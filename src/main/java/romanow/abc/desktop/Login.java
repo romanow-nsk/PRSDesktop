@@ -205,6 +205,7 @@ public class Login extends JFrame implements I_LogArea{
                 }
             main.loginUser(res.body());
             main.debugToken = main.loginUser().getSessionToken();   // Токен новой сессии
+            /*
             Response<ArrayList<String>>  serverEnv = main.service.getSetverEnvironment(main.debugToken).execute();
             if (!serverEnv.isSuccessful() || serverEnv.body()==null){
                 main.onLoginSuccess();
@@ -213,7 +214,9 @@ public class Login extends JFrame implements I_LogArea{
                 System.out.println("!!!!!! Сервер без проверки типа БД");
                 return;
                 }
+
             main.serverEnvironment = serverEnv.body();
+            */
             String ownSubjectArea = ValuesBase.env().applicationName(ValuesBase.AppNameSubjectArea);
             String serverSubjectArea = main.serverEnvironment.get(ValuesBase.AppNameSubjectArea);
             if (!serverSubjectArea.equals(ownSubjectArea)){

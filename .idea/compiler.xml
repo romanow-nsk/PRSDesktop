@@ -8,9 +8,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="EMDesktop" />
-        <module name="EMCore" />
+        <module name="ABCCore" />
         <module name="ABCDataServer" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="EMCore" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

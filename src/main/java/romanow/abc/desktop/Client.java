@@ -6,7 +6,6 @@
 package romanow.abc.desktop;
 
 import com.google.gson.Gson;
-import com.mongodb.DB;
 import romanow.abc.core.API.RestAPIBase;
 import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
