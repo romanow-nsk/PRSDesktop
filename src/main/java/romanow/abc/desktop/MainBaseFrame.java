@@ -6,8 +6,10 @@
 package romanow.abc.desktop;
 
 import com.google.gson.Gson;
-import jdk.nashorn.internal.objects.annotations.Getter;
+import lombok.Getter;
+import lombok.Setter;
 import okhttp3.MultipartBody;
+import romanow.abc.bridge.ConsoleClient;
 import romanow.abc.core.*;
 import romanow.abc.core.API.RestAPIBase;
 import romanow.abc.core.constants.ConstValue;
@@ -48,21 +50,15 @@ import static romanow.abc.core.Utils.httpError;
  * @author romanow
  */
 public class MainBaseFrame extends JFrame implements I_Important {
+    @Getter @Setter private ConsoleClient client=null;
+    protected String debugToken="";
+    //-------------------------------------------------------------------------
     protected WorkSettingsBase workSettings=null;
-    protected ArrayList<ConstValue> constList;
-    protected ArrayList<ConstValue> homeTypes;
-    protected ArrayList<ConstValue> officeTypes;
-    protected ArrayList<ConstValue> cityTypes;
-    protected ArrayList<ConstValue> streetTypes;
-    protected ArrayList<ConstValue> userTypes;
     protected User loginUser=new User();
     protected boolean localUser=false;
-    protected String debugToken="";
     protected boolean refreshMode=false;
     protected Gson gson = new Gson();
     protected ArrayList<String> serverEnvironment;
-    public ArrayList<ConstValue> getConstList() {
-        return constList;}
     public String getDebugToken() {
         return debugToken;}
     public RestAPIBase getService() {
@@ -255,19 +251,6 @@ public class MainBaseFrame extends JFrame implements I_Important {
             }.call(this);
         return new Pair<>(service,ss.getValue());
         }
-    public void loadConstants() throws UniException{
-        constList = new APICall2<ArrayList<ConstValue>>(){
-            @Override
-            public Call<ArrayList<ConstValue>> apiFun() {
-                return service.getConstAll(debugToken);
-            }
-        }.call(this);
-        homeTypes = filter(constList,"HomeType");
-        officeTypes = filter(constList,"OfficeType");
-        streetTypes = filter(constList,"StreetType");
-        cityTypes = filter(constList,"TownType");
-        userTypes = filter(constList,"User");
-        }
     ArrayList<ConstValue> filter(ArrayList<ConstValue> src,String filter){
         ArrayList<ConstValue> out = new ArrayList<>();
         for(ConstValue cc : src)
@@ -283,7 +266,6 @@ public class MainBaseFrame extends JFrame implements I_Important {
             Pair<RestAPIBase,String> res = startOneClient(ip,port);
             service = res.o1;
             debugToken = res.o2;
-            loadConstants();
             } catch (UniException e) {
                 System.out.println("Ошибка ключа отладки "+e.toString());
                 return false;

@@ -98,7 +98,7 @@ public class ServerPanel extends BasePanel{
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
         client = main0;
-        operList = main.filter(main.constList,"DBOperation");
+        //operList = main.filter(main.constList,"DBOperation");
         Operation.removeAll();
         for(ConstValue ss:operList)
             Operation.add(ss.title());

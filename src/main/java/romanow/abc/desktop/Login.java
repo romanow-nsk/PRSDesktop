@@ -5,15 +5,21 @@
  */
 package romanow.abc.desktop;
 
+import retrofit2.Call;
+import romanow.abc.bridge.APICallSync;
+import romanow.abc.bridge.ConsoleClient;
 import romanow.abc.core.Utils;
 import romanow.abc.core.constants.ValuesBase;
 import romanow.abc.core.entity.users.User;
 import retrofit2.Response;
+import romanow.abc.exam.model.DisciplineBean;
+import romanow.abc.exam.model.TeacherBean;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -22,6 +28,7 @@ import java.util.ArrayList;
 public class Login extends JFrame implements I_LogArea{
     private MainBaseFrame main;
     private I_Button back;
+    private ConsoleClient emClient = new ConsoleClient();
     /**
      * Creates new form Login
      */
@@ -35,14 +42,15 @@ public class Login extends JFrame implements I_LogArea{
         ClientIP.add("217.71.138.9");
         ClientIP.add("217.71.138.8");
         ClientIP.add("217.71.138.13");
-        ClientIP.add("192.168.0.102");      // Для отладки - доступ через роутер = удаленный user
+        ClientIP.add("217.71.129.139");      // Для отладки - доступ через роутер = удаленный user
+        Port.add("4502");
         Port.add("4567");
         Port.add("4569");
         Port.add("4571");
         Port.add("5001");
-        setBounds(200,200,370,400);
-        Login.setText("913*******");
-        Password.setText("");
+        setBounds(200,200,370,480);
+        Login.setText("romanov@corp.nstu.ru");
+        Password.setText("password");
         main.setMES(LOG);
         setVisible(true);
         }
@@ -62,7 +70,6 @@ public class Login extends JFrame implements I_LogArea{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        ClientON = new javax.swing.JCheckBox();
         ClientIP = new java.awt.Choice();
         Port = new java.awt.Choice();
         Login = new javax.swing.JTextField();
@@ -77,18 +84,10 @@ public class Login extends JFrame implements I_LogArea{
         NewIP = new javax.swing.JTextField();
         AddIP = new javax.swing.JButton();
         LOG = new java.awt.TextArea();
+        ConnectToServer = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
-
-        ClientON.setText("Соединение");
-        ClientON.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ClientONItemStateChanged(evt);
-            }
-        });
-        getContentPane().add(ClientON);
-        ClientON.setBounds(230, 90, 110, 23);
 
         ClientIP.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -104,11 +103,11 @@ public class Login extends JFrame implements I_LogArea{
             }
         });
         getContentPane().add(Port);
-        Port.setBounds(130, 90, 90, 20);
+        Port.setBounds(130, 90, 120, 20);
 
         Login.setText("9139449081");
         getContentPane().add(Login);
-        Login.setBounds(130, 120, 120, 25);
+        Login.setBounds(130, 120, 170, 25);
 
         Password.setText("pi31415926");
         Password.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -136,11 +135,11 @@ public class Login extends JFrame implements I_LogArea{
         jLabel4.setBounds(20, 120, 110, 14);
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel5.setText("Клиент сервера данных СНЭ");
+        jLabel5.setText("Дистанционная сдача экзамена");
         getContentPane().add(jLabel5);
-        jLabel5.setBounds(130, 20, 230, 20);
+        jLabel5.setBounds(80, 20, 270, 20);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/battery.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/lecture.png"))); // NOI18N
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
         getContentPane().add(jButton1);
@@ -154,7 +153,7 @@ public class Login extends JFrame implements I_LogArea{
             }
         });
         getContentPane().add(LButton);
-        LButton.setBounds(260, 130, 40, 40);
+        LButton.setBounds(260, 150, 40, 40);
         getContentPane().add(NewIP);
         NewIP.setBounds(130, 180, 120, 25);
 
@@ -168,76 +167,47 @@ public class Login extends JFrame implements I_LogArea{
             }
         });
         getContentPane().add(AddIP);
-        AddIP.setBounds(260, 180, 40, 30);
+        AddIP.setBounds(80, 180, 40, 30);
         getContentPane().add(LOG);
-        LOG.setBounds(20, 220, 320, 110);
+        LOG.setBounds(20, 220, 320, 210);
+        getContentPane().add(ConnectToServer);
+        ConnectToServer.setBounds(260, 90, 40, 21);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void ClientONItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ClientONItemStateChanged
-        if (ClientON.isSelected()){
-            if (!main.startClient(ClientIP.getSelectedItem(),Port.getSelectedItem()))
-                ClientON.setSelected(false);
-            }
-        else{
-            disConnect();
-            }
-    }//GEN-LAST:event_ClientONItemStateChanged
 
-    public void disConnect(){
-        ClientON.setSelected(false);
-        main.service=null;
+
+    @Override
+    public TextArea getLogArea() {
+        return LOG;
         }
 
-
+    public void disConnect(){
+        emClient.clear();
+        }
 
     private void LButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LButtonActionPerformed
-        if (!ClientON.isSelected()){
-            main.sendPopupMessage(this,LButton,"Произведите соединение с сервером");
+        emClient.clear();
+        String answer = emClient.login(ClientIP.getSelectedItem(),Port.getSelectedItem(),Login.getText(),new String(Password.getPassword()));
+        if (answer.length()!=0){
+            main.sendPopupMessage(this,LButton,"Нет соединения с сервером:\n"+answer);
             return;
             }
-        try {
-            Response<User> res = main.service.login(Login.getText(),new String(Password.getPassword())).execute();
-            if (!res.isSuccessful()){
-                main.sendPopupMessage(this,LButton,"Ошибка сервера: "+ Utils.httpError(res));
-                return;
-                }
-            main.loginUser(res.body());
-            main.debugToken = main.loginUser().getSessionToken();   // Токен новой сессии
-            /*
-            Response<ArrayList<String>>  serverEnv = main.service.getSetverEnvironment(main.debugToken).execute();
-            if (!serverEnv.isSuccessful() || serverEnv.body()==null){
-                main.onLoginSuccess();
-                back.onPush();
-                dispose();
-                System.out.println("!!!!!! Сервер без проверки типа БД");
-                return;
-                }
-
-            main.serverEnvironment = serverEnv.body();
-            */
-            String ownSubjectArea = ValuesBase.env().applicationName(ValuesBase.AppNameSubjectArea);
-            String serverSubjectArea = main.serverEnvironment.get(ValuesBase.AppNameSubjectArea);
-            if (!serverSubjectArea.equals(ownSubjectArea)){
-                main.sendPopupMessage(this,LButton,"Другой тип сервера: "+ serverSubjectArea);
-                return;
-                }
-            main.onLoginSuccess();
-            back.onPush();
-            dispose();
-            }catch (IOException ee){
-                main.sendPopupMessage(this,LButton,"Ошибка сервера: "+ee.toString());
-                }
-
-    }//GEN-LAST:event_LButtonActionPerformed
+        main.setClient(emClient);
+        main.debugToken = emClient.getToken();   // Токен новой сессии
+        main.loginUser.setTypeId(ValuesBase.UserAdminType);
+        main.onLoginSuccess();
+        back.onPush();
+        dispose();
+        }//GEN-LAST:event_LButtonActionPerformed
 
     private void ClientIPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ClientIPItemStateChanged
-        disConnect();
+        //disConnect();
     }//GEN-LAST:event_ClientIPItemStateChanged
 
     private void PortItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PortItemStateChanged
-        disConnect();
+        //disConnect();
     }//GEN-LAST:event_PortItemStateChanged
 
     private void PasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PasswordKeyPressed
@@ -254,7 +224,7 @@ public class Login extends JFrame implements I_LogArea{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AddIP;
     private java.awt.Choice ClientIP;
-    private javax.swing.JCheckBox ClientON;
+    private javax.swing.JCheckBox ConnectToServer;
     private javax.swing.JButton LButton;
     private java.awt.TextArea LOG;
     private javax.swing.JTextField Login;
@@ -267,10 +237,5 @@ public class Login extends JFrame implements I_LogArea{
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-
-    @Override
-    public TextArea getLogArea() {
-        return LOG;
-    }
     // End of variables declaration//GEN-END:variables
 }

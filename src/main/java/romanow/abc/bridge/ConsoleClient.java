@@ -40,10 +40,17 @@ public class ConsoleClient {
     @Getter TaskControllerApi taskApi=null;
     @Getter ThemeControllerApi themeApi=null;
 
+    public boolean isLogged(){
+        return service!=null && token.length()!=0;
+    }
     public boolean isConnected(){
-        return token.length()!=0;
+        return service!=null;
         }
-    public void createService(String ip,int port){
+    public void clear(){
+        token="";
+        service=null;
+        }
+    public void createService(String ip, String port){
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(ValuesBase.HTTPTimeOut, TimeUnit.SECONDS)
             .connectTimeout(ValuesBase.HTTPTimeOut, TimeUnit.SECONDS)
@@ -55,7 +62,7 @@ public class ConsoleClient {
             .build();
         service = (RestAPI)retrofit.create(RestAPI.class);
         }
-    public  Object createService(String ip,int port,Class face,String token){
+    public  Object createService(String ip,String port,Class face,String token){
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(ValuesBase.HTTPTimeOut, TimeUnit.SECONDS)
                 .connectTimeout(ValuesBase.HTTPTimeOut, TimeUnit.SECONDS)
@@ -75,9 +82,10 @@ public class ConsoleClient {
                 .build();
         return retrofit.create(face);
         }
-    public String login(String ip, int port, String login, String pass) {
+    public String login(String ip, String port, String login, String pass) {
         try {
-            createService(ip, port);
+            if (service==null)
+                createService(ip, port);
             String loginBase64 = Base64Coder.encodeString(login + ":" + pass);
             System.out.println(loginBase64);
             System.out.println(Base64Coder.decodeString(loginBase64));
@@ -116,7 +124,7 @@ public class ConsoleClient {
         }
     public static void main(String ss[]) throws IOException {
         String ip="217.71.129.139";
-        int port=4502;
+        String port="4502";
         String login="romanov@corp.nstu.ru";
         String pass="password";
         final ConsoleClient client = new ConsoleClient();

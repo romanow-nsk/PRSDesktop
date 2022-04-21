@@ -67,6 +67,8 @@ public class Client extends MainBaseFrame   {
                 {UserSuperAdminType, UserAdminType}));
         panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new int[]
                 {UserSuperAdminType}));
+        panelDescList.add(new PanelDescriptor("Тьютор",ExamAdminPanel.class,new int[]
+                {UserSuperAdminType, UserAdminType}));
         }
 
     private void login(){
@@ -103,7 +105,6 @@ public class Client extends MainBaseFrame   {
         service = service0;
         loginUser(user0);
         debugToken = user0.getSessionToken();
-        loadConstants();
         startUser();
         }
     public void startUser(){
@@ -115,14 +116,6 @@ public class Client extends MainBaseFrame   {
             ShowLog.setSelected(false);
             PanelList.removeAll();
             panels.clear();
-            DBRequest ws = new APICall2<DBRequest>(){
-                @Override
-                public Call<DBRequest> apiFun() {
-                    return service.workSettings(debugToken);
-                    }
-                }.call(this);
-            WorkSettingsBase base = (WorkSettingsBase)ws.get(new Gson());
-            boolean mainMode = base.isMainServer();
             for(PanelDescriptor pp : panelDescList){
                 boolean bb=false;
                 boolean editMode = true;
@@ -131,17 +124,15 @@ public class Client extends MainBaseFrame   {
                         bb=true;
                         editMode = vv > 0;
                         break;
-                    }
+                        }
                 if (bb){
                     BasePanel panel = (BasePanel) pp.view.newInstance();
                     if (panel instanceof LogPanel)
                         logPanel = (LogPanel)panel;
-                    if (mainMode && panel.isMainMode() || !mainMode && panel.isESSMode()){
-                        panel.editMode = editMode;
-                        panel.initPanel(this);
-                        panels.add(panel);
-                        PanelList.add(pp.name, panel);
-                        }
+                    panel.editMode = editMode;
+                    panel.initPanel(this);
+                    panels.add(panel);
+                    PanelList.add(pp.name, panel);
                     }
                 }
             setMES(logPanel.mes(),logView,MESLOC);
@@ -214,7 +205,7 @@ public class Client extends MainBaseFrame   {
                 System.out.println("Ошибка сервера: "+ Utils.httpError(res));
                 }
             loginForm.disConnect();
-            setMES(loginForm);
+            setMES(loginForm.getLogArea());
             login();
             }catch (Exception ee){
                 System.out.println("Ошибка сервера: "+ee.toString());

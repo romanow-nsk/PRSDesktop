@@ -69,7 +69,7 @@ public class UserPanelBase extends BasePanel{
                 PHONEMK.setText(uu.getLoginPhone());
                 PASS.setText(uu.getPassword());
                 Login.setText(uu.getLogin());
-                Type.setText(main.userTypes.get(uu.getTypeId()).title());
+                //Type.setText(main.userTypes.get(uu.getTypeId()).title());
                 ViewPhoto.setVisible(uu.getPhoto().getOid()!=0);
                 CardICC.setText(uu.getSimCardICC());
                 }
@@ -94,13 +94,13 @@ public class UserPanelBase extends BasePanel{
         addButton.addActionListener(new ActionListener() {      // Перехват цепочки
             @Override
             public void actionPerformed(final ActionEvent e) {
-                new ListSelector(200, 200, "Роль пользователя", main.userTypes, new I_ListSelected() {
-                    @Override
-                    public void onSelect(int idx) {
-                        selectedType = main.userTypes.get(idx).value();
-                        chain.actionPerformed(e);
-                    }
-                });
+                //new ListSelector(200, 200, "Роль пользователя", main.userTypes, new I_ListSelected() {
+                //    @Override
+                //    public void onSelect(int idx) {
+                //        selectedType = main.userTypes.get(idx).value();
+                //        chain.actionPerformed(e);
+                //    }
+                //});
             }
         });
 
