@@ -11,6 +11,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.constants.ValuesBase;
 import romanow.abc.core.utils.Base64Coder;
 import romanow.abc.exam.SwaggerAPI.*;
@@ -18,6 +19,7 @@ import romanow.abc.exam.model.*;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +27,7 @@ public class ConsoleClient {
     @Getter @Setter private String serverIP="";
     @Getter @Setter int serverPort=0;
     @Getter String token="";
+    @Getter HashMap<UserRole,UserRole> roles=null;
     @Getter RestAPI service = null;
     @Getter AccountControllerApi accountApi=null;
     @Getter AnswerControllerApi answerApi=null;
@@ -96,7 +99,9 @@ public class ConsoleClient {
                     }
                 }.call();
             String ss = ((ResponseBody)response.body()).string();
-            token = ((TokenBody)new Gson().fromJson(ss,TokenBody.class)).getToken();
+            TokenBody tokenBody = (TokenBody)new Gson().fromJson(ss,TokenBody.class);
+            token = tokenBody.getToken();
+            roles = tokenBody.getRoles();
             if (token==null){
                 token = "";
                 return "Нет токена сессии";

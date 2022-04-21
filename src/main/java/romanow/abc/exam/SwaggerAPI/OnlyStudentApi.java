@@ -14,7 +14,12 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
-import romanow.abc.exam.model.*;
+import romanow.abc.exam.model.Pageable;
+import romanow.abc.exam.model.StudentAnswerBean;
+import romanow.abc.exam.model.StudentBean;
+import romanow.abc.exam.model.StudentTicketBean;
+
+
 
 import java.util.ArrayList;
 import java.util.HashMap;

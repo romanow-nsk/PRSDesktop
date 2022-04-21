@@ -31,7 +31,7 @@ import romanow.abc.exam.model.Sort;
 /**
  * PageMessageBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-20T22:54:15.839+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-21T22:55:51.541+07:00[Asia/Novosibirsk]")
 public class PageMessageBean {
 
   @SerializedName("totalElements")

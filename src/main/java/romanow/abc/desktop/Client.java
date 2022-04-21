@@ -6,6 +6,7 @@
 package romanow.abc.desktop;
 
 import com.google.gson.Gson;
+import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.API.RestAPIBase;
 import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
@@ -52,23 +53,23 @@ public class Client extends MainBaseFrame   {
         loginForm.setPassword(name);
     }
     public void initPanels(){
-        panelDescList.add(new PanelDescriptor("Трассировка", LogPanel.class,new int[]
-                {UserSuperAdminType, UserAdminType}));
+        panelDescList.add(new PanelDescriptor("Трассировка", LogPanel.class,new UserRole[]
+                {UserRole.ROLE_ADMIN}));
         //---------- <0 - readOnly Mode
-        panelDescList.add(new PanelDescriptor("Пользователи", UserPanelBase.class,new int[]
-                {UserSuperAdminType, UserAdminType}));
+        panelDescList.add(new PanelDescriptor("Пользователи", UserPanelBase.class,new UserRole[]
+                {UserRole.ROLE_ADMIN}));
         //panelDescList.add(new PanelDescriptor("Отчеты/Уведомления", ReportsPanelBase.class,new int[]
-        //        {UserSuperAdminType, UserAdminType}));
-        panelDescList.add(new PanelDescriptor("Сервер",ServerPanel.class,new int[]
-                {UserSuperAdminType}));
+        //        {UserRole.ROLE_ADMIN, UserAdminType}));
+        //panelDescList.add(new PanelDescriptor("Сервер",ServerPanel.class,new UserRole[]
+        //        {UserRole.ROLE_ADMIN}));
         //panelDescList.add(new PanelDescriptor("Помощь",HelpPanel.class,new int[]
-        //        {UserSuperAdminType, UserAdminType}));
-        panelDescList.add(new PanelDescriptor("Артефакты",ArtifactPanel.class,new int[]
-                {UserSuperAdminType, UserAdminType}));
-        panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new int[]
-                {UserSuperAdminType}));
-        panelDescList.add(new PanelDescriptor("Тьютор",ExamAdminPanel.class,new int[]
-                {UserSuperAdminType, UserAdminType}));
+        //        {UserRole.ROLE_ADMIN, UserAdminType}));
+        //panelDescList.add(new PanelDescriptor("Артефакты",ArtifactPanel.class,new UserRole[]
+        //        {UserRole.ROLE_ADMIN}));
+        //panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new UserRole[]
+        //        {UserRole.ROLE_ADMIN}));
+        panelDescList.add(new PanelDescriptor("Тьютор",ExamAdminPanel.class,new UserRole[]
+                {UserRole.ROLE_ADMIN,UserRole.ROLE_TEACHER}));
         }
 
     private void login(){
@@ -119,20 +120,17 @@ public class Client extends MainBaseFrame   {
             for(PanelDescriptor pp : panelDescList){
                 boolean bb=false;
                 boolean editMode = true;
-                for(int vv : pp.userTypes)
-                    if (Math.abs(vv)==loginUser().getTypeId()){
-                        bb=true;
-                        editMode = vv > 0;
+                for(UserRole vv : pp.userTypes){
+                    if (getClient().getRoles().get(vv)!=null){
+                        BasePanel panel = (BasePanel) pp.view.newInstance();
+                        if (panel instanceof LogPanel)
+                            logPanel = (LogPanel)panel;
+                        panel.editMode = editMode;
+                        panel.initPanel(this);
+                        panels.add(panel);
+                        PanelList.add(pp.name, panel);
                         break;
                         }
-                if (bb){
-                    BasePanel panel = (BasePanel) pp.view.newInstance();
-                    if (panel instanceof LogPanel)
-                        logPanel = (LogPanel)panel;
-                    panel.editMode = editMode;
-                    panel.initPanel(this);
-                    panels.add(panel);
-                    PanelList.add(pp.name, panel);
                     }
                 }
             setMES(logPanel.mes(),logView,MESLOC);

@@ -191,7 +191,7 @@ public class Login extends JFrame implements I_LogArea{
         emClient.clear();
         String answer = emClient.login(ClientIP.getSelectedItem(),Port.getSelectedItem(),Login.getText(),new String(Password.getPassword()));
         if (answer.length()!=0){
-            main.sendPopupMessage(this,LButton,"Нет соединения с сервером:\n"+answer);
+            System.out.println("Нет соединения с сервером:\n"+answer);
             return;
             }
         main.setClient(emClient);
