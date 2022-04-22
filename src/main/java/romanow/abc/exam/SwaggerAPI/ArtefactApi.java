@@ -25,7 +25,7 @@ import java.util.Map;
 
 
 
-public interface ArtefactControllerApi {
+public interface ArtefactApi {
   
   /**
    * Download a file
@@ -59,7 +59,7 @@ public interface ArtefactControllerApi {
   
   
     
-  @GET("artefact/{artefactId}")
+  @GET("artefact/{artefactId}/info")
   Call<ArtefactBean> getInfo(
     @retrofit2.http.Path("artefactId") Long artefactId
   );

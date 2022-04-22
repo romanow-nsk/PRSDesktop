@@ -14,6 +14,7 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+import romanow.abc.exam.model.CreateRatingSystemBean;
 import romanow.abc.exam.model.RatingSystemBean;
 
 
@@ -25,7 +26,48 @@ import java.util.Map;
 
 
 
-public interface RatingSystemControllerApi {
+public interface RatingSystemApi {
+  
+  /**
+   * Create rating mapping
+   * 
+
+   * @param body  (required)
+
+   * @return Call&lt;RatingSystemBean&gt;
+
+   */
+  
+  
+  
+  
+  @Headers({
+    "Content-Type:application/json"
+  })
+  
+  
+    
+  @POST("rating-systems")
+  Call<RatingSystemBean> create1(
+    @retrofit2.http.Body CreateRatingSystemBean body
+  );
+
+  
+  /**
+   * Get all rating mappings
+   * 
+
+   * @return Call&lt;Void&gt;
+
+   */
+  
+  
+  
+    
+  @GET("rating-systems")
+  Call<Void> getAll1();
+    
+
   
   /**
    * Get one rating mapping

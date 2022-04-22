@@ -29,19 +29,19 @@ public class ConsoleClient {
     @Getter String token="";
     @Getter HashMap<UserRole,UserRole> roles=null;
     @Getter RestAPI service = null;
-    @Getter AccountControllerApi accountApi=null;
-    @Getter AnswerControllerApi answerApi=null;
-    @Getter ArtefactControllerApi artefactApi=null;
-    @Getter DisciplineControllerApi disciplineApi=null;
-    @Getter ExamControllerApi examApi=null;
-    @Getter ExamRuleControllerApi examRuleApi=null;
-    @Getter GroupControllerApi groupApi=null;
-    @Getter OnlyAdminApi onlyAdminApi=null;
-    @Getter OnlyStudentApi onlyStudentApi=null;
-    @Getter OnlyTeacherApi onlyTeacherApi=null;
-    @Getter RatingSystemControllerApi ratingSystemApi=null;
-    @Getter TaskControllerApi taskApi=null;
-    @Getter ThemeControllerApi themeApi=null;
+    @Getter AccountApi accountApi=null;
+    @Getter AnswerApi answerApi=null;
+    @Getter ArtefactApi artefactApi=null;
+    @Getter DisciplinesApi disciplineApi=null;
+    @Getter ExamApi examApi=null;
+    @Getter ExamRuleApi examRuleApi=null;
+    @Getter GroupApi groupApi=null;
+    @Getter StudentApi onlyStudentApi=null;
+    @Getter TeacherApi onlyTeacherApi=null;
+    @Getter RatingSystemApi ratingSystemApi=null;
+    @Getter TasksApi taskApi=null;
+    @Getter ThemesApi themeApi=null;
+    @Getter TicketApi ticketApi=null;
 
     public boolean isLogged(){
         return service!=null && token.length()!=0;
@@ -108,19 +108,19 @@ public class ConsoleClient {
                 }
             else{
                 System.out.println("Токен="+token);
-                accountApi = (AccountControllerApi)createService(ip,port,AccountControllerApi.class,token);
-                answerApi = (AnswerControllerApi)createService(ip,port,AnswerControllerApi.class,token);
-                artefactApi = (ArtefactControllerApi)createService(ip,port,ArtefactControllerApi.class,token);
-                disciplineApi = (DisciplineControllerApi)createService(ip,port,DisciplineControllerApi.class,token);
-                examApi = (ExamControllerApi)createService(ip,port,ExamControllerApi.class,token);
-                examRuleApi = (ExamRuleControllerApi) createService(ip,port,ExamRuleControllerApi.class,token);
-                groupApi = (GroupControllerApi) createService(ip,port,GroupControllerApi.class,token);
-                onlyAdminApi = (OnlyAdminApi) createService(ip,port,OnlyAdminApi.class,token);
-                onlyStudentApi = (OnlyStudentApi) createService(ip,port,OnlyStudentApi.class,token);
-                onlyTeacherApi = (OnlyTeacherApi) createService(ip,port,OnlyTeacherApi.class,token);
-                ratingSystemApi = (RatingSystemControllerApi) createService(ip,port,RatingSystemControllerApi.class,token);
-                taskApi = (TaskControllerApi) createService(ip,port,TaskControllerApi.class,token);
-                themeApi = (ThemeControllerApi) createService(ip,port,ThemeControllerApi.class,token);
+                accountApi = (AccountApi)createService(ip,port,AccountApi.class,token);
+                answerApi = (AnswerApi)createService(ip,port,AnswerApi.class,token);
+                artefactApi = (ArtefactApi)createService(ip,port,ArtefactApi.class,token);
+                disciplineApi = (DisciplinesApi)createService(ip,port,DisciplinesApi.class,token);
+                examApi = (ExamApi)createService(ip,port,ExamApi.class,token);
+                examRuleApi = (ExamRuleApi) createService(ip,port,ExamRuleApi.class,token);
+                groupApi = (GroupApi) createService(ip,port,GroupApi.class,token);
+                onlyStudentApi = (StudentApi) createService(ip,port,StudentApi.class,token);
+                onlyTeacherApi = (TeacherApi) createService(ip,port,TeacherApi.class,token);
+                ratingSystemApi = (RatingSystemApi) createService(ip,port,RatingSystemApi.class,token);
+                taskApi = (TasksApi) createService(ip,port,TasksApi.class,token);
+                themeApi = (ThemesApi) createService(ip,port,ThemesApi.class,token);
+                ticketApi = (TicketApi) createService(ip,port,TicketApi.class,token);
                 }
             } catch (IOException ee){
                 return ee.toString();

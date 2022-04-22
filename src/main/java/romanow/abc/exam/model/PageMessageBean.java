@@ -31,14 +31,14 @@ import romanow.abc.exam.model.Sort;
 /**
  * PageMessageBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-21T22:55:51.541+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
 public class PageMessageBean {
 
-  @SerializedName("totalElements")
-  private Long totalElements = null;
-  
   @SerializedName("totalPages")
   private Integer totalPages = null;
+  
+  @SerializedName("totalElements")
+  private Long totalElements = null;
   
   @SerializedName("number")
   private Integer number = null;
@@ -67,24 +67,6 @@ public class PageMessageBean {
   @SerializedName("empty")
   private Boolean empty = null;
   
-  public PageMessageBean totalElements(Long totalElements) {
-    this.totalElements = totalElements;
-    return this;
-  }
-
-  
-  /**
-  * Get totalElements
-  * @return totalElements
-  **/
-  @ApiModelProperty(value = "")
-  public Long getTotalElements() {
-    return totalElements;
-  }
-  public void setTotalElements(Long totalElements) {
-    this.totalElements = totalElements;
-  }
-  
   public PageMessageBean totalPages(Integer totalPages) {
     this.totalPages = totalPages;
     return this;
@@ -101,6 +83,24 @@ public class PageMessageBean {
   }
   public void setTotalPages(Integer totalPages) {
     this.totalPages = totalPages;
+  }
+  
+  public PageMessageBean totalElements(Long totalElements) {
+    this.totalElements = totalElements;
+    return this;
+  }
+
+  
+  /**
+  * Get totalElements
+  * @return totalElements
+  **/
+  @ApiModelProperty(value = "")
+  public Long getTotalElements() {
+    return totalElements;
+  }
+  public void setTotalElements(Long totalElements) {
+    this.totalElements = totalElements;
   }
   
   public PageMessageBean number(Integer number) {
@@ -283,8 +283,8 @@ public class PageMessageBean {
       return false;
     }
     PageMessageBean pageMessageBean = (PageMessageBean) o;
-    return Objects.equals(this.totalElements, pageMessageBean.totalElements) &&
-        Objects.equals(this.totalPages, pageMessageBean.totalPages) &&
+    return Objects.equals(this.totalPages, pageMessageBean.totalPages) &&
+        Objects.equals(this.totalElements, pageMessageBean.totalElements) &&
         Objects.equals(this.number, pageMessageBean.number) &&
         Objects.equals(this.sort, pageMessageBean.sort) &&
         Objects.equals(this.size, pageMessageBean.size) &&
@@ -298,7 +298,7 @@ public class PageMessageBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(totalElements, totalPages, number, sort, size, content, pageable, first, last, numberOfElements, empty);
+    return java.util.Objects.hash(totalPages, totalElements, number, sort, size, content, pageable, first, last, numberOfElements, empty);
   }
   
   @Override
@@ -306,8 +306,8 @@ public class PageMessageBean {
     StringBuilder sb = new StringBuilder();
     sb.append("class PageMessageBean {\n");
     
-    sb.append("    totalElements: ").append(toIndentedString(totalElements)).append("\n");
     sb.append("    totalPages: ").append(toIndentedString(totalPages)).append("\n");
+    sb.append("    totalElements: ").append(toIndentedString(totalElements)).append("\n");
     sb.append("    number: ").append(toIndentedString(number)).append("\n");
     sb.append("    sort: ").append(toIndentedString(sort)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");

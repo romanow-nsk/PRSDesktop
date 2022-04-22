@@ -14,8 +14,6 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
-import romanow.abc.exam.model.Pageable;
-import romanow.abc.exam.model.StudentAnswerBean;
 import romanow.abc.exam.model.StudentBean;
 import romanow.abc.exam.model.StudentTicketBean;
 
@@ -28,26 +26,55 @@ import java.util.Map;
 
 
 
-public interface OnlyStudentApi {
+public interface StudentApi {
   
   /**
-   * Get answers by ticket
-   * Sorted by default by task type (questions first)
+   * Create many students
+   * 
 
-   * @param ticketId  (required)
+   * @param body  (required)
 
-   * @param pageable  (required)
-
-   * @return Call&lt;List&lt;StudentAnswerBean&gt;&gt;
+   * @return Call&lt;List&lt;StudentBean&gt;&gt;
 
    */
   
   
   
+  
+  @Headers({
+    "Content-Type:application/json"
+  })
+  
+  
     
-  @GET("ticket/{ticketId}/answer")
-  Call<List<StudentAnswerBean>> getAnswers(
-    @retrofit2.http.Path("ticketId") Long ticketId, @retrofit2.http.Path("pageable") Pageable pageable
+  @POST("student/bulk")
+  Call<List<StudentBean>> addStudents(
+    @retrofit2.http.Body List<StudentBean> body
+  );
+
+  
+  /**
+   * Create one student
+   * 
+
+   * @param body  (required)
+
+   * @return Call&lt;StudentBean&gt;
+
+   */
+  
+  
+  
+  
+  @Headers({
+    "Content-Type:application/json"
+  })
+  
+  
+    
+  @POST("student")
+  Call<StudentBean> createStudent(
+    @retrofit2.http.Body StudentBean body
   );
 
   
@@ -63,7 +90,7 @@ public interface OnlyStudentApi {
   
     
   @GET("student/me")
-  Call<StudentBean> getSelf1();
+  Call<StudentBean> getSelf();
     
 
   

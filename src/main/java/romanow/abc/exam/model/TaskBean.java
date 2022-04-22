@@ -26,14 +26,11 @@ import java.io.IOException;
 /**
  * TaskBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-20T22:54:15.839+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
 public class TaskBean {
 
   @SerializedName("id")
   private Long id = null;
-  
-  @SerializedName("cost")
-  private Integer cost = null;
   
   @SerializedName("text")
   private String text = null;
@@ -110,24 +107,6 @@ public class TaskBean {
   }
   public void setId(Long id) {
     this.id = id;
-  }
-  
-  public TaskBean cost(Integer cost) {
-    this.cost = cost;
-    return this;
-  }
-
-  
-  /**
-  * Get cost
-  * @return cost
-  **/
-  @ApiModelProperty(value = "")
-  public Integer getCost() {
-    return cost;
-  }
-  public void setCost(Integer cost) {
-    this.cost = cost;
   }
   
   public TaskBean text(String text) {
@@ -212,7 +191,6 @@ public class TaskBean {
     }
     TaskBean taskBean = (TaskBean) o;
     return Objects.equals(this.id, taskBean.id) &&
-        Objects.equals(this.cost, taskBean.cost) &&
         Objects.equals(this.text, taskBean.text) &&
         Objects.equals(this.artefactId, taskBean.artefactId) &&
         Objects.equals(this.taskType, taskBean.taskType) &&
@@ -221,7 +199,7 @@ public class TaskBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, cost, text, artefactId, taskType, themeId);
+    return java.util.Objects.hash(id, text, artefactId, taskType, themeId);
   }
   
   @Override
@@ -230,7 +208,6 @@ public class TaskBean {
     sb.append("class TaskBean {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    cost: ").append(toIndentedString(cost)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
     sb.append("    artefactId: ").append(toIndentedString(artefactId)).append("\n");
     sb.append("    taskType: ").append(toIndentedString(taskType)).append("\n");

@@ -29,7 +29,7 @@ import romanow.abc.exam.model.AccountBean;
 /**
  * CreateTeacherBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-21T22:55:51.541+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
 public class CreateTeacherBean {
 
   @SerializedName("account")

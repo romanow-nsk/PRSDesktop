@@ -18,6 +18,7 @@ import romanow.abc.exam.model.MessageBean;
 import romanow.abc.exam.model.NewMessageBean;
 import romanow.abc.exam.model.PageMessageBean;
 import romanow.abc.exam.model.Pageable;
+import romanow.abc.exam.model.UpdateAnswerBean;
 
 
 
@@ -28,7 +29,7 @@ import java.util.Map;
 
 
 
-public interface AnswerControllerApi {
+public interface AnswerApi {
   
   /**
    * Get messages by an answer
@@ -75,6 +76,33 @@ public interface AnswerControllerApi {
   @POST("answer/{answerId}/message")
   Call<MessageBean> newMessage1(
     @retrofit2.http.Body NewMessageBean body, @retrofit2.http.Path("answerId") Long answerId
+  );
+
+  
+  /**
+   * Put a mark to an answer
+   * 
+
+   * @param body  (required)
+
+   * @param answerId  (required)
+
+   * @return Call&lt;Void&gt;
+
+   */
+  
+  
+  
+  
+  @Headers({
+    "Content-Type:application/json"
+  })
+  
+  
+    
+  @PUT("answer/{answerId}")
+  Call<Void> rate(
+    @retrofit2.http.Body UpdateAnswerBean body, @retrofit2.http.Path("answerId") Long answerId
   );
 
   

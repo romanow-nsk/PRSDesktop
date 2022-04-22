@@ -25,7 +25,7 @@ import java.util.Map;
 
 
 
-public interface AccountControllerApi {
+public interface AccountApi {
   
   /**
    * Change password
@@ -53,6 +53,47 @@ public interface AccountControllerApi {
 
   
   /**
+   * Create an account
+   * Used by admins to create admins
+
+   * @param body  (required)
+
+   * @return Call&lt;AccountBean&gt;
+
+   */
+  
+  
+  
+  
+  @Headers({
+    "Content-Type:application/json"
+  })
+  
+  
+    
+  @POST("account")
+  Call<AccountBean> createAccount(
+    @retrofit2.http.Body AccountBean body
+  );
+
+  
+  /**
+   * Get all accounts
+   * 
+
+   * @return Call&lt;List&lt;AccountBean&gt;&gt;
+
+   */
+  
+  
+  
+    
+  @GET("account")
+  Call<List<AccountBean>> findAll1();
+    
+
+  
+  /**
    * Get one account
    * 
 
@@ -69,6 +110,22 @@ public interface AccountControllerApi {
   Call<AccountBean> findOne1(
     @retrofit2.http.Path("accountId") Long accountId
   );
+
+  
+  /**
+   * Get info about self
+   * 
+
+   * @return Call&lt;AccountBean&gt;
+
+   */
+  
+  
+  
+    
+  @GET("account/me")
+  Call<AccountBean> me();
+    
 
   
 }

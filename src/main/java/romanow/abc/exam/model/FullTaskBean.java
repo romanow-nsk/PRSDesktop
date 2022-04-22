@@ -22,12 +22,13 @@ import com.google.gson.stream.JsonWriter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
+import romanow.abc.exam.model.ArtefactBean;
 
 /**
- * StudentTaskBean
+ * FullTaskBean
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class StudentTaskBean {
+public class FullTaskBean {
 
   @SerializedName("id")
   private Long id = null;
@@ -35,8 +36,8 @@ public class StudentTaskBean {
   @SerializedName("text")
   private String text = null;
   
-  @SerializedName("artefactId")
-  private Long artefactId = null;
+  @SerializedName("artefact")
+  private ArtefactBean artefact = null;
   
   /**
    * Gets or Sets taskType
@@ -88,10 +89,10 @@ public class StudentTaskBean {
   @SerializedName("taskType")
   private TaskTypeEnum taskType = null;
   
-  @SerializedName("themeName")
-  private String themeName = null;
+  @SerializedName("themeId")
+  private Long themeId = null;
   
-  public StudentTaskBean id(Long id) {
+  public FullTaskBean id(Long id) {
     this.id = id;
     return this;
   }
@@ -109,7 +110,7 @@ public class StudentTaskBean {
     this.id = id;
   }
   
-  public StudentTaskBean text(String text) {
+  public FullTaskBean text(String text) {
     this.text = text;
     return this;
   }
@@ -127,25 +128,25 @@ public class StudentTaskBean {
     this.text = text;
   }
   
-  public StudentTaskBean artefactId(Long artefactId) {
-    this.artefactId = artefactId;
+  public FullTaskBean artefact(ArtefactBean artefact) {
+    this.artefact = artefact;
     return this;
   }
 
   
   /**
-  * Get artefactId
-  * @return artefactId
+  * Get artefact
+  * @return artefact
   **/
   @ApiModelProperty(value = "")
-  public Long getArtefactId() {
-    return artefactId;
+  public ArtefactBean getArtefact() {
+    return artefact;
   }
-  public void setArtefactId(Long artefactId) {
-    this.artefactId = artefactId;
+  public void setArtefact(ArtefactBean artefact) {
+    this.artefact = artefact;
   }
   
-  public StudentTaskBean taskType(TaskTypeEnum taskType) {
+  public FullTaskBean taskType(TaskTypeEnum taskType) {
     this.taskType = taskType;
     return this;
   }
@@ -163,22 +164,22 @@ public class StudentTaskBean {
     this.taskType = taskType;
   }
   
-  public StudentTaskBean themeName(String themeName) {
-    this.themeName = themeName;
+  public FullTaskBean themeId(Long themeId) {
+    this.themeId = themeId;
     return this;
   }
 
   
   /**
-  * Get themeName
-  * @return themeName
+  * Get themeId
+  * @return themeId
   **/
   @ApiModelProperty(value = "")
-  public String getThemeName() {
-    return themeName;
+  public Long getThemeId() {
+    return themeId;
   }
-  public void setThemeName(String themeName) {
-    this.themeName = themeName;
+  public void setThemeId(Long themeId) {
+    this.themeId = themeId;
   }
   
   @Override
@@ -189,29 +190,29 @@ public class StudentTaskBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StudentTaskBean studentTaskBean = (StudentTaskBean) o;
-    return Objects.equals(this.id, studentTaskBean.id) &&
-        Objects.equals(this.text, studentTaskBean.text) &&
-        Objects.equals(this.artefactId, studentTaskBean.artefactId) &&
-        Objects.equals(this.taskType, studentTaskBean.taskType) &&
-        Objects.equals(this.themeName, studentTaskBean.themeName);
+    FullTaskBean fullTaskBean = (FullTaskBean) o;
+    return Objects.equals(this.id, fullTaskBean.id) &&
+        Objects.equals(this.text, fullTaskBean.text) &&
+        Objects.equals(this.artefact, fullTaskBean.artefact) &&
+        Objects.equals(this.taskType, fullTaskBean.taskType) &&
+        Objects.equals(this.themeId, fullTaskBean.themeId);
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, text, artefactId, taskType, themeName);
+    return java.util.Objects.hash(id, text, artefact, taskType, themeId);
   }
   
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StudentTaskBean {\n");
+    sb.append("class FullTaskBean {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
-    sb.append("    artefactId: ").append(toIndentedString(artefactId)).append("\n");
+    sb.append("    artefact: ").append(toIndentedString(artefact)).append("\n");
     sb.append("    taskType: ").append(toIndentedString(taskType)).append("\n");
-    sb.append("    themeName: ").append(toIndentedString(themeName)).append("\n");
+    sb.append("    themeId: ").append(toIndentedString(themeId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

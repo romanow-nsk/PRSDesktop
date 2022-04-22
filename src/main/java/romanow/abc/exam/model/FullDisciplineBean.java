@@ -24,26 +24,24 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import romanow.abc.exam.model.FullThemeBean;
 
 /**
- * ExamBean
+ * FullDisciplineBean
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class ExamBean {
+public class FullDisciplineBean {
 
   @SerializedName("id")
   private Long id = null;
   
-  @SerializedName("examRuleId")
-  private Long examRuleId = null;
+  @SerializedName("name")
+  private String name = null;
   
-  @SerializedName("disciplineId")
-  private Long disciplineId = null;
+  @SerializedName("themes")
+  private List<FullThemeBean> themes = null;
   
-  @SerializedName("groupIds")
-  private List<Long> groupIds = null;
-  
-  public ExamBean id(Long id) {
+  public FullDisciplineBean id(Long id) {
     this.id = id;
     return this;
   }
@@ -61,67 +59,49 @@ public class ExamBean {
     this.id = id;
   }
   
-  public ExamBean examRuleId(Long examRuleId) {
-    this.examRuleId = examRuleId;
+  public FullDisciplineBean name(String name) {
+    this.name = name;
     return this;
   }
 
   
   /**
-  * Get examRuleId
-  * @return examRuleId
+  * Get name
+  * @return name
   **/
   @ApiModelProperty(value = "")
-  public Long getExamRuleId() {
-    return examRuleId;
+  public String getName() {
+    return name;
   }
-  public void setExamRuleId(Long examRuleId) {
-    this.examRuleId = examRuleId;
+  public void setName(String name) {
+    this.name = name;
   }
   
-  public ExamBean disciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
+  public FullDisciplineBean themes(List<FullThemeBean> themes) {
+    this.themes = themes;
     return this;
   }
 
-  
-  /**
-  * Get disciplineId
-  * @return disciplineId
-  **/
-  @ApiModelProperty(value = "")
-  public Long getDisciplineId() {
-    return disciplineId;
-  }
-  public void setDisciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
-  }
-  
-  public ExamBean groupIds(List<Long> groupIds) {
-    this.groupIds = groupIds;
-    return this;
-  }
-
-  public ExamBean addGroupIdsItem(Long groupIdsItem) {
+  public FullDisciplineBean addThemesItem(FullThemeBean themesItem) {
     
-    if (this.groupIds == null) {
-      this.groupIds = new ArrayList<Long>();
+    if (this.themes == null) {
+      this.themes = new ArrayList<FullThemeBean>();
     }
     
-    this.groupIds.add(groupIdsItem);
+    this.themes.add(themesItem);
     return this;
   }
   
   /**
-  * Get groupIds
-  * @return groupIds
+  * Get themes
+  * @return themes
   **/
   @ApiModelProperty(value = "")
-  public List<Long> getGroupIds() {
-    return groupIds;
+  public List<FullThemeBean> getThemes() {
+    return themes;
   }
-  public void setGroupIds(List<Long> groupIds) {
-    this.groupIds = groupIds;
+  public void setThemes(List<FullThemeBean> themes) {
+    this.themes = themes;
   }
   
   @Override
@@ -132,27 +112,25 @@ public class ExamBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ExamBean examBean = (ExamBean) o;
-    return Objects.equals(this.id, examBean.id) &&
-        Objects.equals(this.examRuleId, examBean.examRuleId) &&
-        Objects.equals(this.disciplineId, examBean.disciplineId) &&
-        Objects.equals(this.groupIds, examBean.groupIds);
+    FullDisciplineBean fullDisciplineBean = (FullDisciplineBean) o;
+    return Objects.equals(this.id, fullDisciplineBean.id) &&
+        Objects.equals(this.name, fullDisciplineBean.name) &&
+        Objects.equals(this.themes, fullDisciplineBean.themes);
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, examRuleId, disciplineId, groupIds);
+    return java.util.Objects.hash(id, name, themes);
   }
   
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ExamBean {\n");
+    sb.append("class FullDisciplineBean {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    examRuleId: ").append(toIndentedString(examRuleId)).append("\n");
-    sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
-    sb.append("    groupIds: ").append(toIndentedString(groupIds)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    themes: ").append(toIndentedString(themes)).append("\n");
     sb.append("}");
     return sb.toString();
   }

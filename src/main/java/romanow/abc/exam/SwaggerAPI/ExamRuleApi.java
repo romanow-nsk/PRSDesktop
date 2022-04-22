@@ -14,6 +14,7 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+import romanow.abc.exam.model.CreateExamRuleBean;
 import romanow.abc.exam.model.ExamRuleBean;
 
 
@@ -25,7 +26,48 @@ import java.util.Map;
 
 
 
-public interface ExamRuleControllerApi {
+public interface ExamRuleApi {
+  
+  /**
+   * Create an exam rule
+   * 
+
+   * @param body  (required)
+
+   * @return Call&lt;ExamRuleBean&gt;
+
+   */
+  
+  
+  
+  
+  @Headers({
+    "Content-Type:application/json"
+  })
+  
+  
+    
+  @POST("exam-rule")
+  Call<ExamRuleBean> create3(
+    @retrofit2.http.Body CreateExamRuleBean body
+  );
+
+  
+  /**
+   * Get all exam rules
+   * 
+
+   * @return Call&lt;List&lt;ExamRuleBean&gt;&gt;
+
+   */
+  
+  
+  
+    
+  @GET("exam-rule")
+  Call<List<ExamRuleBean>> getAll4();
+    
+
   
   /**
    * Get one exam rule

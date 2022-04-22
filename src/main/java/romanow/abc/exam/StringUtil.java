@@ -13,7 +13,7 @@
 
 package romanow.abc.exam;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-20T22:54:15.839+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
 public class StringUtil {
   /**
    * Check if the given array contains the given value (with case-insensitive comparison).
