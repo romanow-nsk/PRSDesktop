@@ -10,151 +10,150 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * TicketBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class TicketBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class TicketBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("semesterRating")
   private Integer semesterRating = null;
-  
+
   @SerializedName("examRating")
   private Integer examRating = null;
-  
+
   @SerializedName("allowed")
   private Boolean allowed = null;
-  
+
   @SerializedName("examPeriodId")
   private Long examPeriodId = null;
-  
+
   @SerializedName("studentId")
   private Long studentId = null;
-  
+
   public TicketBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public TicketBean semesterRating(Integer semesterRating) {
     this.semesterRating = semesterRating;
     return this;
   }
 
-  
-  /**
-  * Get semesterRating
-  * @return semesterRating
+   /**
+   * Get semesterRating
+   * @return semesterRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getSemesterRating() {
     return semesterRating;
   }
+
   public void setSemesterRating(Integer semesterRating) {
     this.semesterRating = semesterRating;
   }
-  
+
   public TicketBean examRating(Integer examRating) {
     this.examRating = examRating;
     return this;
   }
 
-  
-  /**
-  * Get examRating
-  * @return examRating
+   /**
+   * Get examRating
+   * @return examRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getExamRating() {
     return examRating;
   }
+
   public void setExamRating(Integer examRating) {
     this.examRating = examRating;
   }
-  
+
   public TicketBean allowed(Boolean allowed) {
     this.allowed = allowed;
     return this;
   }
 
-  
-  /**
-  * Get allowed
-  * @return allowed
+   /**
+   * Get allowed
+   * @return allowed
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isAllowed() {
     return allowed;
   }
+
   public void setAllowed(Boolean allowed) {
     this.allowed = allowed;
   }
-  
+
   public TicketBean examPeriodId(Long examPeriodId) {
     this.examPeriodId = examPeriodId;
     return this;
   }
 
-  
-  /**
-  * Get examPeriodId
-  * @return examPeriodId
+   /**
+   * Get examPeriodId
+   * @return examPeriodId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getExamPeriodId() {
     return examPeriodId;
   }
+
   public void setExamPeriodId(Long examPeriodId) {
     this.examPeriodId = examPeriodId;
   }
-  
+
   public TicketBean studentId(Long studentId) {
     this.studentId = studentId;
     return this;
   }
 
-  
-  /**
-  * Get studentId
-  * @return studentId
+   /**
+   * Get studentId
+   * @return studentId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getStudentId() {
     return studentId;
   }
+
   public void setStudentId(Long studentId) {
     this.studentId = studentId;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -174,9 +173,10 @@ public class TicketBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, semesterRating, examRating, allowed, examPeriodId, studentId);
+    return Objects.hash(id, semesterRating, examRating, allowed, examPeriodId, studentId);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -203,8 +203,4 @@ public class TicketBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

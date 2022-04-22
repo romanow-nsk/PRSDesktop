@@ -10,68 +10,67 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import romanow.abc.exam.model.AccountBean;
-
 /**
  * TeacherBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class TeacherBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class TeacherBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("account")
   private AccountBean account = null;
-  
+
   public TeacherBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public TeacherBean account(AccountBean account) {
     this.account = account;
     return this;
   }
 
-  
-  /**
-  * Get account
-  * @return account
+   /**
+   * Get account
+   * @return account
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public AccountBean getAccount() {
     return account;
   }
+
   public void setAccount(AccountBean account) {
     this.account = account;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -87,9 +86,10 @@ public class TeacherBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, account);
+    return Objects.hash(id, account);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -112,8 +112,4 @@ public class TeacherBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

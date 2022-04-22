@@ -10,121 +10,119 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import romanow.abc.exam.model.FullTaskBean;
-
 /**
  * FullThemeBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class FullThemeBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class FullThemeBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("name")
   private String name = null;
-  
+
   @SerializedName("disciplineId")
   private Long disciplineId = null;
-  
+
   @SerializedName("tasks")
   private List<FullTaskBean> tasks = null;
-  
+
   public FullThemeBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public FullThemeBean name(String name) {
     this.name = name;
     return this;
   }
 
-  
-  /**
-  * Get name
-  * @return name
+   /**
+   * Get name
+   * @return name
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public FullThemeBean disciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
     return this;
   }
 
-  
-  /**
-  * Get disciplineId
-  * @return disciplineId
+   /**
+   * Get disciplineId
+   * @return disciplineId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getDisciplineId() {
     return disciplineId;
   }
+
   public void setDisciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
   }
-  
+
   public FullThemeBean tasks(List<FullTaskBean> tasks) {
     this.tasks = tasks;
     return this;
   }
 
   public FullThemeBean addTasksItem(FullTaskBean tasksItem) {
-    
     if (this.tasks == null) {
       this.tasks = new ArrayList<FullTaskBean>();
     }
-    
     this.tasks.add(tasksItem);
     return this;
   }
-  
-  /**
-  * Get tasks
-  * @return tasks
+
+   /**
+   * Get tasks
+   * @return tasks
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<FullTaskBean> getTasks() {
     return tasks;
   }
+
   public void setTasks(List<FullTaskBean> tasks) {
     this.tasks = tasks;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -142,9 +140,10 @@ public class FullThemeBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, name, disciplineId, tasks);
+    return Objects.hash(id, name, disciplineId, tasks);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -169,8 +168,4 @@ public class FullThemeBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

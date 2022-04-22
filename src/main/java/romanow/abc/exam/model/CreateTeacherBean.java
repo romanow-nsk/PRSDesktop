@@ -10,79 +10,77 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import romanow.abc.exam.model.AccountBean;
-
 /**
  * CreateTeacherBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class CreateTeacherBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class CreateTeacherBean {
   @SerializedName("account")
   private AccountBean account = null;
-  
+
   @SerializedName("disciplineIds")
   private List<Long> disciplineIds = null;
-  
+
   public CreateTeacherBean account(AccountBean account) {
     this.account = account;
     return this;
   }
 
-  
-  /**
-  * Get account
-  * @return account
+   /**
+   * Get account
+   * @return account
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public AccountBean getAccount() {
     return account;
   }
+
   public void setAccount(AccountBean account) {
     this.account = account;
   }
-  
+
   public CreateTeacherBean disciplineIds(List<Long> disciplineIds) {
     this.disciplineIds = disciplineIds;
     return this;
   }
 
   public CreateTeacherBean addDisciplineIdsItem(Long disciplineIdsItem) {
-    
     if (this.disciplineIds == null) {
       this.disciplineIds = new ArrayList<Long>();
     }
-    
     this.disciplineIds.add(disciplineIdsItem);
     return this;
   }
-  
-  /**
-  * Get disciplineIds
-  * @return disciplineIds
+
+   /**
+   * Get disciplineIds
+   * @return disciplineIds
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Long> getDisciplineIds() {
     return disciplineIds;
   }
+
   public void setDisciplineIds(List<Long> disciplineIds) {
     this.disciplineIds = disciplineIds;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -98,9 +96,10 @@ public class CreateTeacherBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(account, disciplineIds);
+    return Objects.hash(account, disciplineIds);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -123,8 +122,4 @@ public class CreateTeacherBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

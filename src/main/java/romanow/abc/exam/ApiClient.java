@@ -9,16 +9,10 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest.AuthenticationRequestBuilder;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest.TokenRequestBuilder;
-
-
 import org.threeten.bp.format.DateTimeFormatter;
-
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-
-
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import romanow.abc.exam.auth.HttpBasicAuth;
@@ -31,7 +25,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
@@ -51,10 +44,7 @@ public class ApiClient {
   public ApiClient(String[] authNames) {
     this();
     for(String authName : authNames) {
-      
-      
       throw new RuntimeException("auth name \"" + authName + "\" not found in available auth names");
-      
     }
   }
 
@@ -115,9 +105,7 @@ public class ApiClient {
     adapterBuilder = new Retrofit
       .Builder()
       .baseUrl(baseUrl)
-      
       .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-      
       .addConverterFactory(ScalarsConverterFactory.create())
       .addConverterFactory(GsonCustomConverterFactory.create(json.getGson()));
   }
@@ -139,8 +127,6 @@ public class ApiClient {
     return this;
   }
 
-  
-  
   public ApiClient setOffsetDateTimeFormat(DateTimeFormatter dateFormat) {
     this.json.setOffsetDateTimeFormat(dateFormat);
     return this;
@@ -151,7 +137,6 @@ public class ApiClient {
     return this;
   }
 
-  
 
   /**
    * Helper method to configure the first api key found

@@ -50,7 +50,7 @@ import static romanow.abc.core.Utils.httpError;
  * @author romanow
  */
 public class MainBaseFrame extends JFrame implements I_Important {
-    @Getter @Setter private ConsoleClient client=null;
+    @Getter @Setter protected ConsoleClient client=null;
     protected String debugToken="";
     //-------------------------------------------------------------------------
     protected WorkSettingsBase workSettings=null;

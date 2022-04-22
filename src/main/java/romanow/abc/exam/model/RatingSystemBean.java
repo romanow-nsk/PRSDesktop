@@ -10,40 +10,37 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * RatingSystemBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class RatingSystemBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class RatingSystemBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("name")
   private String name = null;
-  
+
   /**
    * Gets or Sets inner
    */
   @JsonAdapter(InnerEnum.Adapter.class)
   public enum InnerEnum {
-    
     CHECKING("CHECKING"),
     REVISION("REVISION"),
     REJECTED("REJECTED"),
@@ -54,7 +51,6 @@ public class RatingSystemBean {
     InnerEnum(String value) {
       this.value = value;
     }
-    
     public String getValue() {
       return value;
     }
@@ -63,95 +59,92 @@ public class RatingSystemBean {
     public String toString() {
       return String.valueOf(value);
     }
-    
-    public static InnerEnum fromValue(String text) {
+    public static InnerEnum fromValue(String input) {
       for (InnerEnum b : InnerEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    
     public static class Adapter extends TypeAdapter<InnerEnum> {
       @Override
       public void write(final JsonWriter jsonWriter, final InnerEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
       public InnerEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return InnerEnum.fromValue(String.valueOf(value));
+        Object value = jsonReader.nextString();
+        return InnerEnum.fromValue((String)(value));
       }
     }
-  }
-  
-  @SerializedName("ratingMapping")
+  }  @SerializedName("ratingMapping")
   private Map<String, Map<String, InnerEnum>> ratingMapping = null;
-  
+
   public RatingSystemBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public RatingSystemBean name(String name) {
     this.name = name;
     return this;
   }
 
-  
-  /**
-  * Get name
-  * @return name
+   /**
+   * Get name
+   * @return name
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public RatingSystemBean ratingMapping(Map<String, Map<String, InnerEnum>> ratingMapping) {
     this.ratingMapping = ratingMapping;
     return this;
   }
 
   public RatingSystemBean putRatingMappingItem(String key, Map<String, InnerEnum> ratingMappingItem) {
-    
-    if (this.ratingMapping == null) {
-      this.ratingMapping = null;
-    }
-    
+    //if (this.ratingMapping == null) {
+    //  this.ratingMapping = new HashMap<String, InnerEnum<String, String>>();
+    //}
     this.ratingMapping.put(key, ratingMappingItem);
     return this;
   }
-  /**
-  * Get ratingMapping
-  * @return ratingMapping
+
+   /**
+   * Get ratingMapping
+   * @return ratingMapping
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Map<String, Map<String, InnerEnum>> getRatingMapping() {
     return ratingMapping;
   }
+
   public void setRatingMapping(Map<String, Map<String, InnerEnum>> ratingMapping) {
     this.ratingMapping = ratingMapping;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -168,9 +161,10 @@ public class RatingSystemBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, name, ratingMapping);
+    return Objects.hash(id, name, ratingMapping);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -194,8 +188,4 @@ public class RatingSystemBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

@@ -10,37 +10,34 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * ArtefactBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class ArtefactBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class ArtefactBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("fileSize")
   private Long fileSize = null;
-  
+
   /**
    * Gets or Sets artefactType
    */
   @JsonAdapter(ArtefactTypeEnum.Adapter.class)
   public enum ArtefactTypeEnum {
-    
     PNG("PNG"),
     JPG("JPG"),
     JPEG("JPEG"),
@@ -54,7 +51,6 @@ public class ArtefactBean {
     ArtefactTypeEnum(String value) {
       this.value = value;
     }
-    
     public String getValue() {
       return value;
     }
@@ -63,108 +59,105 @@ public class ArtefactBean {
     public String toString() {
       return String.valueOf(value);
     }
-    
-    public static ArtefactTypeEnum fromValue(String text) {
+    public static ArtefactTypeEnum fromValue(String input) {
       for (ArtefactTypeEnum b : ArtefactTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    
     public static class Adapter extends TypeAdapter<ArtefactTypeEnum> {
       @Override
       public void write(final JsonWriter jsonWriter, final ArtefactTypeEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
       public ArtefactTypeEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return ArtefactTypeEnum.fromValue(String.valueOf(value));
+        Object value = jsonReader.nextString();
+        return ArtefactTypeEnum.fromValue((String)(value));
       }
     }
-  }
-  
-  @SerializedName("artefactType")
+  }  @SerializedName("artefactType")
   private ArtefactTypeEnum artefactType = null;
-  
+
   @SerializedName("fileName")
   private String fileName = null;
-  
+
   public ArtefactBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public ArtefactBean fileSize(Long fileSize) {
     this.fileSize = fileSize;
     return this;
   }
 
-  
-  /**
-  * Get fileSize
-  * @return fileSize
+   /**
+   * Get fileSize
+   * @return fileSize
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getFileSize() {
     return fileSize;
   }
+
   public void setFileSize(Long fileSize) {
     this.fileSize = fileSize;
   }
-  
+
   public ArtefactBean artefactType(ArtefactTypeEnum artefactType) {
     this.artefactType = artefactType;
     return this;
   }
 
-  
-  /**
-  * Get artefactType
-  * @return artefactType
+   /**
+   * Get artefactType
+   * @return artefactType
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public ArtefactTypeEnum getArtefactType() {
     return artefactType;
   }
+
   public void setArtefactType(ArtefactTypeEnum artefactType) {
     this.artefactType = artefactType;
   }
-  
+
   public ArtefactBean fileName(String fileName) {
     this.fileName = fileName;
     return this;
   }
 
-  
-  /**
-  * Get fileName
-  * @return fileName
+   /**
+   * Get fileName
+   * @return fileName
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getFileName() {
     return fileName;
   }
+
   public void setFileName(String fileName) {
     this.fileName = fileName;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -182,9 +175,10 @@ public class ArtefactBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, fileSize, artefactType, fileName);
+    return Objects.hash(id, fileSize, artefactType, fileName);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -209,8 +203,4 @@ public class ArtefactBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

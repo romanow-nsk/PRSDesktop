@@ -10,101 +10,99 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Pageable
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class Pageable {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class Pageable {
   @SerializedName("page")
   private Integer page = null;
-  
+
   @SerializedName("size")
   private Integer size = null;
-  
+
   @SerializedName("sort")
   private List<String> sort = null;
-  
+
   public Pageable page(Integer page) {
     this.page = page;
     return this;
   }
 
-  
-  /**
-  * Get page
-  * minimum: 0
-  * @return page
+   /**
+   * Get page
+   * minimum: 0
+   * @return page
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getPage() {
     return page;
   }
+
   public void setPage(Integer page) {
     this.page = page;
   }
-  
+
   public Pageable size(Integer size) {
     this.size = size;
     return this;
   }
 
-  
-  /**
-  * Get size
-  * minimum: 1
-  * @return size
+   /**
+   * Get size
+   * minimum: 1
+   * @return size
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getSize() {
     return size;
   }
+
   public void setSize(Integer size) {
     this.size = size;
   }
-  
+
   public Pageable sort(List<String> sort) {
     this.sort = sort;
     return this;
   }
 
   public Pageable addSortItem(String sortItem) {
-    
     if (this.sort == null) {
       this.sort = new ArrayList<String>();
     }
-    
     this.sort.add(sortItem);
     return this;
   }
-  
-  /**
-  * Get sort
-  * @return sort
+
+   /**
+   * Get sort
+   * @return sort
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<String> getSort() {
     return sort;
   }
+
   public void setSort(List<String> sort) {
     this.sort = sort;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -121,9 +119,10 @@ public class Pageable {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(page, size, sort);
+    return Objects.hash(page, size, sort);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -147,8 +146,4 @@ public class Pageable {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

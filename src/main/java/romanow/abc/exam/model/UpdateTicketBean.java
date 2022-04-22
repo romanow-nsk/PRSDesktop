@@ -10,109 +10,108 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * UpdateTicketBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class UpdateTicketBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class UpdateTicketBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("semesterRating")
   private Integer semesterRating = null;
-  
+
   @SerializedName("examRating")
   private Integer examRating = null;
-  
+
   @SerializedName("allowed")
   private Boolean allowed = null;
-  
+
   public UpdateTicketBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(required = true, value = "")
+  @Schema(required = true, description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public UpdateTicketBean semesterRating(Integer semesterRating) {
     this.semesterRating = semesterRating;
     return this;
   }
 
-  
-  /**
-  * Get semesterRating
-  * @return semesterRating
+   /**
+   * Get semesterRating
+   * @return semesterRating
   **/
-  @ApiModelProperty(required = true, value = "")
+  @Schema(required = true, description = "")
   public Integer getSemesterRating() {
     return semesterRating;
   }
+
   public void setSemesterRating(Integer semesterRating) {
     this.semesterRating = semesterRating;
   }
-  
+
   public UpdateTicketBean examRating(Integer examRating) {
     this.examRating = examRating;
     return this;
   }
 
-  
-  /**
-  * Get examRating
-  * @return examRating
+   /**
+   * Get examRating
+   * @return examRating
   **/
-  @ApiModelProperty(required = true, value = "")
+  @Schema(required = true, description = "")
   public Integer getExamRating() {
     return examRating;
   }
+
   public void setExamRating(Integer examRating) {
     this.examRating = examRating;
   }
-  
+
   public UpdateTicketBean allowed(Boolean allowed) {
     this.allowed = allowed;
     return this;
   }
 
-  
-  /**
-  * Get allowed
-  * @return allowed
+   /**
+   * Get allowed
+   * @return allowed
   **/
-  @ApiModelProperty(required = true, value = "")
+  @Schema(required = true, description = "")
   public Boolean isAllowed() {
     return allowed;
   }
+
   public void setAllowed(Boolean allowed) {
     this.allowed = allowed;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -130,9 +129,10 @@ public class UpdateTicketBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, semesterRating, examRating, allowed);
+    return Objects.hash(id, semesterRating, examRating, allowed);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -157,8 +157,4 @@ public class UpdateTicketBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

@@ -10,11 +10,9 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class StringUtil {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")public class StringUtil {
   /**
    * Check if the given array contains the given value (with case-insensitive comparison).
    *

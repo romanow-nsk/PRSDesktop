@@ -10,120 +10,118 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * CreateExamBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class CreateExamBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class CreateExamBean {
   @SerializedName("examRuleId")
   private Long examRuleId = null;
-  
+
   @SerializedName("disciplineId")
   private Long disciplineId = null;
-  
+
   @SerializedName("groupIds")
   private List<Long> groupIds = null;
-  
+
   @SerializedName("startTime")
   private Long startTime = null;
-  
+
   public CreateExamBean examRuleId(Long examRuleId) {
     this.examRuleId = examRuleId;
     return this;
   }
 
-  
-  /**
-  * Get examRuleId
-  * @return examRuleId
+   /**
+   * Get examRuleId
+   * @return examRuleId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getExamRuleId() {
     return examRuleId;
   }
+
   public void setExamRuleId(Long examRuleId) {
     this.examRuleId = examRuleId;
   }
-  
+
   public CreateExamBean disciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
     return this;
   }
 
-  
-  /**
-  * Get disciplineId
-  * @return disciplineId
+   /**
+   * Get disciplineId
+   * @return disciplineId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getDisciplineId() {
     return disciplineId;
   }
+
   public void setDisciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
   }
-  
+
   public CreateExamBean groupIds(List<Long> groupIds) {
     this.groupIds = groupIds;
     return this;
   }
 
   public CreateExamBean addGroupIdsItem(Long groupIdsItem) {
-    
     if (this.groupIds == null) {
       this.groupIds = new ArrayList<Long>();
     }
-    
     this.groupIds.add(groupIdsItem);
     return this;
   }
-  
-  /**
-  * Get groupIds
-  * @return groupIds
+
+   /**
+   * Get groupIds
+   * @return groupIds
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Long> getGroupIds() {
     return groupIds;
   }
+
   public void setGroupIds(List<Long> groupIds) {
     this.groupIds = groupIds;
   }
-  
+
   public CreateExamBean startTime(Long startTime) {
     this.startTime = startTime;
     return this;
   }
 
-  
-  /**
-  * Get startTime
-  * @return startTime
+   /**
+   * Get startTime
+   * @return startTime
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getStartTime() {
     return startTime;
   }
+
   public void setStartTime(Long startTime) {
     this.startTime = startTime;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -141,9 +139,10 @@ public class CreateExamBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(examRuleId, disciplineId, groupIds, startTime);
+    return Objects.hash(examRuleId, disciplineId, groupIds, startTime);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -168,8 +167,4 @@ public class CreateExamBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

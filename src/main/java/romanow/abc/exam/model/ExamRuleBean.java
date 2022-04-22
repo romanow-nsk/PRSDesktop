@@ -10,204 +10,202 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * ExamRuleBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class ExamRuleBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class ExamRuleBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("name")
   private String name = null;
-  
+
   @SerializedName("themeIds")
   private List<Long> themeIds = null;
-  
+
   @SerializedName("disciplineId")
   private Long disciplineId = null;
-  
+
   @SerializedName("questionCount")
   private Integer questionCount = null;
-  
+
   @SerializedName("exerciseCount")
   private Integer exerciseCount = null;
-  
+
   @SerializedName("duration")
   private Integer duration = null;
-  
+
   @SerializedName("minimalRating")
   private Integer minimalRating = null;
-  
+
   public ExamRuleBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public ExamRuleBean name(String name) {
     this.name = name;
     return this;
   }
 
-  
-  /**
-  * Get name
-  * @return name
+   /**
+   * Get name
+   * @return name
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public ExamRuleBean themeIds(List<Long> themeIds) {
     this.themeIds = themeIds;
     return this;
   }
 
   public ExamRuleBean addThemeIdsItem(Long themeIdsItem) {
-    
     if (this.themeIds == null) {
       this.themeIds = new ArrayList<Long>();
     }
-    
     this.themeIds.add(themeIdsItem);
     return this;
   }
-  
-  /**
-  * Get themeIds
-  * @return themeIds
+
+   /**
+   * Get themeIds
+   * @return themeIds
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Long> getThemeIds() {
     return themeIds;
   }
+
   public void setThemeIds(List<Long> themeIds) {
     this.themeIds = themeIds;
   }
-  
+
   public ExamRuleBean disciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
     return this;
   }
 
-  
-  /**
-  * Get disciplineId
-  * @return disciplineId
+   /**
+   * Get disciplineId
+   * @return disciplineId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getDisciplineId() {
     return disciplineId;
   }
+
   public void setDisciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
   }
-  
+
   public ExamRuleBean questionCount(Integer questionCount) {
     this.questionCount = questionCount;
     return this;
   }
 
-  
-  /**
-  * Get questionCount
-  * @return questionCount
+   /**
+   * Get questionCount
+   * @return questionCount
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getQuestionCount() {
     return questionCount;
   }
+
   public void setQuestionCount(Integer questionCount) {
     this.questionCount = questionCount;
   }
-  
+
   public ExamRuleBean exerciseCount(Integer exerciseCount) {
     this.exerciseCount = exerciseCount;
     return this;
   }
 
-  
-  /**
-  * Get exerciseCount
-  * @return exerciseCount
+   /**
+   * Get exerciseCount
+   * @return exerciseCount
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getExerciseCount() {
     return exerciseCount;
   }
+
   public void setExerciseCount(Integer exerciseCount) {
     this.exerciseCount = exerciseCount;
   }
-  
+
   public ExamRuleBean duration(Integer duration) {
     this.duration = duration;
     return this;
   }
 
-  
-  /**
-  * Get duration
-  * @return duration
+   /**
+   * Get duration
+   * @return duration
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getDuration() {
     return duration;
   }
+
   public void setDuration(Integer duration) {
     this.duration = duration;
   }
-  
+
   public ExamRuleBean minimalRating(Integer minimalRating) {
     this.minimalRating = minimalRating;
     return this;
   }
 
-  
-  /**
-  * Get minimalRating
-  * @return minimalRating
+   /**
+   * Get minimalRating
+   * @return minimalRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getMinimalRating() {
     return minimalRating;
   }
+
   public void setMinimalRating(Integer minimalRating) {
     this.minimalRating = minimalRating;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -229,9 +227,10 @@ public class ExamRuleBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, name, themeIds, disciplineId, questionCount, exerciseCount, duration, minimalRating);
+    return Objects.hash(id, name, themeIds, disciplineId, questionCount, exerciseCount, duration, minimalRating);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -260,8 +259,4 @@ public class ExamRuleBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

@@ -10,216 +10,215 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import romanow.abc.exam.model.ExamPeriodBean;
 import romanow.abc.exam.model.TeacherBean;
-
 /**
  * StudentTicketBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class StudentTicketBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class StudentTicketBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("disciplineName")
   private String disciplineName = null;
-  
+
   @SerializedName("semesterRating")
   private Integer semesterRating = null;
-  
+
   @SerializedName("examRating")
   private Integer examRating = null;
-  
+
   @SerializedName("allowed")
   private Boolean allowed = null;
-  
+
   @SerializedName("examPeriod")
   private ExamPeriodBean examPeriod = null;
-  
+
   @SerializedName("teacher")
   private TeacherBean teacher = null;
-  
+
   @SerializedName("maxQuestionRating")
   private Integer maxQuestionRating = null;
-  
+
   @SerializedName("maxExerciseRating")
   private Integer maxExerciseRating = null;
-  
+
   public StudentTicketBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public StudentTicketBean disciplineName(String disciplineName) {
     this.disciplineName = disciplineName;
     return this;
   }
 
-  
-  /**
-  * Get disciplineName
-  * @return disciplineName
+   /**
+   * Get disciplineName
+   * @return disciplineName
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getDisciplineName() {
     return disciplineName;
   }
+
   public void setDisciplineName(String disciplineName) {
     this.disciplineName = disciplineName;
   }
-  
+
   public StudentTicketBean semesterRating(Integer semesterRating) {
     this.semesterRating = semesterRating;
     return this;
   }
 
-  
-  /**
-  * Get semesterRating
-  * @return semesterRating
+   /**
+   * Get semesterRating
+   * @return semesterRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getSemesterRating() {
     return semesterRating;
   }
+
   public void setSemesterRating(Integer semesterRating) {
     this.semesterRating = semesterRating;
   }
-  
+
   public StudentTicketBean examRating(Integer examRating) {
     this.examRating = examRating;
     return this;
   }
 
-  
-  /**
-  * Get examRating
-  * @return examRating
+   /**
+   * Get examRating
+   * @return examRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getExamRating() {
     return examRating;
   }
+
   public void setExamRating(Integer examRating) {
     this.examRating = examRating;
   }
-  
+
   public StudentTicketBean allowed(Boolean allowed) {
     this.allowed = allowed;
     return this;
   }
 
-  
-  /**
-  * Get allowed
-  * @return allowed
+   /**
+   * Get allowed
+   * @return allowed
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isAllowed() {
     return allowed;
   }
+
   public void setAllowed(Boolean allowed) {
     this.allowed = allowed;
   }
-  
+
   public StudentTicketBean examPeriod(ExamPeriodBean examPeriod) {
     this.examPeriod = examPeriod;
     return this;
   }
 
-  
-  /**
-  * Get examPeriod
-  * @return examPeriod
+   /**
+   * Get examPeriod
+   * @return examPeriod
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public ExamPeriodBean getExamPeriod() {
     return examPeriod;
   }
+
   public void setExamPeriod(ExamPeriodBean examPeriod) {
     this.examPeriod = examPeriod;
   }
-  
+
   public StudentTicketBean teacher(TeacherBean teacher) {
     this.teacher = teacher;
     return this;
   }
 
-  
-  /**
-  * Get teacher
-  * @return teacher
+   /**
+   * Get teacher
+   * @return teacher
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public TeacherBean getTeacher() {
     return teacher;
   }
+
   public void setTeacher(TeacherBean teacher) {
     this.teacher = teacher;
   }
-  
+
   public StudentTicketBean maxQuestionRating(Integer maxQuestionRating) {
     this.maxQuestionRating = maxQuestionRating;
     return this;
   }
 
-  
-  /**
-  * Get maxQuestionRating
-  * @return maxQuestionRating
+   /**
+   * Get maxQuestionRating
+   * @return maxQuestionRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getMaxQuestionRating() {
     return maxQuestionRating;
   }
+
   public void setMaxQuestionRating(Integer maxQuestionRating) {
     this.maxQuestionRating = maxQuestionRating;
   }
-  
+
   public StudentTicketBean maxExerciseRating(Integer maxExerciseRating) {
     this.maxExerciseRating = maxExerciseRating;
     return this;
   }
 
-  
-  /**
-  * Get maxExerciseRating
-  * @return maxExerciseRating
+   /**
+   * Get maxExerciseRating
+   * @return maxExerciseRating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getMaxExerciseRating() {
     return maxExerciseRating;
   }
+
   public void setMaxExerciseRating(Integer maxExerciseRating) {
     this.maxExerciseRating = maxExerciseRating;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -242,9 +241,10 @@ public class StudentTicketBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, disciplineName, semesterRating, examRating, allowed, examPeriod, teacher, maxQuestionRating, maxExerciseRating);
+    return Objects.hash(id, disciplineName, semesterRating, examRating, allowed, examPeriod, teacher, maxQuestionRating, maxExerciseRating);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -274,8 +274,4 @@ public class StudentTicketBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

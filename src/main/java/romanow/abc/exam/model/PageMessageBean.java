@@ -10,270 +10,268 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import romanow.abc.exam.model.MessageBean;
 import romanow.abc.exam.model.PageableObject;
 import romanow.abc.exam.model.Sort;
-
 /**
  * PageMessageBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class PageMessageBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class PageMessageBean {
   @SerializedName("totalPages")
   private Integer totalPages = null;
-  
+
   @SerializedName("totalElements")
   private Long totalElements = null;
-  
+
   @SerializedName("number")
   private Integer number = null;
-  
+
   @SerializedName("sort")
   private Sort sort = null;
-  
+
   @SerializedName("size")
   private Integer size = null;
-  
+
   @SerializedName("content")
   private List<MessageBean> content = null;
-  
+
   @SerializedName("pageable")
   private PageableObject pageable = null;
-  
+
   @SerializedName("first")
   private Boolean first = null;
-  
+
   @SerializedName("last")
   private Boolean last = null;
-  
+
   @SerializedName("numberOfElements")
   private Integer numberOfElements = null;
-  
+
   @SerializedName("empty")
   private Boolean empty = null;
-  
+
   public PageMessageBean totalPages(Integer totalPages) {
     this.totalPages = totalPages;
     return this;
   }
 
-  
-  /**
-  * Get totalPages
-  * @return totalPages
+   /**
+   * Get totalPages
+   * @return totalPages
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getTotalPages() {
     return totalPages;
   }
+
   public void setTotalPages(Integer totalPages) {
     this.totalPages = totalPages;
   }
-  
+
   public PageMessageBean totalElements(Long totalElements) {
     this.totalElements = totalElements;
     return this;
   }
 
-  
-  /**
-  * Get totalElements
-  * @return totalElements
+   /**
+   * Get totalElements
+   * @return totalElements
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getTotalElements() {
     return totalElements;
   }
+
   public void setTotalElements(Long totalElements) {
     this.totalElements = totalElements;
   }
-  
+
   public PageMessageBean number(Integer number) {
     this.number = number;
     return this;
   }
 
-  
-  /**
-  * Get number
-  * @return number
+   /**
+   * Get number
+   * @return number
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getNumber() {
     return number;
   }
+
   public void setNumber(Integer number) {
     this.number = number;
   }
-  
+
   public PageMessageBean sort(Sort sort) {
     this.sort = sort;
     return this;
   }
 
-  
-  /**
-  * Get sort
-  * @return sort
+   /**
+   * Get sort
+   * @return sort
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Sort getSort() {
     return sort;
   }
+
   public void setSort(Sort sort) {
     this.sort = sort;
   }
-  
+
   public PageMessageBean size(Integer size) {
     this.size = size;
     return this;
   }
 
-  
-  /**
-  * Get size
-  * @return size
+   /**
+   * Get size
+   * @return size
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getSize() {
     return size;
   }
+
   public void setSize(Integer size) {
     this.size = size;
   }
-  
+
   public PageMessageBean content(List<MessageBean> content) {
     this.content = content;
     return this;
   }
 
   public PageMessageBean addContentItem(MessageBean contentItem) {
-    
     if (this.content == null) {
       this.content = new ArrayList<MessageBean>();
     }
-    
     this.content.add(contentItem);
     return this;
   }
-  
-  /**
-  * Get content
-  * @return content
+
+   /**
+   * Get content
+   * @return content
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<MessageBean> getContent() {
     return content;
   }
+
   public void setContent(List<MessageBean> content) {
     this.content = content;
   }
-  
+
   public PageMessageBean pageable(PageableObject pageable) {
     this.pageable = pageable;
     return this;
   }
 
-  
-  /**
-  * Get pageable
-  * @return pageable
+   /**
+   * Get pageable
+   * @return pageable
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public PageableObject getPageable() {
     return pageable;
   }
+
   public void setPageable(PageableObject pageable) {
     this.pageable = pageable;
   }
-  
+
   public PageMessageBean first(Boolean first) {
     this.first = first;
     return this;
   }
 
-  
-  /**
-  * Get first
-  * @return first
+   /**
+   * Get first
+   * @return first
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isFirst() {
     return first;
   }
+
   public void setFirst(Boolean first) {
     this.first = first;
   }
-  
+
   public PageMessageBean last(Boolean last) {
     this.last = last;
     return this;
   }
 
-  
-  /**
-  * Get last
-  * @return last
+   /**
+   * Get last
+   * @return last
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isLast() {
     return last;
   }
+
   public void setLast(Boolean last) {
     this.last = last;
   }
-  
+
   public PageMessageBean numberOfElements(Integer numberOfElements) {
     this.numberOfElements = numberOfElements;
     return this;
   }
 
-  
-  /**
-  * Get numberOfElements
-  * @return numberOfElements
+   /**
+   * Get numberOfElements
+   * @return numberOfElements
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getNumberOfElements() {
     return numberOfElements;
   }
+
   public void setNumberOfElements(Integer numberOfElements) {
     this.numberOfElements = numberOfElements;
   }
-  
+
   public PageMessageBean empty(Boolean empty) {
     this.empty = empty;
     return this;
   }
 
-  
-  /**
-  * Get empty
-  * @return empty
+   /**
+   * Get empty
+   * @return empty
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isEmpty() {
     return empty;
   }
+
   public void setEmpty(Boolean empty) {
     this.empty = empty;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -298,9 +296,10 @@ public class PageMessageBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(totalPages, totalElements, number, sort, size, content, pageable, first, last, numberOfElements, empty);
+    return Objects.hash(totalPages, totalElements, number, sort, size, content, pageable, first, last, numberOfElements, empty);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -332,8 +331,4 @@ public class PageMessageBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

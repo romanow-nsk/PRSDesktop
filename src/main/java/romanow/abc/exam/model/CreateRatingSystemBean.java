@@ -10,168 +10,163 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * CreateRatingSystemBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class CreateRatingSystemBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class CreateRatingSystemBean {
   @SerializedName("name")
   private String name = null;
-  
+
   @SerializedName("approvedRatingsForQuestion")
   private List<Integer> approvedRatingsForQuestion = null;
-  
+
   @SerializedName("rejectedRatingsForQuestion")
   private List<Integer> rejectedRatingsForQuestion = null;
-  
+
   @SerializedName("approvedRatingsForExercise")
   private List<Integer> approvedRatingsForExercise = null;
-  
+
   @SerializedName("rejectedRatingsForExercise")
   private List<Integer> rejectedRatingsForExercise = null;
-  
+
   public CreateRatingSystemBean name(String name) {
     this.name = name;
     return this;
   }
 
-  
-  /**
-  * Get name
-  * @return name
+   /**
+   * Get name
+   * @return name
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public CreateRatingSystemBean approvedRatingsForQuestion(List<Integer> approvedRatingsForQuestion) {
     this.approvedRatingsForQuestion = approvedRatingsForQuestion;
     return this;
   }
 
   public CreateRatingSystemBean addApprovedRatingsForQuestionItem(Integer approvedRatingsForQuestionItem) {
-    
     if (this.approvedRatingsForQuestion == null) {
       this.approvedRatingsForQuestion = new ArrayList<Integer>();
     }
-    
     this.approvedRatingsForQuestion.add(approvedRatingsForQuestionItem);
     return this;
   }
-  
-  /**
-  * Get approvedRatingsForQuestion
-  * @return approvedRatingsForQuestion
+
+   /**
+   * Get approvedRatingsForQuestion
+   * @return approvedRatingsForQuestion
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Integer> getApprovedRatingsForQuestion() {
     return approvedRatingsForQuestion;
   }
+
   public void setApprovedRatingsForQuestion(List<Integer> approvedRatingsForQuestion) {
     this.approvedRatingsForQuestion = approvedRatingsForQuestion;
   }
-  
+
   public CreateRatingSystemBean rejectedRatingsForQuestion(List<Integer> rejectedRatingsForQuestion) {
     this.rejectedRatingsForQuestion = rejectedRatingsForQuestion;
     return this;
   }
 
   public CreateRatingSystemBean addRejectedRatingsForQuestionItem(Integer rejectedRatingsForQuestionItem) {
-    
     if (this.rejectedRatingsForQuestion == null) {
       this.rejectedRatingsForQuestion = new ArrayList<Integer>();
     }
-    
     this.rejectedRatingsForQuestion.add(rejectedRatingsForQuestionItem);
     return this;
   }
-  
-  /**
-  * Get rejectedRatingsForQuestion
-  * @return rejectedRatingsForQuestion
+
+   /**
+   * Get rejectedRatingsForQuestion
+   * @return rejectedRatingsForQuestion
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Integer> getRejectedRatingsForQuestion() {
     return rejectedRatingsForQuestion;
   }
+
   public void setRejectedRatingsForQuestion(List<Integer> rejectedRatingsForQuestion) {
     this.rejectedRatingsForQuestion = rejectedRatingsForQuestion;
   }
-  
+
   public CreateRatingSystemBean approvedRatingsForExercise(List<Integer> approvedRatingsForExercise) {
     this.approvedRatingsForExercise = approvedRatingsForExercise;
     return this;
   }
 
   public CreateRatingSystemBean addApprovedRatingsForExerciseItem(Integer approvedRatingsForExerciseItem) {
-    
     if (this.approvedRatingsForExercise == null) {
       this.approvedRatingsForExercise = new ArrayList<Integer>();
     }
-    
     this.approvedRatingsForExercise.add(approvedRatingsForExerciseItem);
     return this;
   }
-  
-  /**
-  * Get approvedRatingsForExercise
-  * @return approvedRatingsForExercise
+
+   /**
+   * Get approvedRatingsForExercise
+   * @return approvedRatingsForExercise
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Integer> getApprovedRatingsForExercise() {
     return approvedRatingsForExercise;
   }
+
   public void setApprovedRatingsForExercise(List<Integer> approvedRatingsForExercise) {
     this.approvedRatingsForExercise = approvedRatingsForExercise;
   }
-  
+
   public CreateRatingSystemBean rejectedRatingsForExercise(List<Integer> rejectedRatingsForExercise) {
     this.rejectedRatingsForExercise = rejectedRatingsForExercise;
     return this;
   }
 
   public CreateRatingSystemBean addRejectedRatingsForExerciseItem(Integer rejectedRatingsForExerciseItem) {
-    
     if (this.rejectedRatingsForExercise == null) {
       this.rejectedRatingsForExercise = new ArrayList<Integer>();
     }
-    
     this.rejectedRatingsForExercise.add(rejectedRatingsForExerciseItem);
     return this;
   }
-  
-  /**
-  * Get rejectedRatingsForExercise
-  * @return rejectedRatingsForExercise
+
+   /**
+   * Get rejectedRatingsForExercise
+   * @return rejectedRatingsForExercise
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Integer> getRejectedRatingsForExercise() {
     return rejectedRatingsForExercise;
   }
+
   public void setRejectedRatingsForExercise(List<Integer> rejectedRatingsForExercise) {
     this.rejectedRatingsForExercise = rejectedRatingsForExercise;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -190,9 +185,10 @@ public class CreateRatingSystemBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(name, approvedRatingsForQuestion, rejectedRatingsForQuestion, approvedRatingsForExercise, rejectedRatingsForExercise);
+    return Objects.hash(name, approvedRatingsForQuestion, rejectedRatingsForQuestion, approvedRatingsForExercise, rejectedRatingsForExercise);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -218,8 +214,4 @@ public class CreateRatingSystemBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

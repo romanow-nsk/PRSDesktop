@@ -10,40 +10,37 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * TaskBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class TaskBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class TaskBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("text")
   private String text = null;
-  
+
   @SerializedName("artefactId")
   private Long artefactId = null;
-  
+
   /**
    * Gets or Sets taskType
    */
   @JsonAdapter(TaskTypeEnum.Adapter.class)
   public enum TaskTypeEnum {
-    
     QUESTION("QUESTION"),
     EXERCISE("EXERCISE");
 
@@ -52,7 +49,6 @@ public class TaskBean {
     TaskTypeEnum(String value) {
       this.value = value;
     }
-    
     public String getValue() {
       return value;
     }
@@ -61,126 +57,123 @@ public class TaskBean {
     public String toString() {
       return String.valueOf(value);
     }
-    
-    public static TaskTypeEnum fromValue(String text) {
+    public static TaskTypeEnum fromValue(String input) {
       for (TaskTypeEnum b : TaskTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    
     public static class Adapter extends TypeAdapter<TaskTypeEnum> {
       @Override
       public void write(final JsonWriter jsonWriter, final TaskTypeEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
       public TaskTypeEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return TaskTypeEnum.fromValue(String.valueOf(value));
+        Object value = jsonReader.nextString();
+        return TaskTypeEnum.fromValue((String)(value));
       }
     }
-  }
-  
-  @SerializedName("taskType")
+  }  @SerializedName("taskType")
   private TaskTypeEnum taskType = null;
-  
+
   @SerializedName("themeId")
   private Long themeId = null;
-  
+
   public TaskBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public TaskBean text(String text) {
     this.text = text;
     return this;
   }
 
-  
-  /**
-  * Get text
-  * @return text
+   /**
+   * Get text
+   * @return text
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getText() {
     return text;
   }
+
   public void setText(String text) {
     this.text = text;
   }
-  
+
   public TaskBean artefactId(Long artefactId) {
     this.artefactId = artefactId;
     return this;
   }
 
-  
-  /**
-  * Get artefactId
-  * @return artefactId
+   /**
+   * Get artefactId
+   * @return artefactId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getArtefactId() {
     return artefactId;
   }
+
   public void setArtefactId(Long artefactId) {
     this.artefactId = artefactId;
   }
-  
+
   public TaskBean taskType(TaskTypeEnum taskType) {
     this.taskType = taskType;
     return this;
   }
 
-  
-  /**
-  * Get taskType
-  * @return taskType
+   /**
+   * Get taskType
+   * @return taskType
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public TaskTypeEnum getTaskType() {
     return taskType;
   }
+
   public void setTaskType(TaskTypeEnum taskType) {
     this.taskType = taskType;
   }
-  
+
   public TaskBean themeId(Long themeId) {
     this.themeId = themeId;
     return this;
   }
 
-  
-  /**
-  * Get themeId
-  * @return themeId
+   /**
+   * Get themeId
+   * @return themeId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getThemeId() {
     return themeId;
   }
+
   public void setThemeId(Long themeId) {
     this.themeId = themeId;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -199,9 +192,10 @@ public class TaskBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, text, artefactId, taskType, themeId);
+    return Objects.hash(id, text, artefactId, taskType, themeId);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -227,8 +221,4 @@ public class TaskBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

@@ -10,130 +10,129 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * MessageBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class MessageBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class MessageBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("text")
   private String text = null;
-  
+
   @SerializedName("sendTime")
   private Long sendTime = null;
-  
+
   @SerializedName("artefactId")
   private Long artefactId = null;
-  
+
   @SerializedName("accountId")
   private Long accountId = null;
-  
+
   public MessageBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public MessageBean text(String text) {
     this.text = text;
     return this;
   }
 
-  
-  /**
-  * Get text
-  * @return text
+   /**
+   * Get text
+   * @return text
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getText() {
     return text;
   }
+
   public void setText(String text) {
     this.text = text;
   }
-  
+
   public MessageBean sendTime(Long sendTime) {
     this.sendTime = sendTime;
     return this;
   }
 
-  
-  /**
-  * Get sendTime
-  * @return sendTime
+   /**
+   * Get sendTime
+   * @return sendTime
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getSendTime() {
     return sendTime;
   }
+
   public void setSendTime(Long sendTime) {
     this.sendTime = sendTime;
   }
-  
+
   public MessageBean artefactId(Long artefactId) {
     this.artefactId = artefactId;
     return this;
   }
 
-  
-  /**
-  * Get artefactId
-  * @return artefactId
+   /**
+   * Get artefactId
+   * @return artefactId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getArtefactId() {
     return artefactId;
   }
+
   public void setArtefactId(Long artefactId) {
     this.artefactId = artefactId;
   }
-  
+
   public MessageBean accountId(Long accountId) {
     this.accountId = accountId;
     return this;
   }
 
-  
-  /**
-  * Get accountId
-  * @return accountId
+   /**
+   * Get accountId
+   * @return accountId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getAccountId() {
     return accountId;
   }
+
   public void setAccountId(Long accountId) {
     this.accountId = accountId;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -152,9 +151,10 @@ public class MessageBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, text, sendTime, artefactId, accountId);
+    return Objects.hash(id, text, sendTime, artefactId, accountId);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -180,8 +180,4 @@ public class MessageBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

@@ -10,43 +10,40 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * ExamPeriodBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class ExamPeriodBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class ExamPeriodBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("start")
   private Long start = null;
-  
+
   @SerializedName("end")
   private Long end = null;
-  
+
   @SerializedName("examId")
   private Long examId = null;
-  
+
   /**
    * Gets or Sets state
    */
   @JsonAdapter(StateEnum.Adapter.class)
   public enum StateEnum {
-    
     REDACTION("REDACTION"),
     ALLOWANCE("ALLOWANCE"),
     READY("READY"),
@@ -59,7 +56,6 @@ public class ExamPeriodBean {
     StateEnum(String value) {
       this.value = value;
     }
-    
     public String getValue() {
       return value;
     }
@@ -68,123 +64,120 @@ public class ExamPeriodBean {
     public String toString() {
       return String.valueOf(value);
     }
-    
-    public static StateEnum fromValue(String text) {
+    public static StateEnum fromValue(String input) {
       for (StateEnum b : StateEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    
     public static class Adapter extends TypeAdapter<StateEnum> {
       @Override
       public void write(final JsonWriter jsonWriter, final StateEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
       public StateEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return StateEnum.fromValue(String.valueOf(value));
+        Object value = jsonReader.nextString();
+        return StateEnum.fromValue((String)(value));
       }
     }
-  }
-  
-  @SerializedName("state")
+  }  @SerializedName("state")
   private StateEnum state = null;
-  
+
   public ExamPeriodBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public ExamPeriodBean start(Long start) {
     this.start = start;
     return this;
   }
 
-  
-  /**
-  * Get start
-  * @return start
+   /**
+   * Get start
+   * @return start
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getStart() {
     return start;
   }
+
   public void setStart(Long start) {
     this.start = start;
   }
-  
+
   public ExamPeriodBean end(Long end) {
     this.end = end;
     return this;
   }
 
-  
-  /**
-  * Get end
-  * @return end
+   /**
+   * Get end
+   * @return end
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getEnd() {
     return end;
   }
+
   public void setEnd(Long end) {
     this.end = end;
   }
-  
+
   public ExamPeriodBean examId(Long examId) {
     this.examId = examId;
     return this;
   }
 
-  
-  /**
-  * Get examId
-  * @return examId
+   /**
+   * Get examId
+   * @return examId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getExamId() {
     return examId;
   }
+
   public void setExamId(Long examId) {
     this.examId = examId;
   }
-  
+
   public ExamPeriodBean state(StateEnum state) {
     this.state = state;
     return this;
   }
 
-  
-  /**
-  * Get state
-  * @return state
+   /**
+   * Get state
+   * @return state
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public StateEnum getState() {
     return state;
   }
+
   public void setState(StateEnum state) {
     this.state = state;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -203,9 +196,10 @@ public class ExamPeriodBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, start, end, examId, state);
+    return Objects.hash(id, start, end, examId, state);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -231,8 +225,4 @@ public class ExamPeriodBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

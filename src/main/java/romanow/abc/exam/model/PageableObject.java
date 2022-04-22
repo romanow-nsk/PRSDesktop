@@ -10,152 +10,151 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import romanow.abc.exam.model.Sort;
-
 /**
  * PageableObject
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class PageableObject {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class PageableObject {
   @SerializedName("sort")
   private Sort sort = null;
-  
+
   @SerializedName("offset")
   private Long offset = null;
-  
+
   @SerializedName("pageNumber")
   private Integer pageNumber = null;
-  
+
   @SerializedName("pageSize")
   private Integer pageSize = null;
-  
+
   @SerializedName("paged")
   private Boolean paged = null;
-  
+
   @SerializedName("unpaged")
   private Boolean unpaged = null;
-  
+
   public PageableObject sort(Sort sort) {
     this.sort = sort;
     return this;
   }
 
-  
-  /**
-  * Get sort
-  * @return sort
+   /**
+   * Get sort
+   * @return sort
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Sort getSort() {
     return sort;
   }
+
   public void setSort(Sort sort) {
     this.sort = sort;
   }
-  
+
   public PageableObject offset(Long offset) {
     this.offset = offset;
     return this;
   }
 
-  
-  /**
-  * Get offset
-  * @return offset
+   /**
+   * Get offset
+   * @return offset
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getOffset() {
     return offset;
   }
+
   public void setOffset(Long offset) {
     this.offset = offset;
   }
-  
+
   public PageableObject pageNumber(Integer pageNumber) {
     this.pageNumber = pageNumber;
     return this;
   }
 
-  
-  /**
-  * Get pageNumber
-  * @return pageNumber
+   /**
+   * Get pageNumber
+   * @return pageNumber
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getPageNumber() {
     return pageNumber;
   }
+
   public void setPageNumber(Integer pageNumber) {
     this.pageNumber = pageNumber;
   }
-  
+
   public PageableObject pageSize(Integer pageSize) {
     this.pageSize = pageSize;
     return this;
   }
 
-  
-  /**
-  * Get pageSize
-  * @return pageSize
+   /**
+   * Get pageSize
+   * @return pageSize
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getPageSize() {
     return pageSize;
   }
+
   public void setPageSize(Integer pageSize) {
     this.pageSize = pageSize;
   }
-  
+
   public PageableObject paged(Boolean paged) {
     this.paged = paged;
     return this;
   }
 
-  
-  /**
-  * Get paged
-  * @return paged
+   /**
+   * Get paged
+   * @return paged
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isPaged() {
     return paged;
   }
+
   public void setPaged(Boolean paged) {
     this.paged = paged;
   }
-  
+
   public PageableObject unpaged(Boolean unpaged) {
     this.unpaged = unpaged;
     return this;
   }
 
-  
-  /**
-  * Get unpaged
-  * @return unpaged
+   /**
+   * Get unpaged
+   * @return unpaged
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Boolean isUnpaged() {
     return unpaged;
   }
+
   public void setUnpaged(Boolean unpaged) {
     this.unpaged = unpaged;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -175,9 +174,10 @@ public class PageableObject {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(sort, offset, pageNumber, pageSize, paged, unpaged);
+    return Objects.hash(sort, offset, pageNumber, pageSize, paged, unpaged);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -204,8 +204,4 @@ public class PageableObject {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

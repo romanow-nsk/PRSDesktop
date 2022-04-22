@@ -10,46 +10,45 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-
 /**
  * UpdateAnswerBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class UpdateAnswerBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class UpdateAnswerBean {
   @SerializedName("rating")
   private Integer rating = null;
-  
+
   public UpdateAnswerBean rating(Integer rating) {
     this.rating = rating;
     return this;
   }
 
-  
-  /**
-  * Get rating
-  * @return rating
+   /**
+   * Get rating
+   * @return rating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getRating() {
     return rating;
   }
+
   public void setRating(Integer rating) {
     this.rating = rating;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -64,9 +63,10 @@ public class UpdateAnswerBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(rating);
+    return Objects.hash(rating);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -88,8 +88,4 @@ public class UpdateAnswerBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

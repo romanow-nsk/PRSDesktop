@@ -10,78 +10,76 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * CreateGroupBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class CreateGroupBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class CreateGroupBean {
   @SerializedName("name")
   private String name = null;
-  
+
   @SerializedName("disciplineIds")
   private List<Long> disciplineIds = null;
-  
+
   public CreateGroupBean name(String name) {
     this.name = name;
     return this;
   }
 
-  
-  /**
-  * Get name
-  * @return name
+   /**
+   * Get name
+   * @return name
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public CreateGroupBean disciplineIds(List<Long> disciplineIds) {
     this.disciplineIds = disciplineIds;
     return this;
   }
 
   public CreateGroupBean addDisciplineIdsItem(Long disciplineIdsItem) {
-    
     if (this.disciplineIds == null) {
       this.disciplineIds = new ArrayList<Long>();
     }
-    
     this.disciplineIds.add(disciplineIdsItem);
     return this;
   }
-  
-  /**
-  * Get disciplineIds
-  * @return disciplineIds
+
+   /**
+   * Get disciplineIds
+   * @return disciplineIds
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<Long> getDisciplineIds() {
     return disciplineIds;
   }
+
   public void setDisciplineIds(List<Long> disciplineIds) {
     this.disciplineIds = disciplineIds;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -97,9 +95,10 @@ public class CreateGroupBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(name, disciplineIds);
+    return Objects.hash(name, disciplineIds);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -122,8 +121,4 @@ public class CreateGroupBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

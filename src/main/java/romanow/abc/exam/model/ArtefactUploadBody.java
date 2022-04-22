@@ -20,74 +20,33 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.File;
 import java.io.IOException;
 /**
- * ThemeBean
+ * ArtefactUploadBody
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
-public class ThemeBean {
-  @SerializedName("id")
-  private Long id = null;
+public class ArtefactUploadBody {
+  @SerializedName("file")
+  private File file = null;
 
-  @SerializedName("name")
-  private String name = null;
-
-  @SerializedName("disciplineId")
-  private Long disciplineId = null;
-
-  public ThemeBean id(Long id) {
-    this.id = id;
+  public ArtefactUploadBody file(File file) {
+    this.file = file;
     return this;
   }
 
    /**
-   * Get id
-   * @return id
+   * Get file
+   * @return file
   **/
-  @Schema(description = "")
-  public Long getId() {
-    return id;
+  @Schema(required = true, description = "")
+  public File getFile() {
+    return file;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public ThemeBean name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Get name
-   * @return name
-  **/
-  @Schema(description = "")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public ThemeBean disciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
-    return this;
-  }
-
-   /**
-   * Get disciplineId
-   * @return disciplineId
-  **/
-  @Schema(description = "")
-  public Long getDisciplineId() {
-    return disciplineId;
-  }
-
-  public void setDisciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
+  public void setFile(File file) {
+    this.file = file;
   }
 
 
@@ -99,26 +58,22 @@ public class ThemeBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ThemeBean themeBean = (ThemeBean) o;
-    return Objects.equals(this.id, themeBean.id) &&
-        Objects.equals(this.name, themeBean.name) &&
-        Objects.equals(this.disciplineId, themeBean.disciplineId);
+    ArtefactUploadBody artefactUploadBody = (ArtefactUploadBody) o;
+    return Objects.equals(this.file, artefactUploadBody.file);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, disciplineId);
+    return Objects.hash(Objects.hashCode(file));
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ThemeBean {\n");
+    sb.append("class ArtefactUploadBody {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
+    sb.append("    file: ").append(toIndentedString(file)).append("\n");
     sb.append("}");
     return sb.toString();
   }

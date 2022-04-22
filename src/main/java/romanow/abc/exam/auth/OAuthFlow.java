@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.auth;
 
 public enum OAuthFlow {

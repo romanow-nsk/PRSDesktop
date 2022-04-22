@@ -10,44 +10,41 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import romanow.abc.exam.model.StudentTaskBean;
-
 /**
  * StudentAnswerBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class StudentAnswerBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class StudentAnswerBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("task")
   private StudentTaskBean task = null;
-  
+
   @SerializedName("rating")
   private Integer rating = null;
-  
+
   @SerializedName("ticketId")
   private Long ticketId = null;
-  
+
   /**
    * Gets or Sets status
    */
   @JsonAdapter(StatusEnum.Adapter.class)
   public enum StatusEnum {
-    
     CHECKING("CHECKING"),
     REVISION("REVISION"),
     REJECTED("REJECTED"),
@@ -58,7 +55,6 @@ public class StudentAnswerBean {
     StatusEnum(String value) {
       this.value = value;
     }
-    
     public String getValue() {
       return value;
     }
@@ -67,144 +63,141 @@ public class StudentAnswerBean {
     public String toString() {
       return String.valueOf(value);
     }
-    
-    public static StatusEnum fromValue(String text) {
+    public static StatusEnum fromValue(String input) {
       for (StatusEnum b : StatusEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    
     public static class Adapter extends TypeAdapter<StatusEnum> {
       @Override
       public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
       public StatusEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return StatusEnum.fromValue(String.valueOf(value));
+        Object value = jsonReader.nextString();
+        return StatusEnum.fromValue((String)(value));
       }
     }
-  }
-  
-  @SerializedName("status")
+  }  @SerializedName("status")
   private StatusEnum status = null;
-  
+
   @SerializedName("number")
   private Integer number = null;
-  
+
   public StudentAnswerBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public StudentAnswerBean task(StudentTaskBean task) {
     this.task = task;
     return this;
   }
 
-  
-  /**
-  * Get task
-  * @return task
+   /**
+   * Get task
+   * @return task
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public StudentTaskBean getTask() {
     return task;
   }
+
   public void setTask(StudentTaskBean task) {
     this.task = task;
   }
-  
+
   public StudentAnswerBean rating(Integer rating) {
     this.rating = rating;
     return this;
   }
 
-  
-  /**
-  * Get rating
-  * @return rating
+   /**
+   * Get rating
+   * @return rating
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getRating() {
     return rating;
   }
+
   public void setRating(Integer rating) {
     this.rating = rating;
   }
-  
+
   public StudentAnswerBean ticketId(Long ticketId) {
     this.ticketId = ticketId;
     return this;
   }
 
-  
-  /**
-  * Get ticketId
-  * @return ticketId
+   /**
+   * Get ticketId
+   * @return ticketId
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getTicketId() {
     return ticketId;
   }
+
   public void setTicketId(Long ticketId) {
     this.ticketId = ticketId;
   }
-  
+
   public StudentAnswerBean status(StatusEnum status) {
     this.status = status;
     return this;
   }
 
-  
-  /**
-  * Get status
-  * @return status
+   /**
+   * Get status
+   * @return status
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public StatusEnum getStatus() {
     return status;
   }
+
   public void setStatus(StatusEnum status) {
     this.status = status;
   }
-  
+
   public StudentAnswerBean number(Integer number) {
     this.number = number;
     return this;
   }
 
-  
-  /**
-  * Get number
-  * @return number
+   /**
+   * Get number
+   * @return number
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Integer getNumber() {
     return number;
   }
+
   public void setNumber(Integer number) {
     this.number = number;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -224,9 +217,10 @@ public class StudentAnswerBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, task, rating, ticketId, status, number);
+    return Objects.hash(id, task, rating, ticketId, status, number);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -253,8 +247,4 @@ public class StudentAnswerBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-

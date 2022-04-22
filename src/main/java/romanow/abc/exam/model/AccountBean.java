@@ -10,48 +10,45 @@
  * Do not edit the class manually.
  */
 
-
 package romanow.abc.exam.model;
 
 import java.util.Objects;
+import java.util.Arrays;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * AccountBean
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.java.JavaClientCodegen", date = "2022-04-22T11:27:57.635+07:00[Asia/Novosibirsk]")
-public class AccountBean {
 
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+public class AccountBean {
   @SerializedName("id")
   private Long id = null;
-  
+
   @SerializedName("username")
   private String username = null;
-  
+
   @SerializedName("password")
   private String password = null;
-  
+
   @SerializedName("name")
   private String name = null;
-  
+
   @SerializedName("surname")
   private String surname = null;
-  
+
   /**
    * Gets or Sets roles
    */
   @JsonAdapter(RolesEnum.Adapter.class)
   public enum RolesEnum {
-    
     ADMIN("ROLE_ADMIN"),
     STUDENT("ROLE_STUDENT"),
     TEACHER("ROLE_TEACHER");
@@ -61,7 +58,6 @@ public class AccountBean {
     RolesEnum(String value) {
       this.value = value;
     }
-    
     public String getValue() {
       return value;
     }
@@ -70,150 +66,146 @@ public class AccountBean {
     public String toString() {
       return String.valueOf(value);
     }
-    
-    public static RolesEnum fromValue(String text) {
+    public static RolesEnum fromValue(String input) {
       for (RolesEnum b : RolesEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    
     public static class Adapter extends TypeAdapter<RolesEnum> {
       @Override
       public void write(final JsonWriter jsonWriter, final RolesEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
       public RolesEnum read(final JsonReader jsonReader) throws IOException {
-        String value = jsonReader.nextString();
-        return RolesEnum.fromValue(String.valueOf(value));
+        Object value = jsonReader.nextString();
+        return RolesEnum.fromValue((String)(value));
       }
     }
-  }
-  
-  @SerializedName("roles")
+  }  @SerializedName("roles")
   private List<RolesEnum> roles = null;
-  
+
   public AccountBean id(Long id) {
     this.id = id;
     return this;
   }
 
-  
-  /**
-  * Get id
-  * @return id
+   /**
+   * Get id
+   * @return id
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public Long getId() {
     return id;
   }
+
   public void setId(Long id) {
     this.id = id;
   }
-  
+
   public AccountBean username(String username) {
     this.username = username;
     return this;
   }
 
-  
-  /**
-  * Get username
-  * @return username
+   /**
+   * Get username
+   * @return username
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getUsername() {
     return username;
   }
+
   public void setUsername(String username) {
     this.username = username;
   }
-  
+
   public AccountBean password(String password) {
     this.password = password;
     return this;
   }
 
-  
-  /**
-  * Get password
-  * @return password
+   /**
+   * Get password
+   * @return password
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getPassword() {
     return password;
   }
+
   public void setPassword(String password) {
     this.password = password;
   }
-  
+
   public AccountBean name(String name) {
     this.name = name;
     return this;
   }
 
-  
-  /**
-  * Get name
-  * @return name
+   /**
+   * Get name
+   * @return name
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public AccountBean surname(String surname) {
     this.surname = surname;
     return this;
   }
 
-  
-  /**
-  * Get surname
-  * @return surname
+   /**
+   * Get surname
+   * @return surname
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public String getSurname() {
     return surname;
   }
+
   public void setSurname(String surname) {
     this.surname = surname;
   }
-  
+
   public AccountBean roles(List<RolesEnum> roles) {
     this.roles = roles;
     return this;
   }
 
   public AccountBean addRolesItem(RolesEnum rolesItem) {
-    
     if (this.roles == null) {
       this.roles = new ArrayList<RolesEnum>();
     }
-    
     this.roles.add(rolesItem);
     return this;
   }
-  
-  /**
-  * Get roles
-  * @return roles
+
+   /**
+   * Get roles
+   * @return roles
   **/
-  @ApiModelProperty(value = "")
+  @Schema(description = "")
   public List<RolesEnum> getRoles() {
     return roles;
   }
+
   public void setRoles(List<RolesEnum> roles) {
     this.roles = roles;
   }
-  
+
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -233,9 +225,10 @@ public class AccountBean {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(id, username, password, name, surname, roles);
+    return Objects.hash(id, username, password, name, surname, roles);
   }
-  
+
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -262,8 +255,4 @@ public class AccountBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  
 }
-
-
-
