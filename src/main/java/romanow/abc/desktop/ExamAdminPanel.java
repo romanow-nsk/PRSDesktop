@@ -8,11 +8,14 @@ package romanow.abc.desktop;
 import retrofit2.Call;
 import romanow.abc.bridge.APICallSync;
 import romanow.abc.bridge.constants.TaskType;
+import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.exam.model.*;
+import romanow.abc.excel.ExcelX2;
+import romanow.abc.excel.I_ExcelBack;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -32,6 +35,7 @@ public class ExamAdminPanel extends BasePanel{
     private FullTaskBean cTask=null;
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
+    private List<GroupBean> groups = new ArrayList<>();
     public ExamAdminPanel() {
         initComponents();
         }
@@ -45,6 +49,7 @@ public class ExamAdminPanel extends BasePanel{
 
     private void refreshAll(){
         refreshDisciplineList();
+        refreshGroupsList();
         }
 
     private void refreshDisciplineList(){
@@ -62,6 +67,23 @@ public class ExamAdminPanel extends BasePanel{
                 for(DisciplineBean dd : disciplines)
                     Discipline.add(dd.getName());
                 refreshDisciplineFull();
+                }
+            };
+        }
+    private void refreshGroupsList(){
+        Group.removeAll();
+        Student.removeAll();
+        new APICall<List<GroupBean>>(main) {
+            @Override
+            public Call<List<GroupBean>> apiFun() {
+                return main.client.getGroupApi().getAll2();
+            }
+            @Override
+            public void onSucess(List<GroupBean> oo) {
+                groups = oo;
+                for(GroupBean dd : groups)
+                    Group.add(dd.getName());
+                //refreshGroupFull();
                 }
             };
         }
@@ -147,6 +169,19 @@ public class ExamAdminPanel extends BasePanel{
         EditTheme = new javax.swing.JButton();
         FullTrace = new javax.swing.JCheckBox();
         DisciplineSaveImport = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        Group = new java.awt.Choice();
+        Student = new java.awt.Choice();
+        RefreshDisciplines1 = new javax.swing.JButton();
+        AddGroup = new javax.swing.JButton();
+        RemoveGroup = new javax.swing.JButton();
+        AddStudent = new javax.swing.JButton();
+        RemoveStudent = new javax.swing.JButton();
+        EditGroup = new javax.swing.JButton();
+        EditStudent = new javax.swing.JButton();
+        GroupsImport = new javax.swing.JButton();
+        GroupsSaveImport = new javax.swing.JButton();
 
         setLayout(null);
 
@@ -162,7 +197,7 @@ public class ExamAdminPanel extends BasePanel{
         add(jLabel3);
         jLabel3.setBounds(20, 65, 70, 16);
         add(TaskText);
-        TaskText.setBounds(20, 150, 400, 220);
+        TaskText.setBounds(20, 150, 420, 220);
 
         Discipline.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -189,7 +224,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RefreshDisciplines);
-        RefreshDisciplines.setBounds(350, 5, 30, 30);
+        RefreshDisciplines.setBounds(230, 5, 30, 30);
 
         DisciplineImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
         DisciplineImport.setBorderPainted(false);
@@ -233,7 +268,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(AddDiscipline);
-        AddDiscipline.setBounds(270, 40, 30, 30);
+        AddDiscipline.setBounds(270, 35, 30, 30);
 
         RemoveDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveDiscipline.setBorderPainted(false);
@@ -244,7 +279,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RemoveDiscipline);
-        RemoveDiscipline.setBounds(310, 40, 30, 30);
+        RemoveDiscipline.setBounds(310, 35, 30, 30);
 
         AddTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddTheme.setBorderPainted(false);
@@ -329,7 +364,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(EditDiscipline);
-        EditDiscipline.setBounds(350, 40, 30, 30);
+        EditDiscipline.setBounds(350, 35, 30, 30);
 
         EditTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditTheme.setBorderPainted(false);
@@ -342,9 +377,9 @@ public class ExamAdminPanel extends BasePanel{
         add(EditTheme);
         EditTheme.setBounds(350, 75, 30, 30);
 
-        FullTrace.setText("просмотр");
+        FullTrace.setText("тесты");
         add(FullTrace);
-        FullTrace.setBounds(400, 10, 78, 20);
+        FullTrace.setBounds(380, 10, 60, 20);
 
         DisciplineSaveImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
         DisciplineSaveImport.setBorderPainted(false);
@@ -355,7 +390,130 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(DisciplineSaveImport);
-        DisciplineSaveImport.setBounds(440, 40, 40, 30);
+        DisciplineSaveImport.setBounds(400, 75, 40, 30);
+
+        jLabel4.setText("Группа");
+        add(jLabel4);
+        jLabel4.setBounds(450, 25, 70, 16);
+
+        jLabel5.setText("Студент");
+        add(jLabel5);
+        jLabel5.setBounds(450, 65, 70, 16);
+
+        Group.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                GroupItemStateChanged(evt);
+            }
+        });
+        add(Group);
+        Group.setBounds(450, 40, 240, 20);
+
+        Student.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                StudentItemStateChanged(evt);
+            }
+        });
+        add(Student);
+        Student.setBounds(450, 80, 240, 20);
+
+        RefreshDisciplines1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
+        RefreshDisciplines1.setBorderPainted(false);
+        RefreshDisciplines1.setContentAreaFilled(false);
+        RefreshDisciplines1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RefreshDisciplines1ActionPerformed(evt);
+            }
+        });
+        add(RefreshDisciplines1);
+        RefreshDisciplines1.setBounds(660, 5, 30, 30);
+
+        AddGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        AddGroup.setBorderPainted(false);
+        AddGroup.setContentAreaFilled(false);
+        AddGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddGroupActionPerformed(evt);
+            }
+        });
+        add(AddGroup);
+        AddGroup.setBounds(700, 35, 30, 30);
+
+        RemoveGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        RemoveGroup.setBorderPainted(false);
+        RemoveGroup.setContentAreaFilled(false);
+        RemoveGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RemoveGroupActionPerformed(evt);
+            }
+        });
+        add(RemoveGroup);
+        RemoveGroup.setBounds(740, 35, 30, 30);
+
+        AddStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        AddStudent.setBorderPainted(false);
+        AddStudent.setContentAreaFilled(false);
+        AddStudent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddStudentActionPerformed(evt);
+            }
+        });
+        add(AddStudent);
+        AddStudent.setBounds(700, 70, 30, 30);
+
+        RemoveStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        RemoveStudent.setBorderPainted(false);
+        RemoveStudent.setContentAreaFilled(false);
+        RemoveStudent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RemoveStudentActionPerformed(evt);
+            }
+        });
+        add(RemoveStudent);
+        RemoveStudent.setBounds(740, 70, 30, 30);
+
+        EditGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        EditGroup.setBorderPainted(false);
+        EditGroup.setContentAreaFilled(false);
+        EditGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditGroupActionPerformed(evt);
+            }
+        });
+        add(EditGroup);
+        EditGroup.setBounds(780, 35, 30, 30);
+
+        EditStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        EditStudent.setBorderPainted(false);
+        EditStudent.setContentAreaFilled(false);
+        EditStudent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditStudentActionPerformed(evt);
+            }
+        });
+        add(EditStudent);
+        EditStudent.setBounds(780, 70, 30, 30);
+
+        GroupsImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
+        GroupsImport.setBorderPainted(false);
+        GroupsImport.setContentAreaFilled(false);
+        GroupsImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GroupsImportActionPerformed(evt);
+            }
+        });
+        add(GroupsImport);
+        GroupsImport.setBounds(820, 35, 40, 30);
+
+        GroupsSaveImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
+        GroupsSaveImport.setBorderPainted(false);
+        GroupsSaveImport.setContentAreaFilled(false);
+        GroupsSaveImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GroupsSaveImportActionPerformed(evt);
+            }
+        });
+        add(GroupsSaveImport);
+        GroupsSaveImport.setBounds(820, 70, 40, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -599,6 +757,147 @@ public class ExamAdminPanel extends BasePanel{
         });
     }//GEN-LAST:event_DisciplineSaveImportActionPerformed
 
+    private void GroupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_GroupItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_GroupItemStateChanged
+
+    private void StudentItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_StudentItemStateChanged
+
+    private void RefreshDisciplines1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplines1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RefreshDisciplines1ActionPerformed
+
+    private void AddGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddGroupActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_AddGroupActionPerformed
+
+    private void RemoveGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveGroupActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RemoveGroupActionPerformed
+
+    private void AddStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddStudentActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_AddStudentActionPerformed
+
+    private void RemoveStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveStudentActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RemoveStudentActionPerformed
+
+    private void EditGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditGroupActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EditGroupActionPerformed
+
+    private void EditStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditStudentActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EditStudentActionPerformed
+
+
+    private ExcelX2 excel;
+    private static String[]  parseFIO(String fio){
+        fio = fio.trim();
+        String out[]={"","",""};
+        int idx=fio.indexOf(" ");
+        if(idx==-1){
+            out[0]=fio;
+            return out;
+            }
+        out[0]=fio.substring(0,idx);
+        fio = fio.substring(idx+1);
+        idx=fio.indexOf(" ");
+        if(idx==-1){
+            out[1]=fio;
+            return out;
+            }
+        out[1]=fio.substring(0,idx);
+        out[2]=fio.substring(idx+1);
+        return out;
+        }
+
+    private void procNextSheet(final String sheets[], final int idx){
+        new OKFull(200, 200, "Импорт группы " + sheets[idx], new I_ButtonFull() {
+            @Override
+            public void onPush(boolean yes) {
+                if (!yes){
+                    if ((idx+1)!=sheets.length) {
+                        procNextSheet(sheets, idx + 1);
+                        }
+                    return;
+                    }
+                System.out.println("Импорт группы "+sheets[idx]);
+                final CreateGroupBean group = new CreateGroupBean();
+                group.setName(sheets[idx]);
+                group.setDisciplineIds(new ArrayList<>());      // TODO ИНИЦИАЛИЗИРОВАТЬ НАДО АФФТОРУ КЛАССА - ПО УМОЛЧАНИЮ ПУСТОЙ, но не null
+                try {
+                    final GroupBean group2 = new APICallSync<GroupBean>() {
+                        @Override
+                        public Call<GroupBean> apiFun() {
+                            return main.client.getGroupApi().create2(group);
+                            }
+                        }.call();
+                    excel.procSheet(sheets[idx], new I_ExcelBack() {
+                        @Override
+                        public void onRow(String[] values) {
+                            System.out.println(values[0] + " " + values[1]);
+                            AccountBean account = new AccountBean();
+                            account.setUsername(values[1]);
+                            String ss[] = parseFIO(values[0]);
+                            account.setName(ss[0]);
+                            account.setSurname(ss[1]);
+                            ArrayList roles = new ArrayList<UserRole>();
+                            roles.add(UserRole.ROLE_TEACHER);
+                            account.setRoles(roles);
+                            StudentBean student = new StudentBean();
+                            student.setGroupId(group2.getId());
+                            student.setAccount(account);
+                            try {
+                                new APICallSync<StudentBean>() {
+                                    @Override
+                                    public Call<StudentBean> apiFun() {
+                                        return main.client.getOnlyStudentApi().createStudent(student);
+                                        }
+                                    }.call();
+                                } catch (IOException ee){
+                                    System.out.println("Ошибка импорта студента "+values[0]);
+                                    }
+                            }
+
+                        @Override
+                        public void onFinishSheet(String errorMes) {
+                            if (errorMes.length() != 0)
+                                System.out.println(errorMes);
+                            if ((idx + 1) != sheets.length)
+                                procNextSheet(sheets, idx + 1);
+                            }
+                        });
+                    } catch (Exception ee){
+                        System.out.println("Ошибка импорта "+sheets[idx]);
+                        if ((idx+1)!=sheets.length) {
+                            procNextSheet(sheets, idx + 1);
+                            }
+                        }
+                }
+            });
+        }
+
+    private void GroupsImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupsImportActionPerformed
+        FileNameExt fname = main.getInputFileName("Импорт групп", "xlsx", null);
+        if (fname == null)
+            return;
+        excel = new ExcelX2();
+        try{
+            String sheets[] = excel.openTable(fname.fullName(), new String[]{"ФИО", "Эл. почта"});
+            procNextSheet(sheets,0);
+            } catch (Exception ee){
+                System.out.println("Ошибка импорта:\n"+ee.toString());
+                }
+    }//GEN-LAST:event_GroupsImportActionPerformed
+
+    private void GroupsSaveImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupsSaveImportActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_GroupsSaveImportActionPerformed
+
     @Override
     public void refresh() {}
 
@@ -618,6 +917,8 @@ public class ExamAdminPanel extends BasePanel{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AddDiscipline;
+    private javax.swing.JButton AddGroup;
+    private javax.swing.JButton AddStudent;
     private javax.swing.JButton AddTask;
     private javax.swing.JButton AddTheme;
     private java.awt.Choice Discipline;
@@ -625,13 +926,22 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton DisciplineSaveImport;
     private javax.swing.JButton DownLoadArtifact;
     private javax.swing.JButton EditDiscipline;
+    private javax.swing.JButton EditGroup;
+    private javax.swing.JButton EditStudent;
     private javax.swing.JButton EditTask;
     private javax.swing.JButton EditTheme;
     private javax.swing.JCheckBox FullTrace;
+    private java.awt.Choice Group;
+    private javax.swing.JButton GroupsImport;
+    private javax.swing.JButton GroupsSaveImport;
     private javax.swing.JButton RefreshDisciplines;
+    private javax.swing.JButton RefreshDisciplines1;
     private javax.swing.JButton RemoveDiscipline;
+    private javax.swing.JButton RemoveGroup;
+    private javax.swing.JButton RemoveStudent;
     private javax.swing.JButton RemoveTask;
     private javax.swing.JButton RemoveTheme;
+    private java.awt.Choice Student;
     private java.awt.Choice Task;
     private java.awt.TextArea TaskText;
     private java.awt.Choice Theme;
@@ -640,5 +950,7 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     // End of variables declaration//GEN-END:variables
 }
