@@ -7,9 +7,17 @@ package romanow.abc.desktop;
 
 import retrofit2.Call;
 import romanow.abc.bridge.APICallSync;
+import romanow.abc.bridge.constants.TaskType;
+import romanow.abc.convert.onewayticket.OWTDiscipline;
+import romanow.abc.convert.onewayticket.OWTReader;
+import romanow.abc.convert.onewayticket.OWTTheme;
+import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.exam.model.*;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +31,7 @@ public class ExamAdminPanel extends BasePanel{
     private FullThemeBean cTheme = null;
     private FullTaskBean cTask=null;
     private int cTaskNum=0;
+    private OWTDiscipline owtImportData = null;
     public ExamAdminPanel() {
         initComponents();
         }
@@ -30,6 +39,7 @@ public class ExamAdminPanel extends BasePanel{
         super.initPanel(main0);
         ViewArtifact.setEnabled(false);
         DownLoadArtifact.setEnabled(false);
+        DisciplineSaveImport.setEnabled(false);
         refreshAll();
         }
 
@@ -72,7 +82,7 @@ public class ExamAdminPanel extends BasePanel{
                 cDiscipline = oo;
                 Theme.removeAll();
                 for(FullThemeBean theme : cDiscipline.getThemes())
-                    Theme.add(theme.getName());
+                    Theme.add(theme.getTheme().getName());
                 refreshThemeFull();
                 }
             };
@@ -95,7 +105,7 @@ public class ExamAdminPanel extends BasePanel{
             return;
         cTaskNum = Task.getSelectedIndex();
         cTask = cTheme.getTasks().get(cTaskNum);
-        TaskText.setText(cTask.getText());
+        TaskText.setText(cTask.getTask().getText());
         boolean bb = cTask.getArtefact()!=null;
         ViewArtifact.setEnabled(bb);
         DownLoadArtifact.setEnabled(bb);
@@ -121,7 +131,7 @@ public class ExamAdminPanel extends BasePanel{
         Discipline = new java.awt.Choice();
         Theme = new java.awt.Choice();
         RefreshDisciplines = new javax.swing.JButton();
-        ImportDiscipline = new javax.swing.JButton();
+        DisciplineImport = new javax.swing.JButton();
         RemoveTask = new javax.swing.JButton();
         AddTask = new javax.swing.JButton();
         AddDiscipline = new javax.swing.JButton();
@@ -132,6 +142,11 @@ public class ExamAdminPanel extends BasePanel{
         ViewArtifact = new javax.swing.JButton();
         UploadArtifact = new javax.swing.JButton();
         DownLoadArtifact = new javax.swing.JButton();
+        EditTask = new javax.swing.JButton();
+        EditDiscipline = new javax.swing.JButton();
+        EditTheme = new javax.swing.JButton();
+        FullTrace = new javax.swing.JCheckBox();
+        DisciplineSaveImport = new javax.swing.JButton();
 
         setLayout(null);
 
@@ -174,18 +189,18 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RefreshDisciplines);
-        RefreshDisciplines.setBounds(350, 40, 30, 30);
+        RefreshDisciplines.setBounds(350, 5, 30, 30);
 
-        ImportDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
-        ImportDiscipline.setBorderPainted(false);
-        ImportDiscipline.setContentAreaFilled(false);
-        ImportDiscipline.addActionListener(new java.awt.event.ActionListener() {
+        DisciplineImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
+        DisciplineImport.setBorderPainted(false);
+        DisciplineImport.setContentAreaFilled(false);
+        DisciplineImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ImportDisciplineActionPerformed(evt);
+                DisciplineImportActionPerformed(evt);
             }
         });
-        add(ImportDiscipline);
-        ImportDiscipline.setBounds(390, 40, 40, 30);
+        add(DisciplineImport);
+        DisciplineImport.setBounds(400, 40, 40, 30);
 
         RemoveTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveTask.setBorderPainted(false);
@@ -293,31 +308,81 @@ public class ExamAdminPanel extends BasePanel{
         });
         add(DownLoadArtifact);
         DownLoadArtifact.setBounds(60, 380, 40, 30);
+
+        EditTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        EditTask.setBorderPainted(false);
+        EditTask.setContentAreaFilled(false);
+        EditTask.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditTaskActionPerformed(evt);
+            }
+        });
+        add(EditTask);
+        EditTask.setBounds(350, 110, 30, 30);
+
+        EditDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        EditDiscipline.setBorderPainted(false);
+        EditDiscipline.setContentAreaFilled(false);
+        EditDiscipline.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditDisciplineActionPerformed(evt);
+            }
+        });
+        add(EditDiscipline);
+        EditDiscipline.setBounds(350, 40, 30, 30);
+
+        EditTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        EditTheme.setBorderPainted(false);
+        EditTheme.setContentAreaFilled(false);
+        EditTheme.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditThemeActionPerformed(evt);
+            }
+        });
+        add(EditTheme);
+        EditTheme.setBounds(350, 75, 30, 30);
+
+        FullTrace.setText("просмотр");
+        add(FullTrace);
+        FullTrace.setBounds(400, 10, 78, 20);
+
+        DisciplineSaveImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
+        DisciplineSaveImport.setBorderPainted(false);
+        DisciplineSaveImport.setContentAreaFilled(false);
+        DisciplineSaveImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DisciplineSaveImportActionPerformed(evt);
+            }
+        });
+        add(DisciplineSaveImport);
+        DisciplineSaveImport.setBounds(440, 40, 40, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
         refreshAll();
     }//GEN-LAST:event_RefreshDisciplinesActionPerformed
 
-    private void ImportDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImportDisciplineActionPerformed
-        /*
-        new UploadPanel(400, 300, main, new I_OK() {
-            @Override
-            public void onOK(Entity ent) {
-                new APICall<MeasureFile>(main){
-                    @Override
-                    public Call<MeasureFile> apiFun() {
-                        return main2.service2.addMeasure(main.debugToken,ent.getOid());
-                    }
-                    @Override
-                    public void onSucess(MeasureFile oo) {
-                        System.out.println(oo);
-                    }
-                };
-            }
-        });
-         */
-    }//GEN-LAST:event_ImportDisciplineActionPerformed
+    private void DisciplineImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineImportActionPerformed
+        try {
+            FileNameExt fname = main.getInputFileName("Импорт тестов", "txt", null);
+            if (fname == null)
+                return;
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fname.fullName()), "Windows-1251"));
+            owtImportData = new OWTDiscipline();
+            owtImportData.clear();
+            OWTReader reader = new OWTReader(in);
+            owtImportData.read(reader);
+            StringBuffer sb = new StringBuffer();
+            owtImportData.toLog(sb,FullTrace.isSelected());
+            System.out.println(sb.toString());
+            DisciplineSaveImport.setEnabled(true);
+            } catch (Exception ee){
+                System.out.println("Ошибка импорта тестов:\n"+ee.toString());
+                Discipline.setEnabled(false);
+                }
+
+
+    }//GEN-LAST:event_DisciplineImportActionPerformed
 
     private void RemoveTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveTaskActionPerformed
         if (cTask==null)
@@ -328,7 +393,7 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getTaskApi().deleteTask(cTask.getId());
+                        return main.client.getTaskApi().deleteTask(cTask.getTask().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -366,13 +431,13 @@ public class ExamAdminPanel extends BasePanel{
     private void RemoveDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveDisciplineActionPerformed
         if (cDiscipline==null)
             return;
-        new OK(200, 200, "Удалить дисциплину: " + cDiscipline.getName(), new I_Button() {
+        new OK(200, 200, "Удалить дисциплину: " + cDiscipline.getDiscipline().getName(), new I_Button() {
             @Override
             public void onPush() {
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getDisciplineApi().delete(cDiscipline.getId());
+                        return main.client.getDisciplineApi().delete(cDiscipline.getDiscipline().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -386,12 +451,12 @@ public class ExamAdminPanel extends BasePanel{
     private void AddThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddThemeActionPerformed
         if (cDiscipline==null)
             return;
-        new OKName(200,200,"Добавить тему в "+cDiscipline.getName(), new I_Value<String>() {
+        new OKName(200,200,"Добавить тему в "+cDiscipline.getDiscipline().getName(), new I_Value<String>() {
             @Override
             public void onEnter(String value) {
                 ThemeBean bean = new ThemeBean();
                 bean.setName(value);
-                bean.setDisciplineId(cDiscipline.getId());
+                bean.setDisciplineId(cDiscipline.getDiscipline().getId());
                 new APICall<ThemeBean>(main) {
                     @Override
                     public Call<ThemeBean> apiFun() {
@@ -409,14 +474,13 @@ public class ExamAdminPanel extends BasePanel{
     private void RemoveThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveThemeActionPerformed
         if (cTheme==null)
             return;
-        new OK(200, 200, "Удалить тему: " + cTheme.getName(), new I_Button() {
+        new OK(200, 200, "Удалить тему: " + cTheme.getTheme().getName(), new I_Button() {
             @Override
             public void onPush() {
                 new APICall<Void>(main) {
                     @Override
-                    public Call<Void> apiFun() {
-                        return null;
-                        //return main.client.getThemeApi().delete(cDiscipline.getId());
+                    public Call<Void> apiFun() {        // TODO - это удаление
+                        return main.client.getThemeApi().update2(cDiscipline.getDiscipline().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -451,6 +515,90 @@ public class ExamAdminPanel extends BasePanel{
         // TODO add your handling code here:
     }//GEN-LAST:event_DownLoadArtifactActionPerformed
 
+    private void EditTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditTaskActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EditTaskActionPerformed
+
+    private void EditDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditDisciplineActionPerformed
+        new OKName(200,200,"Изменить название дисциплины", cDiscipline.getDiscipline().getName(),new I_Value<String>() {
+            @Override
+            public void onEnter(String value) {
+                cDiscipline.getDiscipline().setName(value);
+                new APICall<DisciplineBean>(main) {
+                    @Override
+                    public Call<DisciplineBean> apiFun() {
+                        return main.client.getDisciplineApi().update1(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
+                        //return main.client.getDisciplineApi().update1(cDiscipline,cDiscipline.getId());
+                        }
+                    @Override
+                    public void onSucess(DisciplineBean oo) {
+                        refreshDisciplineList();
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_EditDisciplineActionPerformed
+
+    private void EditThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditThemeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EditThemeActionPerformed
+    //-------------------------------------------------------------------------------------------------------------------
+    private void DisciplineSaveImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineSaveImportActionPerformed
+        if (owtImportData==null)
+            return;
+        new OKName(200, 200, "Дисциплина с тестами: " + owtImportData.getHead(), owtImportData.getHead(),new I_Value<String>() {
+            @Override
+            public void onEnter(String value) {
+                DisciplineBean discipline = new DisciplineBean();
+                discipline.setName(value);
+                new APICall<DisciplineBean>(main) {
+                    @Override
+                    public Call<DisciplineBean> apiFun() {
+                        return main.client.getDisciplineApi().create4(discipline);
+                        }
+                    @Override
+                    public void onSucess(final DisciplineBean oo) {
+                        int idx1=0;
+                        int idx2=0;
+                        OWTTheme owtTheme=null;
+                        try {
+                            final ThemeBean theme = new ThemeBean();
+                            final TaskBean task = new TaskBean();
+                            for (idx1 = 0; idx1 < owtImportData.size(); idx1++) {
+                                idx2=-1;
+                                owtTheme = owtImportData.get(idx1);
+                                theme.disciplineId(oo.getId());
+                                theme.setName(owtTheme.getQuestion());
+                                final ThemeBean theme2 = new APICallSync<ThemeBean>() {
+                                    @Override
+                                    public Call<ThemeBean> apiFun() {
+                                        return main.client.getThemeApi().create(theme);
+                                        }
+                                    }.call();
+                                for(idx2=0;idx2 < owtTheme.size();idx2++){
+                                    task.setThemeId(theme2.getId());
+                                    task.setTaskType(TaskBean.TaskTypeEnum.QUESTION);
+                                    task.setText(owtTheme.get(idx2).toString());
+                                    new APICallSync<TaskBean>() {
+                                        @Override
+                                        public Call<TaskBean> apiFun() {
+                                            return main.client.getTaskApi().createTask(task);
+                                            }
+                                        }.call();
+                                    }
+                                }
+                            }catch (IOException ee){
+                                System.out.println("Ошибка добавления темы "+(idx1+1)+ (idx2==-1 ? "" : " теста "+(idx2+1))+"\n"+owtTheme.getQuestion()+"\n"+ee.toString());
+                                }
+                        DisciplineSaveImport.setEnabled(false);
+                        owtImportData = null;
+                        refreshDisciplineList();
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_DisciplineSaveImportActionPerformed
+
     @Override
     public void refresh() {}
 
@@ -473,8 +621,13 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton AddTask;
     private javax.swing.JButton AddTheme;
     private java.awt.Choice Discipline;
+    private javax.swing.JButton DisciplineImport;
+    private javax.swing.JButton DisciplineSaveImport;
     private javax.swing.JButton DownLoadArtifact;
-    private javax.swing.JButton ImportDiscipline;
+    private javax.swing.JButton EditDiscipline;
+    private javax.swing.JButton EditTask;
+    private javax.swing.JButton EditTheme;
+    private javax.swing.JCheckBox FullTrace;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RemoveDiscipline;
     private javax.swing.JButton RemoveTask;

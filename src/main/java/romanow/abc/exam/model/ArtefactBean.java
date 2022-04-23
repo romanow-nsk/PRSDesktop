@@ -25,7 +25,7 @@ import java.io.IOException;
  * ArtefactBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
 public class ArtefactBean {
   @SerializedName("id")
   private Long id = null;
@@ -38,13 +38,17 @@ public class ArtefactBean {
    */
   @JsonAdapter(ArtefactTypeEnum.Adapter.class)
   public enum ArtefactTypeEnum {
+    UNKNOWN("UNKNOWN"),
     PNG("PNG"),
     JPG("JPG"),
     JPEG("JPEG"),
     XML("XML"),
     DOC("DOC"),
     DOCX("DOCX"),
-    PDF("PDF");
+    PDF("PDF"),
+    TXT("TXT"),
+    ZIP("ZIP"),
+    RAR("RAR");
 
     private String value;
 

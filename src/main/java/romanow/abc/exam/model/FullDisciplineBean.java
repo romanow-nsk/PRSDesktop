@@ -23,56 +23,36 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import romanow.abc.exam.model.DisciplineBean;
 import romanow.abc.exam.model.FullThemeBean;
 /**
  * FullDisciplineBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
 public class FullDisciplineBean {
-  @SerializedName("id")
-  private Long id = null;
-
-  @SerializedName("name")
-  private String name = null;
+  @SerializedName("discipline")
+  private DisciplineBean discipline = null;
 
   @SerializedName("themes")
   private List<FullThemeBean> themes = null;
 
-  public FullDisciplineBean id(Long id) {
-    this.id = id;
+  public FullDisciplineBean discipline(DisciplineBean discipline) {
+    this.discipline = discipline;
     return this;
   }
 
    /**
-   * Get id
-   * @return id
+   * Get discipline
+   * @return discipline
   **/
   @Schema(description = "")
-  public Long getId() {
-    return id;
+  public DisciplineBean getDiscipline() {
+    return discipline;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public FullDisciplineBean name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Get name
-   * @return name
-  **/
-  @Schema(description = "")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setDiscipline(DisciplineBean discipline) {
+    this.discipline = discipline;
   }
 
   public FullDisciplineBean themes(List<FullThemeBean> themes) {
@@ -111,14 +91,13 @@ public class FullDisciplineBean {
       return false;
     }
     FullDisciplineBean fullDisciplineBean = (FullDisciplineBean) o;
-    return Objects.equals(this.id, fullDisciplineBean.id) &&
-        Objects.equals(this.name, fullDisciplineBean.name) &&
+    return Objects.equals(this.discipline, fullDisciplineBean.discipline) &&
         Objects.equals(this.themes, fullDisciplineBean.themes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, themes);
+    return Objects.hash(discipline, themes);
   }
 
 
@@ -127,8 +106,7 @@ public class FullDisciplineBean {
     StringBuilder sb = new StringBuilder();
     sb.append("class FullDisciplineBean {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    discipline: ").append(toIndentedString(discipline)).append("\n");
     sb.append("    themes: ").append(toIndentedString(themes)).append("\n");
     sb.append("}");
     return sb.toString();

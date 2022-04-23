@@ -22,102 +22,35 @@ import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import romanow.abc.exam.model.ArtefactBean;
+import romanow.abc.exam.model.TaskBean;
 /**
  * FullTaskBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
 public class FullTaskBean {
-  @SerializedName("id")
-  private Long id = null;
-
-  @SerializedName("text")
-  private String text = null;
+  @SerializedName("task")
+  private TaskBean task = null;
 
   @SerializedName("artefact")
   private ArtefactBean artefact = null;
 
-  /**
-   * Gets or Sets taskType
-   */
-  @JsonAdapter(TaskTypeEnum.Adapter.class)
-  public enum TaskTypeEnum {
-    QUESTION("QUESTION"),
-    EXERCISE("EXERCISE");
-
-    private String value;
-
-    TaskTypeEnum(String value) {
-      this.value = value;
-    }
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-    public static TaskTypeEnum fromValue(String input) {
-      for (TaskTypeEnum b : TaskTypeEnum.values()) {
-        if (b.value.equals(input)) {
-          return b;
-        }
-      }
-      return null;
-    }
-    public static class Adapter extends TypeAdapter<TaskTypeEnum> {
-      @Override
-      public void write(final JsonWriter jsonWriter, final TaskTypeEnum enumeration) throws IOException {
-        jsonWriter.value(String.valueOf(enumeration.getValue()));
-      }
-
-      @Override
-      public TaskTypeEnum read(final JsonReader jsonReader) throws IOException {
-        Object value = jsonReader.nextString();
-        return TaskTypeEnum.fromValue((String)(value));
-      }
-    }
-  }  @SerializedName("taskType")
-  private TaskTypeEnum taskType = null;
-
-  @SerializedName("themeId")
-  private Long themeId = null;
-
-  public FullTaskBean id(Long id) {
-    this.id = id;
+  public FullTaskBean task(TaskBean task) {
+    this.task = task;
     return this;
   }
 
    /**
-   * Get id
-   * @return id
+   * Get task
+   * @return task
   **/
   @Schema(description = "")
-  public Long getId() {
-    return id;
+  public TaskBean getTask() {
+    return task;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public FullTaskBean text(String text) {
-    this.text = text;
-    return this;
-  }
-
-   /**
-   * Get text
-   * @return text
-  **/
-  @Schema(description = "")
-  public String getText() {
-    return text;
-  }
-
-  public void setText(String text) {
-    this.text = text;
+  public void setTask(TaskBean task) {
+    this.task = task;
   }
 
   public FullTaskBean artefact(ArtefactBean artefact) {
@@ -138,42 +71,6 @@ public class FullTaskBean {
     this.artefact = artefact;
   }
 
-  public FullTaskBean taskType(TaskTypeEnum taskType) {
-    this.taskType = taskType;
-    return this;
-  }
-
-   /**
-   * Get taskType
-   * @return taskType
-  **/
-  @Schema(description = "")
-  public TaskTypeEnum getTaskType() {
-    return taskType;
-  }
-
-  public void setTaskType(TaskTypeEnum taskType) {
-    this.taskType = taskType;
-  }
-
-  public FullTaskBean themeId(Long themeId) {
-    this.themeId = themeId;
-    return this;
-  }
-
-   /**
-   * Get themeId
-   * @return themeId
-  **/
-  @Schema(description = "")
-  public Long getThemeId() {
-    return themeId;
-  }
-
-  public void setThemeId(Long themeId) {
-    this.themeId = themeId;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -184,16 +81,13 @@ public class FullTaskBean {
       return false;
     }
     FullTaskBean fullTaskBean = (FullTaskBean) o;
-    return Objects.equals(this.id, fullTaskBean.id) &&
-        Objects.equals(this.text, fullTaskBean.text) &&
-        Objects.equals(this.artefact, fullTaskBean.artefact) &&
-        Objects.equals(this.taskType, fullTaskBean.taskType) &&
-        Objects.equals(this.themeId, fullTaskBean.themeId);
+    return Objects.equals(this.task, fullTaskBean.task) &&
+        Objects.equals(this.artefact, fullTaskBean.artefact);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, text, artefact, taskType, themeId);
+    return Objects.hash(task, artefact);
   }
 
 
@@ -202,11 +96,8 @@ public class FullTaskBean {
     StringBuilder sb = new StringBuilder();
     sb.append("class FullTaskBean {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    text: ").append(toIndentedString(text)).append("\n");
+    sb.append("    task: ").append(toIndentedString(task)).append("\n");
     sb.append("    artefact: ").append(toIndentedString(artefact)).append("\n");
-    sb.append("    taskType: ").append(toIndentedString(taskType)).append("\n");
-    sb.append("    themeId: ").append(toIndentedString(themeId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

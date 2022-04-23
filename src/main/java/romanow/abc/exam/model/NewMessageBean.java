@@ -25,7 +25,7 @@ import java.io.IOException;
  * NewMessageBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
 public class NewMessageBean {
   @SerializedName("text")
   private String text = null;

@@ -24,76 +24,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import romanow.abc.exam.model.FullTaskBean;
+import romanow.abc.exam.model.ThemeBean;
 /**
  * FullThemeBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-22T14:47:34.663+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
 public class FullThemeBean {
-  @SerializedName("id")
-  private Long id = null;
-
-  @SerializedName("name")
-  private String name = null;
-
-  @SerializedName("disciplineId")
-  private Long disciplineId = null;
+  @SerializedName("theme")
+  private ThemeBean theme = null;
 
   @SerializedName("tasks")
   private List<FullTaskBean> tasks = null;
 
-  public FullThemeBean id(Long id) {
-    this.id = id;
+  public FullThemeBean theme(ThemeBean theme) {
+    this.theme = theme;
     return this;
   }
 
    /**
-   * Get id
-   * @return id
+   * Get theme
+   * @return theme
   **/
   @Schema(description = "")
-  public Long getId() {
-    return id;
+  public ThemeBean getTheme() {
+    return theme;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public FullThemeBean name(String name) {
-    this.name = name;
-    return this;
-  }
-
-   /**
-   * Get name
-   * @return name
-  **/
-  @Schema(description = "")
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public FullThemeBean disciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
-    return this;
-  }
-
-   /**
-   * Get disciplineId
-   * @return disciplineId
-  **/
-  @Schema(description = "")
-  public Long getDisciplineId() {
-    return disciplineId;
-  }
-
-  public void setDisciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
+  public void setTheme(ThemeBean theme) {
+    this.theme = theme;
   }
 
   public FullThemeBean tasks(List<FullTaskBean> tasks) {
@@ -132,15 +91,13 @@ public class FullThemeBean {
       return false;
     }
     FullThemeBean fullThemeBean = (FullThemeBean) o;
-    return Objects.equals(this.id, fullThemeBean.id) &&
-        Objects.equals(this.name, fullThemeBean.name) &&
-        Objects.equals(this.disciplineId, fullThemeBean.disciplineId) &&
+    return Objects.equals(this.theme, fullThemeBean.theme) &&
         Objects.equals(this.tasks, fullThemeBean.tasks);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, disciplineId, tasks);
+    return Objects.hash(theme, tasks);
   }
 
 
@@ -149,9 +106,7 @@ public class FullThemeBean {
     StringBuilder sb = new StringBuilder();
     sb.append("class FullThemeBean {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
+    sb.append("    theme: ").append(toIndentedString(theme)).append("\n");
     sb.append("    tasks: ").append(toIndentedString(tasks)).append("\n");
     sb.append("}");
     return sb.toString();

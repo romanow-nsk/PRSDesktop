@@ -19,15 +19,16 @@ public class OKName extends ABCBaseView {
     /**
      * Creates new form OK
      */
-    public OKName(int x,int y,String title) {
-        this(x,y,title,null);
-        }
     public OKName(int x,int y,String title, I_Value<String> ok0) {
+        this(x,y,title,"",ok0);
+        }
+    public OKName(int x,int y,String title, String name, I_Value<String> ok0) {
         super(400,70);
         setUndecorated(true);
         initComponents();
         ok = ok0;
         OK.setFont(new Font("Arial Cyr", Font.PLAIN, 13));
+        Name.setText(name);
         UtilsDesktop.setButtonText(OK,title,45);
         OK.setBounds(10, 5, 330, 30);
         positionOn(x+20,y+20);

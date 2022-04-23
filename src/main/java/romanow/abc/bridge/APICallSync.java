@@ -33,14 +33,14 @@ public abstract class APICallSync<T> {
                 mes =  "Сеанс закрыт " + httpError(res);
                 System.out.println(mes);
                 throw new IOException(mes);
-            }
+                }
             try {
                 mes = res.errorBody().string();
-            } catch (IOException ex){
-                mes += "Ошибка: "+ex.toString(); }
-            System.out.println(mes);
-            throw new IOException(mes);
-           }
+                } catch (IOException ex){
+                    mes += "Ошибка: "+ex.toString(); }
+                System.out.println(mes);
+                throw new IOException(mes);
+                }
         System.out.println("time="+(System.currentTimeMillis()-tt)+" мс");
         return res.body();
         }
