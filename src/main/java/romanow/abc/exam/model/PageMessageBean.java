@@ -30,7 +30,7 @@ import romanow.abc.exam.model.Sort;
  * PageMessageBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-24T21:32:27.604+07:00[Asia/Novosibirsk]")
 public class PageMessageBean {
   @SerializedName("totalPages")
   private Integer totalPages = null;
@@ -53,14 +53,14 @@ public class PageMessageBean {
   @SerializedName("pageable")
   private PageableObject pageable = null;
 
+  @SerializedName("numberOfElements")
+  private Integer numberOfElements = null;
+
   @SerializedName("first")
   private Boolean first = null;
 
   @SerializedName("last")
   private Boolean last = null;
-
-  @SerializedName("numberOfElements")
-  private Integer numberOfElements = null;
 
   @SerializedName("empty")
   private Boolean empty = null;
@@ -199,6 +199,24 @@ public class PageMessageBean {
     this.pageable = pageable;
   }
 
+  public PageMessageBean numberOfElements(Integer numberOfElements) {
+    this.numberOfElements = numberOfElements;
+    return this;
+  }
+
+   /**
+   * Get numberOfElements
+   * @return numberOfElements
+  **/
+  @Schema(description = "")
+  public Integer getNumberOfElements() {
+    return numberOfElements;
+  }
+
+  public void setNumberOfElements(Integer numberOfElements) {
+    this.numberOfElements = numberOfElements;
+  }
+
   public PageMessageBean first(Boolean first) {
     this.first = first;
     return this;
@@ -233,24 +251,6 @@ public class PageMessageBean {
 
   public void setLast(Boolean last) {
     this.last = last;
-  }
-
-  public PageMessageBean numberOfElements(Integer numberOfElements) {
-    this.numberOfElements = numberOfElements;
-    return this;
-  }
-
-   /**
-   * Get numberOfElements
-   * @return numberOfElements
-  **/
-  @Schema(description = "")
-  public Integer getNumberOfElements() {
-    return numberOfElements;
-  }
-
-  public void setNumberOfElements(Integer numberOfElements) {
-    this.numberOfElements = numberOfElements;
   }
 
   public PageMessageBean empty(Boolean empty) {
@@ -288,15 +288,15 @@ public class PageMessageBean {
         Objects.equals(this.size, pageMessageBean.size) &&
         Objects.equals(this.content, pageMessageBean.content) &&
         Objects.equals(this.pageable, pageMessageBean.pageable) &&
+        Objects.equals(this.numberOfElements, pageMessageBean.numberOfElements) &&
         Objects.equals(this.first, pageMessageBean.first) &&
         Objects.equals(this.last, pageMessageBean.last) &&
-        Objects.equals(this.numberOfElements, pageMessageBean.numberOfElements) &&
         Objects.equals(this.empty, pageMessageBean.empty);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(totalPages, totalElements, number, sort, size, content, pageable, first, last, numberOfElements, empty);
+    return Objects.hash(totalPages, totalElements, number, sort, size, content, pageable, numberOfElements, first, last, empty);
   }
 
 
@@ -312,9 +312,9 @@ public class PageMessageBean {
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    content: ").append(toIndentedString(content)).append("\n");
     sb.append("    pageable: ").append(toIndentedString(pageable)).append("\n");
+    sb.append("    numberOfElements: ").append(toIndentedString(numberOfElements)).append("\n");
     sb.append("    first: ").append(toIndentedString(first)).append("\n");
     sb.append("    last: ").append(toIndentedString(last)).append("\n");
-    sb.append("    numberOfElements: ").append(toIndentedString(numberOfElements)).append("\n");
     sb.append("    empty: ").append(toIndentedString(empty)).append("\n");
     sb.append("}");
     return sb.toString();

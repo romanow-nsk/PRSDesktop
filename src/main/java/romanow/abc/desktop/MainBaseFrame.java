@@ -8,7 +8,7 @@ package romanow.abc.desktop;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
-import okhttp3.MultipartBody;
+import okhttp3.*;
 import romanow.abc.bridge.ConsoleClient;
 import romanow.abc.core.*;
 import romanow.abc.core.API.RestAPIBase;
@@ -17,6 +17,7 @@ import romanow.abc.core.constants.ValuesBase;
 import romanow.abc.core.entity.Entity;
 import romanow.abc.core.entity.EntityList;
 import romanow.abc.core.entity.artifacts.Artifact;
+import romanow.abc.core.entity.artifacts.ArtifactTypes;
 import romanow.abc.core.entity.base.WorkSettingsBase;
 import romanow.abc.core.entity.baseentityes.JEmpty;
 import romanow.abc.core.entity.baseentityes.JString;
@@ -24,22 +25,23 @@ import romanow.abc.core.entity.users.User;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.core.utils.Pair;
-import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import romanow.abc.core.utils.StringFIFO;
+import romanow.abc.exam.model.ArtefactBean;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.*;
+import java.net.FileNameMap;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -535,7 +537,57 @@ public class MainBaseFrame extends JFrame implements I_Important {
                 return new Pair<>(mes,null);
                 }
             }
-        //------------------------------------------------------------------------------------------------------------------
+
+    //------------------------------------------------------------------------------------------------------------------
+    public void uploadFileAsync(final I_Value<ArtefactBean> ok){
+        FileNameExt fname = getInputFileName("Выгрузить файл","*",null);
+        if (fname==null){
+            System.out.println("Файл не выбран");
+            return;
+        }
+        try {
+            //MultipartBody.Part body2 = RestAPICommon.createMultipartBody(fname);
+            RequestBody body2 = createRequestBody(fname);
+            Call<ArtefactBean> call3 = client.getArtefactApi().uploadFile(body2);
+            call3.enqueue(new Callback<ArtefactBean>() {
+                @Override
+                public void onResponse(Call<ArtefactBean> call, Response<ArtefactBean> response) {
+                    if (!response.isSuccessful()){
+                        System.out.println("Ошибка выгрузки файла  "+ Utils.httpError(response));
+                    }
+                    else{
+                        java.awt.EventQueue.invokeLater(new Runnable() {
+                            public void run() {
+                                ok.onEnter(response.body());
+                            }
+                        });
+                    }
+                }
+                @Override
+                public void onFailure(Call<ArtefactBean> call, Throwable ee) {
+                    System.out.println("Ошибка сервера: "+ ee.toString());
+                    }
+                });
+            } catch (Exception e) { System.out.println("Ошибка сервера: "+e.toString()); }
+        }
+
+    public static RequestBody createRequestBody(FileNameExt fname) {
+        if (fname == null) return null;
+        return createRequestBody(fname.fullName(),fname.getExt());
+        }
+    public static RequestBody createRequestBody(String fname, String ext){
+        if (fname == null) return null;
+        File file = new File(fname);
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String type = ArtifactTypes.getMimeType(ext);
+        //System.out.println(type);
+        MediaType mType = MediaType.parse(type);
+        //System.out.println(mType);
+        RequestBody requestFile = RequestBody.create(mType, file);
+        //MultipartBody.Part body = MultipartBody.Part.createFormData("file", "", requestFile);
+        return requestFile;
+        }
+    //------------------------------------------------------------------------------------------------------------------
     public void viewCalendarPeriod(I_Period fun){
         new CalendarView("Начало периода",new I_CalendarTime() {
             @Override

@@ -35,7 +35,7 @@ public class ConsoleClient {
     @Getter DisciplinesApi disciplineApi=null;
     @Getter ExamApi examApi=null;
     @Getter ExamRuleApi examRuleApi=null;
-    @Getter GroupApi groupApi=null;
+    @Getter GroupsApi groupApi=null;
     @Getter StudentApi onlyStudentApi=null;
     @Getter TeacherApi onlyTeacherApi=null;
     @Getter RatingSystemApi ratingSystemApi=null;
@@ -114,7 +114,7 @@ public class ConsoleClient {
                 disciplineApi = (DisciplinesApi)createService(ip,port,DisciplinesApi.class,token);
                 examApi = (ExamApi)createService(ip,port,ExamApi.class,token);
                 examRuleApi = (ExamRuleApi) createService(ip,port,ExamRuleApi.class,token);
-                groupApi = (GroupApi) createService(ip,port,GroupApi.class,token);
+                groupApi = (GroupsApi) createService(ip,port,GroupsApi.class,token);
                 onlyStudentApi = (StudentApi) createService(ip,port,StudentApi.class,token);
                 onlyTeacherApi = (TeacherApi) createService(ip,port,TeacherApi.class,token);
                 ratingSystemApi = (RatingSystemApi) createService(ip,port,RatingSystemApi.class,token);

@@ -42,7 +42,7 @@ public interface DisciplinesApi {
    * @return Call&lt;Void&gt;
    */
   @DELETE("discipline/{disciplineId}")
-  Call<Void> delete(
+  Call<Void> delete2(
             @retrofit2.http.Path("disciplineId") Long disciplineId            
   );
 
@@ -111,7 +111,7 @@ public interface DisciplinesApi {
     "Content-Type:application/json"
   })
   @PUT("discipline/{disciplineId}")
-  Call<DisciplineBean> update1(
+  Call<DisciplineBean> update2(
                     @retrofit2.http.Body DisciplineBean body    ,         @retrofit2.http.Path("disciplineId") Long disciplineId            
   );
 

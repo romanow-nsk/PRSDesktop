@@ -27,7 +27,7 @@ import java.util.List;
  * ExamRuleBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-23T18:50:52.264+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-24T21:32:27.604+07:00[Asia/Novosibirsk]")
 public class ExamRuleBean {
   @SerializedName("id")
   private Long id = null;
@@ -52,6 +52,9 @@ public class ExamRuleBean {
 
   @SerializedName("minimalRating")
   private Integer minimalRating = null;
+
+  @SerializedName("ratingSystemId")
+  private Long ratingSystemId = null;
 
   public ExamRuleBean id(Long id) {
     this.id = id;
@@ -205,6 +208,24 @@ public class ExamRuleBean {
     this.minimalRating = minimalRating;
   }
 
+  public ExamRuleBean ratingSystemId(Long ratingSystemId) {
+    this.ratingSystemId = ratingSystemId;
+    return this;
+  }
+
+   /**
+   * Get ratingSystemId
+   * @return ratingSystemId
+  **/
+  @Schema(description = "")
+  public Long getRatingSystemId() {
+    return ratingSystemId;
+  }
+
+  public void setRatingSystemId(Long ratingSystemId) {
+    this.ratingSystemId = ratingSystemId;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -222,12 +243,13 @@ public class ExamRuleBean {
         Objects.equals(this.questionCount, examRuleBean.questionCount) &&
         Objects.equals(this.exerciseCount, examRuleBean.exerciseCount) &&
         Objects.equals(this.duration, examRuleBean.duration) &&
-        Objects.equals(this.minimalRating, examRuleBean.minimalRating);
+        Objects.equals(this.minimalRating, examRuleBean.minimalRating) &&
+        Objects.equals(this.ratingSystemId, examRuleBean.ratingSystemId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, themeIds, disciplineId, questionCount, exerciseCount, duration, minimalRating);
+    return Objects.hash(id, name, themeIds, disciplineId, questionCount, exerciseCount, duration, minimalRating, ratingSystemId);
   }
 
 
@@ -244,6 +266,7 @@ public class ExamRuleBean {
     sb.append("    exerciseCount: ").append(toIndentedString(exerciseCount)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    minimalRating: ").append(toIndentedString(minimalRating)).append("\n");
+    sb.append("    ratingSystemId: ").append(toIndentedString(ratingSystemId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -13,6 +13,7 @@ import romanow.abc.core.entity.contacts.Mail;
 import romanow.abc.core.entity.contacts.Phone;
 import romanow.abc.core.entity.users.User;
 import retrofit2.Response;
+import romanow.abc.exam.model.ArtefactBean;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -376,13 +377,15 @@ public class UserPanelBase extends BasePanel{
     }//GEN-LAST:event_ViewPhotoActionPerformed
 
     private void UpploadPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpploadPhotoActionPerformed
-        new UploadPanel(400, 300, main, new I_OK() {
+        /*
+        new UploadPanel(400, 300, main, new I_Value<ArtefactBean>() {
             @Override
-            public void onOK(Entity ent) {
+            public void onEnter(ArtefactBean value) {
                 ((User)userPanel.current).getPhoto().setOidRef((Artifact) ent);
                 userPanel.updateAction(null);
-            }
+                }
         });
+         */
     }//GEN-LAST:event_UpploadPhotoActionPerformed
 
     private void CardICCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CardICCKeyPressed

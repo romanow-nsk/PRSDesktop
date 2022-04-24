@@ -5,22 +5,27 @@
  */
 package romanow.abc.desktop;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import romanow.abc.bridge.APICallSync;
 import romanow.abc.bridge.constants.TaskType;
 import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
+import romanow.abc.core.Utils;
+import romanow.abc.core.entity.artifacts.ArtifactTypes;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.exam.model.*;
 import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,14 +41,17 @@ public class ExamAdminPanel extends BasePanel{
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
     private List<GroupBean> groups = new ArrayList<>();
+    private FullGroupBean cGroup = null;
     public ExamAdminPanel() {
         initComponents();
         }
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
-        ViewArtifact.setEnabled(false);
-        DownLoadArtifact.setEnabled(false);
+        ArtifactView.setEnabled(false);
+        ArtifactDownLoad.setEnabled(false);
         DisciplineSaveImport.setEnabled(false);
+        ArtifactDownLoad.setEnabled(false);
+        ArtifactView.setEnabled(false);
         refreshAll();
         }
 
@@ -83,10 +91,31 @@ public class ExamAdminPanel extends BasePanel{
                 groups = oo;
                 for(GroupBean dd : groups)
                     Group.add(dd.getName());
-                //refreshGroupFull();
+                refreshGroupFull();
                 }
             };
         }
+    private void refreshGroupFull(){
+        Student.removeAll();
+        cGroup=null;
+        if (groups.size()==0)
+            return;
+        long oid = groups.get(Group.getSelectedIndex()).getId();
+        new APICall<FullGroupBean>(main) {
+            @Override
+            public Call<FullGroupBean> apiFun() {
+                return main.client.getGroupApi().getOne2(oid,1);
+                }
+            @Override
+            public void onSucess(FullGroupBean oo) {
+                cGroup = oo;
+                Student.removeAll();
+                for(StudentBean student : cGroup.getStudents())
+                    Student.add(student.getAccount().getName());
+                //refreshStudentFull();
+            }
+        };
+    }
     private void refreshDisciplineFull(){
         Theme.removeAll();
         Task.removeAll();
@@ -127,10 +156,10 @@ public class ExamAdminPanel extends BasePanel{
             return;
         cTaskNum = Task.getSelectedIndex();
         cTask = cTheme.getTasks().get(cTaskNum);
-        TaskText.setText(cTask.getTask().getText());
+        TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),60));
         boolean bb = cTask.getArtefact()!=null;
-        ViewArtifact.setEnabled(bb);
-        DownLoadArtifact.setEnabled(bb);
+        ArtifactView.setEnabled(bb);
+        ArtifactDownLoad.setEnabled(bb);
         if (bb){
             ArtefactBean artefact = cTask.getArtefact();
             TaskText.append("\n"+artefact.getFileName());
@@ -161,9 +190,9 @@ public class ExamAdminPanel extends BasePanel{
         AddTheme = new javax.swing.JButton();
         RemoveTheme = new javax.swing.JButton();
         Task = new java.awt.Choice();
-        ViewArtifact = new javax.swing.JButton();
-        UploadArtifact = new javax.swing.JButton();
-        DownLoadArtifact = new javax.swing.JButton();
+        ArtifactView = new javax.swing.JButton();
+        ArtifactUpload = new javax.swing.JButton();
+        ArtifactDownLoad = new javax.swing.JButton();
         EditTask = new javax.swing.JButton();
         EditDiscipline = new javax.swing.JButton();
         EditTheme = new javax.swing.JButton();
@@ -173,7 +202,7 @@ public class ExamAdminPanel extends BasePanel{
         jLabel5 = new javax.swing.JLabel();
         Group = new java.awt.Choice();
         Student = new java.awt.Choice();
-        RefreshDisciplines1 = new javax.swing.JButton();
+        RefreshGroups = new javax.swing.JButton();
         AddGroup = new javax.swing.JButton();
         RemoveGroup = new javax.swing.JButton();
         AddStudent = new javax.swing.JButton();
@@ -181,7 +210,6 @@ public class ExamAdminPanel extends BasePanel{
         EditGroup = new javax.swing.JButton();
         EditStudent = new javax.swing.JButton();
         GroupsImport = new javax.swing.JButton();
-        GroupsSaveImport = new javax.swing.JButton();
 
         setLayout(null);
 
@@ -311,38 +339,38 @@ public class ExamAdminPanel extends BasePanel{
         add(Task);
         Task.setBounds(20, 120, 240, 20);
 
-        ViewArtifact.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
-        ViewArtifact.setBorderPainted(false);
-        ViewArtifact.setContentAreaFilled(false);
-        ViewArtifact.addActionListener(new java.awt.event.ActionListener() {
+        ArtifactView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
+        ArtifactView.setBorderPainted(false);
+        ArtifactView.setContentAreaFilled(false);
+        ArtifactView.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ViewArtifactActionPerformed(evt);
+                ArtifactViewActionPerformed(evt);
             }
         });
-        add(ViewArtifact);
-        ViewArtifact.setBounds(100, 380, 40, 30);
+        add(ArtifactView);
+        ArtifactView.setBounds(100, 380, 40, 30);
 
-        UploadArtifact.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
-        UploadArtifact.setBorderPainted(false);
-        UploadArtifact.setContentAreaFilled(false);
-        UploadArtifact.addActionListener(new java.awt.event.ActionListener() {
+        ArtifactUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
+        ArtifactUpload.setBorderPainted(false);
+        ArtifactUpload.setContentAreaFilled(false);
+        ArtifactUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                UploadArtifactActionPerformed(evt);
+                ArtifactUploadActionPerformed(evt);
             }
         });
-        add(UploadArtifact);
-        UploadArtifact.setBounds(20, 380, 40, 30);
+        add(ArtifactUpload);
+        ArtifactUpload.setBounds(20, 380, 40, 30);
 
-        DownLoadArtifact.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/download.png"))); // NOI18N
-        DownLoadArtifact.setBorderPainted(false);
-        DownLoadArtifact.setContentAreaFilled(false);
-        DownLoadArtifact.addActionListener(new java.awt.event.ActionListener() {
+        ArtifactDownLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/download.png"))); // NOI18N
+        ArtifactDownLoad.setBorderPainted(false);
+        ArtifactDownLoad.setContentAreaFilled(false);
+        ArtifactDownLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DownLoadArtifactActionPerformed(evt);
+                ArtifactDownLoadActionPerformed(evt);
             }
         });
-        add(DownLoadArtifact);
-        DownLoadArtifact.setBounds(60, 380, 40, 30);
+        add(ArtifactDownLoad);
+        ArtifactDownLoad.setBounds(60, 380, 40, 30);
 
         EditTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditTask.setBorderPainted(false);
@@ -416,16 +444,16 @@ public class ExamAdminPanel extends BasePanel{
         add(Student);
         Student.setBounds(450, 80, 240, 20);
 
-        RefreshDisciplines1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
-        RefreshDisciplines1.setBorderPainted(false);
-        RefreshDisciplines1.setContentAreaFilled(false);
-        RefreshDisciplines1.addActionListener(new java.awt.event.ActionListener() {
+        RefreshGroups.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
+        RefreshGroups.setBorderPainted(false);
+        RefreshGroups.setContentAreaFilled(false);
+        RefreshGroups.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RefreshDisciplines1ActionPerformed(evt);
+                RefreshGroupsActionPerformed(evt);
             }
         });
-        add(RefreshDisciplines1);
-        RefreshDisciplines1.setBounds(660, 5, 30, 30);
+        add(RefreshGroups);
+        RefreshGroups.setBounds(660, 5, 30, 30);
 
         AddGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddGroup.setBorderPainted(false);
@@ -493,7 +521,7 @@ public class ExamAdminPanel extends BasePanel{
         add(EditStudent);
         EditStudent.setBounds(780, 70, 30, 30);
 
-        GroupsImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
+        GroupsImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
         GroupsImport.setBorderPainted(false);
         GroupsImport.setContentAreaFilled(false);
         GroupsImport.addActionListener(new java.awt.event.ActionListener() {
@@ -503,17 +531,6 @@ public class ExamAdminPanel extends BasePanel{
         });
         add(GroupsImport);
         GroupsImport.setBounds(820, 35, 40, 30);
-
-        GroupsSaveImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
-        GroupsSaveImport.setBorderPainted(false);
-        GroupsSaveImport.setContentAreaFilled(false);
-        GroupsSaveImport.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                GroupsSaveImportActionPerformed(evt);
-            }
-        });
-        add(GroupsSaveImport);
-        GroupsSaveImport.setBounds(820, 70, 40, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -595,7 +612,7 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getDisciplineApi().delete(cDiscipline.getDiscipline().getId());
+                        return main.client.getDisciplineApi().delete2(cDiscipline.getDiscipline().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -638,7 +655,7 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {        // TODO - это удаление
-                        return main.client.getThemeApi().update2(cDiscipline.getDiscipline().getId());
+                        return main.client.getThemeApi().delete(cTheme.getTheme().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -661,17 +678,21 @@ public class ExamAdminPanel extends BasePanel{
         refreshTaskFull();
     }//GEN-LAST:event_TaskItemStateChanged
 
-    private void ViewArtifactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ViewArtifactActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ViewArtifactActionPerformed
+    private void ArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactViewActionPerformed
 
-    private void UploadArtifactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UploadArtifactActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_UploadArtifactActionPerformed
+    }//GEN-LAST:event_ArtifactViewActionPerformed
 
-    private void DownLoadArtifactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DownLoadArtifactActionPerformed
+    private void ArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactUploadActionPerformed
+        main.uploadFileAsync(new I_Value<ArtefactBean>() {
+            @Override
+            public void onEnter(ArtefactBean value) {
+                refreshTaskFull();
+                }
+            });
+        }//GEN-LAST:event_ArtifactUploadActionPerformed
+    private void ArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactDownLoadActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_DownLoadArtifactActionPerformed
+    }//GEN-LAST:event_ArtifactDownLoadActionPerformed
 
     private void EditTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditTaskActionPerformed
         // TODO add your handling code here:
@@ -685,7 +706,7 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<DisciplineBean>(main) {
                     @Override
                     public Call<DisciplineBean> apiFun() {
-                        return main.client.getDisciplineApi().update1(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
+                        return main.client.getDisciplineApi().update2(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
                         //return main.client.getDisciplineApi().update1(cDiscipline,cDiscipline.getId());
                         }
                     @Override
@@ -736,7 +757,7 @@ public class ExamAdminPanel extends BasePanel{
                                 for(idx2=0;idx2 < owtTheme.size();idx2++){
                                     task.setThemeId(theme2.getId());
                                     task.setTaskType(TaskBean.TaskTypeEnum.QUESTION);
-                                    task.setText(UtilsEM.formatSize(owtTheme.get(idx2).toString(),60));
+                                    task.setText(owtTheme.get(idx2).toString());
                                     new APICallSync<TaskBean>() {
                                         @Override
                                         public Call<TaskBean> apiFun() {
@@ -758,23 +779,56 @@ public class ExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_DisciplineSaveImportActionPerformed
 
     private void GroupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_GroupItemStateChanged
-        // TODO add your handling code here:
+        refreshGroupFull();
     }//GEN-LAST:event_GroupItemStateChanged
 
     private void StudentItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentItemStateChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_StudentItemStateChanged
 
-    private void RefreshDisciplines1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplines1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_RefreshDisciplines1ActionPerformed
+    private void RefreshGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshGroupsActionPerformed
+        refreshGroupsList();
+    }//GEN-LAST:event_RefreshGroupsActionPerformed
 
     private void AddGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddGroupActionPerformed
-        // TODO add your handling code here:
+        new OKName(200,200,"Добавить группу", new I_Value<String>() {
+            @Override
+            public void onEnter(String value) {
+                GroupBean bean = new GroupBean();
+                bean.setName(value);
+                new APICall<GroupBean>(main) {
+                    @Override
+                    public Call<GroupBean> apiFun() {
+                        return main.client.getGroupApi().create2(bean);
+                    }
+                    @Override
+                    public void onSucess(GroupBean oo) {
+                        refreshGroupsList();
+                    }
+                };
+            }
+        });
     }//GEN-LAST:event_AddGroupActionPerformed
 
     private void RemoveGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveGroupActionPerformed
-        // TODO add your handling code here:
+        if (cGroup==null)
+            return;
+        new OK(200, 200, "Удалить группу: " + cGroup.getGroup().getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                new APICall<Void>(main) {
+                    @Override
+                    public Call<Void> apiFun() {
+                        return main.client.getGroupApi().delete1(cGroup.getGroup().getId());
+                        }
+                    @Override
+                    public void onSucess(Void oo) {
+                        refreshGroupsList();
+                        }
+                };
+            }
+        });
+
     }//GEN-LAST:event_RemoveGroupActionPerformed
 
     private void AddStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddStudentActionPerformed
@@ -807,9 +861,8 @@ public class ExamAdminPanel extends BasePanel{
                     return;
                     }
                 System.out.println("Импорт группы "+sheets[idx]);
-                final CreateGroupBean group = new CreateGroupBean();
+                final  GroupBean group = new GroupBean();
                 group.setName(sheets[idx]);
-                group.setDisciplineIds(new ArrayList<>());      // TODO ИНИЦИАЛИЗИРОВАТЬ НАДО АФФТОРУ КЛАССА - ПО УМОЛЧАНИЮ ПУСТОЙ, но не null
                 try {
                     final GroupBean group2 = new APICallSync<GroupBean>() {
                         @Override
@@ -875,10 +928,6 @@ public class ExamAdminPanel extends BasePanel{
                 }
     }//GEN-LAST:event_GroupsImportActionPerformed
 
-    private void GroupsSaveImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupsSaveImportActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_GroupsSaveImportActionPerformed
-
     @Override
     public void refresh() {}
 
@@ -902,10 +951,12 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton AddStudent;
     private javax.swing.JButton AddTask;
     private javax.swing.JButton AddTheme;
+    private javax.swing.JButton ArtifactDownLoad;
+    private javax.swing.JButton ArtifactUpload;
+    private javax.swing.JButton ArtifactView;
     private java.awt.Choice Discipline;
     private javax.swing.JButton DisciplineImport;
     private javax.swing.JButton DisciplineSaveImport;
-    private javax.swing.JButton DownLoadArtifact;
     private javax.swing.JButton EditDiscipline;
     private javax.swing.JButton EditGroup;
     private javax.swing.JButton EditStudent;
@@ -914,9 +965,8 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
     private javax.swing.JButton GroupsImport;
-    private javax.swing.JButton GroupsSaveImport;
     private javax.swing.JButton RefreshDisciplines;
-    private javax.swing.JButton RefreshDisciplines1;
+    private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RemoveDiscipline;
     private javax.swing.JButton RemoveGroup;
     private javax.swing.JButton RemoveStudent;
@@ -926,8 +976,6 @@ public class ExamAdminPanel extends BasePanel{
     private java.awt.Choice Task;
     private java.awt.TextArea TaskText;
     private java.awt.Choice Theme;
-    private javax.swing.JButton UploadArtifact;
-    private javax.swing.JButton ViewArtifact;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

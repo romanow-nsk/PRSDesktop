@@ -34,6 +34,17 @@ public interface ThemesApi {
   );
 
   /**
+   * Delete a theme
+   * 
+   * @param themeId  (required)
+   * @return Call&lt;Void&gt;
+   */
+  @DELETE("theme/{themeId}")
+  Call<Void> delete(
+            @retrofit2.http.Path("themeId") Long themeId            
+  );
+
+  /**
    * 
    * 
    * @param themeId  (required)
@@ -78,17 +89,6 @@ public interface ThemesApi {
   @PUT("theme/{themeId}")
   Call<ThemeBean> update(
                     @retrofit2.http.Body ThemeBean body    ,         @retrofit2.http.Path("themeId") Long themeId            
-  );
-
-  /**
-   * Update a theme
-   * 
-   * @param themeId  (required)
-   * @return Call&lt;Void&gt;
-   */
-  @DELETE("theme/{themeId}")
-  Call<Void> update2(
-            @retrofit2.http.Path("themeId") Long themeId            
   );
 
 }
