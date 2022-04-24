@@ -686,7 +686,17 @@ public class ExamAdminPanel extends BasePanel{
         main.uploadFileAsync(new I_Value<ArtefactBean>() {
             @Override
             public void onEnter(ArtefactBean value) {
-                refreshTaskFull();
+                cTask.getTask().setArtefactId(value.getId());
+                new APICall<TaskBean>(main) {
+                    @Override
+                    public Call<TaskBean> apiFun() {
+                        return main.client.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
+                        }
+                    @Override
+                    public void onSucess(TaskBean oo) {
+                        refreshTaskFull();
+                        }
+                    };
                 }
             });
         }//GEN-LAST:event_ArtifactUploadActionPerformed
@@ -880,7 +890,7 @@ public class ExamAdminPanel extends BasePanel{
                             account.setName(ss[0]);
                             account.setSurname(ss[1]);
                             ArrayList roles = new ArrayList<UserRole>();
-                            roles.add(UserRole.ROLE_TEACHER);
+                            roles.add(UserRole.ROLE_STUDENT);
                             account.setRoles(roles);
                             StudentBean student = new StudentBean();
                             student.setGroupId(group2.getId());

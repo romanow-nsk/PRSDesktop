@@ -547,7 +547,7 @@ public class MainBaseFrame extends JFrame implements I_Important {
         }
         try {
             //MultipartBody.Part body2 = RestAPICommon.createMultipartBody(fname);
-            RequestBody body2 = createRequestBody(fname);
+            MultipartBody.Part body2 = createRequestBody(fname);
             Call<ArtefactBean> call3 = client.getArtefactApi().uploadFile(body2);
             call3.enqueue(new Callback<ArtefactBean>() {
                 @Override
@@ -571,21 +571,17 @@ public class MainBaseFrame extends JFrame implements I_Important {
             } catch (Exception e) { System.out.println("Ошибка сервера: "+e.toString()); }
         }
 
-    public static RequestBody createRequestBody(FileNameExt fname) {
+    public static MultipartBody.Part createRequestBody(FileNameExt fname){
         if (fname == null) return null;
-        return createRequestBody(fname.fullName(),fname.getExt());
-        }
-    public static RequestBody createRequestBody(String fname, String ext){
-        if (fname == null) return null;
-        File file = new File(fname);
+        File file = new File(fname.fullName());
         FileNameMap fileNameMap = URLConnection.getFileNameMap();
-        String type = ArtifactTypes.getMimeType(ext);
+        String type = ArtifactTypes.getMimeType(fname.getExt());
         //System.out.println(type);
         MediaType mType = MediaType.parse(type);
         //System.out.println(mType);
         RequestBody requestFile = RequestBody.create(mType, file);
-        //MultipartBody.Part body = MultipartBody.Part.createFormData("file", "", requestFile);
-        return requestFile;
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", fname.fileName(), requestFile);
+        return body;
         }
     //------------------------------------------------------------------------------------------------------------------
     public void viewCalendarPeriod(I_Period fun){

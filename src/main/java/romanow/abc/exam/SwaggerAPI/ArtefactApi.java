@@ -1,5 +1,6 @@
 package romanow.abc.exam.SwaggerAPI;
 
+import okhttp3.MultipartBody;
 import romanow.abc.exam.CollectionFormats.*;
 
 import io.reactivex.Observable;
@@ -40,16 +41,9 @@ public interface ArtefactApi {
             @retrofit2.http.Path("artefactId") Long artefactId            
   );
 
-  /**
-   * Upload a file
-   * 
-   * @param file  (optional)
-   * @return Call&lt;ArtefactBean&gt;
-   */
   @retrofit2.http.Multipart
   @POST("artefact/upload")
-  Call<ArtefactBean> uploadFile(
-                        @retrofit2.http.Part("file\"; filename=\"file") RequestBody file
-  );
+  Call<ArtefactBean> uploadFile(@Part MultipartBody.Part part);
+
 
 }
