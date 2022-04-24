@@ -736,7 +736,7 @@ public class ExamAdminPanel extends BasePanel{
                                 for(idx2=0;idx2 < owtTheme.size();idx2++){
                                     task.setThemeId(theme2.getId());
                                     task.setTaskType(TaskBean.TaskTypeEnum.QUESTION);
-                                    task.setText(owtTheme.get(idx2).toString());
+                                    task.setText(UtilsEM.formatSize(owtTheme.get(idx2).toString(),60));
                                     new APICallSync<TaskBean>() {
                                         @Override
                                         public Call<TaskBean> apiFun() {
@@ -795,25 +795,6 @@ public class ExamAdminPanel extends BasePanel{
 
 
     private ExcelX2 excel;
-    private static String[]  parseFIO(String fio){
-        fio = fio.trim();
-        String out[]={"","",""};
-        int idx=fio.indexOf(" ");
-        if(idx==-1){
-            out[0]=fio;
-            return out;
-            }
-        out[0]=fio.substring(0,idx);
-        fio = fio.substring(idx+1);
-        idx=fio.indexOf(" ");
-        if(idx==-1){
-            out[1]=fio;
-            return out;
-            }
-        out[1]=fio.substring(0,idx);
-        out[2]=fio.substring(idx+1);
-        return out;
-        }
 
     private void procNextSheet(final String sheets[], final int idx){
         new OKFull(200, 200, "Импорт группы " + sheets[idx], new I_ButtonFull() {
@@ -842,7 +823,7 @@ public class ExamAdminPanel extends BasePanel{
                             System.out.println(values[0] + " " + values[1]);
                             AccountBean account = new AccountBean();
                             account.setUsername(values[1]);
-                            String ss[] = parseFIO(values[0]);
+                            String ss[] = UtilsEM.parseFIO(values[0]);
                             account.setName(ss[0]);
                             account.setSurname(ss[1]);
                             ArrayList roles = new ArrayList<UserRole>();
