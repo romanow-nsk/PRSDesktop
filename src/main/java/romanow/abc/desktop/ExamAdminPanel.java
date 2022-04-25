@@ -889,6 +889,7 @@ public class ExamAdminPanel extends BasePanel{
                             String ss[] = UtilsEM.parseFIO(values[0]);
                             account.setName(ss[0]);
                             account.setSurname(ss[1]);
+                            account.setPassword("");
                             ArrayList roles = new ArrayList<UserRole>();
                             roles.add(UserRole.ROLE_STUDENT);
                             account.setRoles(roles);

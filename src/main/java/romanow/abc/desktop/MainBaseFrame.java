@@ -546,8 +546,13 @@ public class MainBaseFrame extends JFrame implements I_Important {
             return;
         }
         try {
-            //MultipartBody.Part body2 = RestAPICommon.createMultipartBody(fname);
-            MultipartBody.Part body2 = createRequestBody(fname);
+            //------------------ Вариант 2  для -----------------------
+            //@retrofit2.http.Multipart
+            //@POST("artefact/upload")
+            //Call<ArtefactBean> uploadFile(@Part MultipartBody.Part part);
+            //----------------------------------------------------------
+            MultipartBody.Part body2 = createMultipsrtBody(fname);
+            //RequestBody body2 = createRequestBody(fname);
             Call<ArtefactBean> call3 = client.getArtefactApi().uploadFile(body2);
             call3.enqueue(new Callback<ArtefactBean>() {
                 @Override
@@ -571,7 +576,7 @@ public class MainBaseFrame extends JFrame implements I_Important {
             } catch (Exception e) { System.out.println("Ошибка сервера: "+e.toString()); }
         }
 
-    public static MultipartBody.Part createRequestBody(FileNameExt fname){
+    public static MultipartBody.Part createMultipsrtBody(FileNameExt fname){
         if (fname == null) return null;
         File file = new File(fname.fullName());
         FileNameMap fileNameMap = URLConnection.getFileNameMap();
@@ -582,6 +587,16 @@ public class MainBaseFrame extends JFrame implements I_Important {
         RequestBody requestFile = RequestBody.create(mType, file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", fname.fileName(), requestFile);
         return body;
+        }
+    public static RequestBody createRequestBody(FileNameExt fname){
+        if (fname == null) return null;
+        File file = new File(fname.fullName());
+        RequestBody formBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("file", fname.getName(),
+                    RequestBody.create(MediaType.parse("text/plain"), file))
+            .build();
+        return formBody;
         }
     //------------------------------------------------------------------------------------------------------------------
     public void viewCalendarPeriod(I_Period fun){
