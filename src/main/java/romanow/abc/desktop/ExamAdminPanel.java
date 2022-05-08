@@ -114,10 +114,10 @@ public class ExamAdminPanel extends BasePanel{
 
     private void refreshRules(){
         cExamRules.clear();
-        ExamRulesList.removeAll();
+        RulesList.removeAll();
         for(ExamRuleBean examRule : allExamRules)
             if (cDiscipline.getDiscipline().getId().longValue()==examRule.getDisciplineId().longValue()){
-                ExamRulesList.add(examRule.getName());
+                RulesList.add(examRule.getName());
                 cExamRules.add(examRule);
                 }
         refreshSelectedRule();
@@ -131,7 +131,7 @@ public class ExamAdminPanel extends BasePanel{
         cRule=null;
         if (cExamRules.size()==0)
             return;
-        cRule = cExamRules.get(ExamRulesList.getSelectedIndex());
+        cRule = cExamRules.get(RulesList.getSelectedIndex());
         RuleName.setText(cRule.getName());
         RuleDuration.setText(""+cRule.getDuration());
         RuleExcerCount.setText(""+cRule.getExerciseCount());
@@ -321,7 +321,7 @@ public class ExamAdminPanel extends BasePanel{
         AllExamsList = new java.awt.Choice();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        ExamRulesList = new java.awt.Choice();
+        RulesList = new java.awt.Choice();
         jLabel9 = new javax.swing.JLabel();
         RuleExcerCount = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
@@ -335,6 +335,8 @@ public class ExamAdminPanel extends BasePanel{
         RuleDelete = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         RuleQurestionCount = new javax.swing.JTextField();
+        RuleThemeAddAll = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -675,8 +677,14 @@ public class ExamAdminPanel extends BasePanel{
         jLabel8.setText("Экзамен для групп");
         add(jLabel8);
         jLabel8.setBounds(180, 380, 120, 20);
-        add(ExamRulesList);
-        ExamRulesList.setBounds(20, 440, 230, 20);
+
+        RulesList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RulesListItemStateChanged(evt);
+            }
+        });
+        add(RulesList);
+        RulesList.setBounds(20, 440, 230, 20);
 
         jLabel9.setText("Регламенты");
         add(jLabel9);
@@ -771,6 +779,21 @@ public class ExamAdminPanel extends BasePanel{
         });
         add(RuleQurestionCount);
         RuleQurestionCount.setBounds(110, 500, 40, 25);
+
+        RuleThemeAddAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
+        RuleThemeAddAll.setBorderPainted(false);
+        RuleThemeAddAll.setContentAreaFilled(false);
+        RuleThemeAddAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RuleThemeAddAllActionPerformed(evt);
+            }
+        });
+        add(RuleThemeAddAll);
+        RuleThemeAddAll.setBounds(350, 440, 30, 30);
+
+        jLabel12.setText("Все темы");
+        add(jLabel12);
+        jLabel12.setBounds(350, 420, 80, 16);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1339,6 +1362,26 @@ public class ExamAdminPanel extends BasePanel{
             }
     }//GEN-LAST:event_RuleQurestionCountKeyPressed
 
+    private void RulesListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RulesListItemStateChanged
+        refreshSelectedRule();
+    }//GEN-LAST:event_RulesListItemStateChanged
+
+    private void RuleThemeAddAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeAddAllActionPerformed
+        if (cRule==null)
+            return;
+        new OK(200, 200, "Копировать все темы", new I_Button() {
+            @Override
+            public void onPush() {
+                List<Long> idsList = cRule.getThemeIds();
+                idsList.clear();
+                for(FullThemeBean theme : cDiscipline.getThemes())
+                    idsList.add(theme.getTheme().getId());
+                ruleUpdate(null);
+            }
+        });
+
+    }//GEN-LAST:event_RuleThemeAddAllActionPerformed
+
     @Override
     public void refresh() {}
 
@@ -1375,7 +1418,6 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton EditTask;
     private javax.swing.JButton EditTheme;
     private java.awt.Choice ExamGroupsList;
-    private java.awt.Choice ExamRulesList;
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
     private javax.swing.JButton GroupsImport;
@@ -1393,8 +1435,10 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JTextField RuleName;
     private javax.swing.JTextField RuleQurestionCount;
     private javax.swing.JButton RuleThemeAdd;
+    private javax.swing.JButton RuleThemeAddAll;
     private javax.swing.JButton RuleThemeRemove;
     private java.awt.Choice RuleThemesList;
+    private java.awt.Choice RulesList;
     private java.awt.Choice Student;
     private java.awt.Choice Task;
     private java.awt.TextArea TaskText;
@@ -1402,6 +1446,7 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
