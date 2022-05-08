@@ -23,21 +23,43 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import romanow.abc.exam.model.DisciplineBean;
+import romanow.abc.exam.model.ExamRuleBean;
+import romanow.abc.exam.model.FullDisciplineBean;
 import romanow.abc.exam.model.FullThemeBean;
 /**
- * FullDisciplineBean
+ * FullExamRuleBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
-public class FullDisciplineBean {
+public class FullExamRuleBean {
+  @SerializedName("examRule")
+  private ExamRuleBean examRule = null;
+
   @SerializedName("discipline")
-  private DisciplineBean discipline = null;
+  private FullDisciplineBean discipline = null;
 
   @SerializedName("themes")
   private List<FullThemeBean> themes = null;
 
-  public FullDisciplineBean discipline(DisciplineBean discipline) {
+  public FullExamRuleBean examRule(ExamRuleBean examRule) {
+    this.examRule = examRule;
+    return this;
+  }
+
+   /**
+   * Get examRule
+   * @return examRule
+  **/
+  @Schema(description = "")
+  public ExamRuleBean getExamRule() {
+    return examRule;
+  }
+
+  public void setExamRule(ExamRuleBean examRule) {
+    this.examRule = examRule;
+  }
+
+  public FullExamRuleBean discipline(FullDisciplineBean discipline) {
     this.discipline = discipline;
     return this;
   }
@@ -47,20 +69,20 @@ public class FullDisciplineBean {
    * @return discipline
   **/
   @Schema(description = "")
-  public DisciplineBean getDiscipline() {
+  public FullDisciplineBean getDiscipline() {
     return discipline;
   }
 
-  public void setDiscipline(DisciplineBean discipline) {
+  public void setDiscipline(FullDisciplineBean discipline) {
     this.discipline = discipline;
   }
 
-  public FullDisciplineBean themes(List<FullThemeBean> themes) {
+  public FullExamRuleBean themes(List<FullThemeBean> themes) {
     this.themes = themes;
     return this;
   }
 
-  public FullDisciplineBean addThemesItem(FullThemeBean themesItem) {
+  public FullExamRuleBean addThemesItem(FullThemeBean themesItem) {
     if (this.themes == null) {
       this.themes = new ArrayList<FullThemeBean>();
     }
@@ -90,22 +112,24 @@ public class FullDisciplineBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FullDisciplineBean fullDisciplineBean = (FullDisciplineBean) o;
-    return Objects.equals(this.discipline, fullDisciplineBean.discipline) &&
-        Objects.equals(this.themes, fullDisciplineBean.themes);
+    FullExamRuleBean fullExamRuleBean = (FullExamRuleBean) o;
+    return Objects.equals(this.examRule, fullExamRuleBean.examRule) &&
+        Objects.equals(this.discipline, fullExamRuleBean.discipline) &&
+        Objects.equals(this.themes, fullExamRuleBean.themes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(discipline, themes);
+    return Objects.hash(examRule, discipline, themes);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class FullDisciplineBean {\n");
+    sb.append("class FullExamRuleBean {\n");
     
+    sb.append("    examRule: ").append(toIndentedString(examRule)).append("\n");
     sb.append("    discipline: ").append(toIndentedString(discipline)).append("\n");
     sb.append("    themes: ").append(toIndentedString(themes)).append("\n");
     sb.append("}");

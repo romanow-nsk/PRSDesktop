@@ -21,85 +21,54 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import romanow.abc.exam.model.FullGroupBean;
+import romanow.abc.exam.model.StudentBean;
 /**
- * Pageable
+ * FullStudentBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
-public class Pageable {
-  @SerializedName("page")
-  private Integer page = null;
+public class FullStudentBean {
+  @SerializedName("student")
+  private StudentBean student = null;
 
-  @SerializedName("size")
-  private Integer size = null;
+  @SerializedName("group")
+  private FullGroupBean group = null;
 
-  @SerializedName("sort")
-  private List<String> sort = null;
-
-  public Pageable page(Integer page) {
-    this.page = page;
+  public FullStudentBean student(StudentBean student) {
+    this.student = student;
     return this;
   }
 
    /**
-   * Get page
-   * minimum: 0
-   * @return page
+   * Get student
+   * @return student
   **/
   @Schema(description = "")
-  public Integer getPage() {
-    return page;
+  public StudentBean getStudent() {
+    return student;
   }
 
-  public void setPage(Integer page) {
-    this.page = page;
+  public void setStudent(StudentBean student) {
+    this.student = student;
   }
 
-  public Pageable size(Integer size) {
-    this.size = size;
+  public FullStudentBean group(FullGroupBean group) {
+    this.group = group;
     return this;
   }
 
    /**
-   * Get size
-   * minimum: 1
-   * @return size
+   * Get group
+   * @return group
   **/
   @Schema(description = "")
-  public Integer getSize() {
-    return size;
+  public FullGroupBean getGroup() {
+    return group;
   }
 
-  public void setSize(Integer size) {
-    this.size = size;
-  }
-
-  public Pageable sort(List<String> sort) {
-    this.sort = sort;
-    return this;
-  }
-
-  public Pageable addSortItem(String sortItem) {
-    if (this.sort == null) {
-      this.sort = new ArrayList<String>();
-    }
-    this.sort.add(sortItem);
-    return this;
-  }
-
-   /**
-   * Get sort
-   * @return sort
-  **/
-  @Schema(description = "")
-  public List<String> getSort() {
-    return sort;
-  }
-
-  public void setSort(List<String> sort) {
-    this.sort = sort;
+  public void setGroup(FullGroupBean group) {
+    this.group = group;
   }
 
 
@@ -111,26 +80,24 @@ public class Pageable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Pageable pageable = (Pageable) o;
-    return Objects.equals(this.page, pageable.page) &&
-        Objects.equals(this.size, pageable.size) &&
-        Objects.equals(this.sort, pageable.sort);
+    FullStudentBean fullStudentBean = (FullStudentBean) o;
+    return Objects.equals(this.student, fullStudentBean.student) &&
+        Objects.equals(this.group, fullStudentBean.group);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(page, size, sort);
+    return Objects.hash(student, group);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Pageable {\n");
+    sb.append("class FullStudentBean {\n");
     
-    sb.append("    page: ").append(toIndentedString(page)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    sort: ").append(toIndentedString(sort)).append("\n");
+    sb.append("    student: ").append(toIndentedString(student)).append("\n");
+    sb.append("    group: ").append(toIndentedString(group)).append("\n");
     sb.append("}");
     return sb.toString();
   }

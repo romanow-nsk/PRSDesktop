@@ -21,85 +21,76 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import romanow.abc.exam.model.AccountBean;
+import romanow.abc.exam.model.ArtefactBean;
+import romanow.abc.exam.model.MessageBean;
 /**
- * Pageable
+ * FullMessageBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
-public class Pageable {
-  @SerializedName("page")
-  private Integer page = null;
+public class FullMessageBean {
+  @SerializedName("message")
+  private MessageBean message = null;
 
-  @SerializedName("size")
-  private Integer size = null;
+  @SerializedName("artefact")
+  private ArtefactBean artefact = null;
 
-  @SerializedName("sort")
-  private List<String> sort = null;
+  @SerializedName("account")
+  private AccountBean account = null;
 
-  public Pageable page(Integer page) {
-    this.page = page;
+  public FullMessageBean message(MessageBean message) {
+    this.message = message;
     return this;
   }
 
    /**
-   * Get page
-   * minimum: 0
-   * @return page
+   * Get message
+   * @return message
   **/
   @Schema(description = "")
-  public Integer getPage() {
-    return page;
+  public MessageBean getMessage() {
+    return message;
   }
 
-  public void setPage(Integer page) {
-    this.page = page;
+  public void setMessage(MessageBean message) {
+    this.message = message;
   }
 
-  public Pageable size(Integer size) {
-    this.size = size;
+  public FullMessageBean artefact(ArtefactBean artefact) {
+    this.artefact = artefact;
     return this;
   }
 
    /**
-   * Get size
-   * minimum: 1
-   * @return size
+   * Get artefact
+   * @return artefact
   **/
   @Schema(description = "")
-  public Integer getSize() {
-    return size;
+  public ArtefactBean getArtefact() {
+    return artefact;
   }
 
-  public void setSize(Integer size) {
-    this.size = size;
+  public void setArtefact(ArtefactBean artefact) {
+    this.artefact = artefact;
   }
 
-  public Pageable sort(List<String> sort) {
-    this.sort = sort;
-    return this;
-  }
-
-  public Pageable addSortItem(String sortItem) {
-    if (this.sort == null) {
-      this.sort = new ArrayList<String>();
-    }
-    this.sort.add(sortItem);
+  public FullMessageBean account(AccountBean account) {
+    this.account = account;
     return this;
   }
 
    /**
-   * Get sort
-   * @return sort
+   * Get account
+   * @return account
   **/
   @Schema(description = "")
-  public List<String> getSort() {
-    return sort;
+  public AccountBean getAccount() {
+    return account;
   }
 
-  public void setSort(List<String> sort) {
-    this.sort = sort;
+  public void setAccount(AccountBean account) {
+    this.account = account;
   }
 
 
@@ -111,26 +102,26 @@ public class Pageable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Pageable pageable = (Pageable) o;
-    return Objects.equals(this.page, pageable.page) &&
-        Objects.equals(this.size, pageable.size) &&
-        Objects.equals(this.sort, pageable.sort);
+    FullMessageBean fullMessageBean = (FullMessageBean) o;
+    return Objects.equals(this.message, fullMessageBean.message) &&
+        Objects.equals(this.artefact, fullMessageBean.artefact) &&
+        Objects.equals(this.account, fullMessageBean.account);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(page, size, sort);
+    return Objects.hash(message, artefact, account);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Pageable {\n");
+    sb.append("class FullMessageBean {\n");
     
-    sb.append("    page: ").append(toIndentedString(page)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    sort: ").append(toIndentedString(sort)).append("\n");
+    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("    artefact: ").append(toIndentedString(artefact)).append("\n");
+    sb.append("    account: ").append(toIndentedString(account)).append("\n");
     sb.append("}");
     return sb.toString();
   }

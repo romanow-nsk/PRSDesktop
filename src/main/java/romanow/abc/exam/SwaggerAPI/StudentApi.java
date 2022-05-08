@@ -56,6 +56,17 @@ public interface StudentApi {
     
 
   /**
+   * Get student by id
+   * 
+   * @param studentId  (required)
+   * @return Call&lt;StudentBean&gt;
+   */
+  @GET("student/{studentId}")
+  Call<StudentBean> getStudent(
+            @retrofit2.http.Path("studentId") Long studentId            
+  );
+
+  /**
    * Get student&#x27;s tickets
    * 
    * @return Call&lt;List&lt;StudentTicketBean&gt;&gt;

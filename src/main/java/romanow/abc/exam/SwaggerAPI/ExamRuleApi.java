@@ -10,6 +10,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 import romanow.abc.exam.model.ExamRuleBean;
+import romanow.abc.exam.model.FullExamRuleBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,18 @@ public interface ExamRuleApi {
   @GET("exam-rule")
   Call<List<ExamRuleBean>> getAll4();
     
+
+  /**
+   * Get full exam rule
+   * 
+   * @param id  (required)
+   * @param level  (optional, default to 0)
+   * @return Call&lt;FullExamRuleBean&gt;
+   */
+  @GET("exam-rule/{id}/full")
+  Call<FullExamRuleBean> getFull2(
+            @retrofit2.http.Path("id") Long id            ,     @retrofit2.http.Query("level") Integer level                
+  );
 
   /**
    * Get one exam rule

@@ -25,7 +25,7 @@ import java.io.IOException;
  * GroupBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-24T21:32:27.604+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
 public class GroupBean {
   @SerializedName("id")
   private Long id = null;

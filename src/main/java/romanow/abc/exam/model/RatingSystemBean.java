@@ -28,7 +28,7 @@ import java.util.Map;
  * RatingSystemBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-24T21:32:27.604+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
 public class RatingSystemBean {
   @SerializedName("id")
   private Long id = null;
@@ -125,8 +125,8 @@ public class RatingSystemBean {
 
   public RatingSystemBean putRatingMappingItem(String key, Map<String, InnerEnum> ratingMappingItem) {
     if (this.ratingMapping == null) {
-      //this.ratingMapping = new HashMap<String, InnerEnum<String, String>>();
-    }
+      this.ratingMapping = new HashMap<>();
+      }
     this.ratingMapping.put(key, ratingMappingItem);
     return this;
   }

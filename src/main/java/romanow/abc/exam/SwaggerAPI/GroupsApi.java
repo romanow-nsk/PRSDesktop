@@ -107,7 +107,7 @@ public interface GroupsApi {
   );
 
   /**
-   * Add disciplines to a group
+   * Remove disciplines from a group
    * 
    * @param body  (required)
    * @param groupId  (required)

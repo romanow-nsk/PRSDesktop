@@ -41,8 +41,13 @@ public interface ArtefactApi {
             @retrofit2.http.Path("artefactId") Long artefactId            
   );
 
-  //-------------------- Правлено руками -------------------------------------
+  /**
+   * Upload a file
+   *
+   * @return Call&lt;ArtefactBean&gt;
+   */
   @retrofit2.http.Multipart
   @POST("artefact/upload")
   Call<ArtefactBean> uploadFile(@Part MultipartBody.Part part);
+
 }

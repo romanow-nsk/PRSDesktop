@@ -9,6 +9,7 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+import romanow.abc.exam.model.FullTicketBean;
 import romanow.abc.exam.model.Pageable;
 import romanow.abc.exam.model.StudentAnswerBean;
 import romanow.abc.exam.model.UpdateTicketBean;
@@ -29,6 +30,18 @@ public interface TicketApi {
   @GET("ticket/{ticketId}/answer")
   Call<List<StudentAnswerBean>> getAnswers(
             @retrofit2.http.Path("ticketId") Long ticketId            ,     @retrofit2.http.Query("pageable") Pageable pageable                
+  );
+
+  /**
+   * Get full ticket
+   * 
+   * @param ticketId  (required)
+   * @param level  (optional, default to 0)
+   * @return Call&lt;FullTicketBean&gt;
+   */
+  @GET("ticket/{ticketId}/full")
+  Call<FullTicketBean> getFull(
+            @retrofit2.http.Path("ticketId") Long ticketId            ,     @retrofit2.http.Query("level") Integer level                
   );
 
   /**

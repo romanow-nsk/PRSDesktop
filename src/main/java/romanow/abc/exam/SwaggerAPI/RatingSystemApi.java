@@ -38,7 +38,7 @@ public interface RatingSystemApi {
    * @return Call&lt;Void&gt;
    */
   @GET("rating-systems")
-  Call<Void> getAll1();
+  Call<List<RatingSystemBean>> getAll1();
     
 
   /**

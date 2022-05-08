@@ -84,9 +84,20 @@ public interface DisciplinesApi {
    * @param level  (optional, default to 0)
    * @return Call&lt;FullDisciplineBean&gt;
    */
-  @GET("discipline/{disciplineId}")
-  Call<FullDisciplineBean> getOne5(
+  @GET("discipline/{disciplineId}/full")
+  Call<FullDisciplineBean> getFull3(
             @retrofit2.http.Path("disciplineId") Long disciplineId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
+  /**
+   * Get one discipline
+   * 
+   * @param disciplineId  (required)
+   * @return Call&lt;DisciplineBean&gt;
+   */
+  @GET("discipline/{disciplineId}")
+  Call<DisciplineBean> getOne5(
+            @retrofit2.http.Path("disciplineId") Long disciplineId            
   );
 
   /**

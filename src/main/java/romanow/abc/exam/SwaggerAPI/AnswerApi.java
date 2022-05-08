@@ -9,6 +9,7 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+import romanow.abc.exam.model.FullAnswerBean;
 import romanow.abc.exam.model.MessageBean;
 import romanow.abc.exam.model.NewMessageBean;
 import romanow.abc.exam.model.PageMessageBean;
@@ -21,6 +22,18 @@ import java.util.List;
 import java.util.Map;
 
 public interface AnswerApi {
+  /**
+   * 
+   * 
+   * @param answerId  (required)
+   * @param level  (optional, default to 0)
+   * @return Call&lt;FullAnswerBean&gt;
+   */
+  @GET("answer/{answerId}/full")
+  Call<FullAnswerBean> getFull4(
+            @retrofit2.http.Path("answerId") Long answerId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
   /**
    * Get messages by an answer
    * 

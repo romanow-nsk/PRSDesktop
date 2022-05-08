@@ -12,6 +12,8 @@ import okhttp3.ResponseBody;
 import romanow.abc.exam.model.CreateExamBean;
 import romanow.abc.exam.model.ExamBean;
 import romanow.abc.exam.model.ExamPeriodBean;
+import romanow.abc.exam.model.FullExamBean;
+import romanow.abc.exam.model.FullExamPeriodBean;
 import romanow.abc.exam.model.MessageBean;
 import romanow.abc.exam.model.NewMessageBean;
 import romanow.abc.exam.model.PageMessageBean;
@@ -58,6 +60,41 @@ public interface ExamApi {
   @GET("exams")
   Call<List<ExamBean>> getAll3();
     
+
+  /**
+   * Get full exam by id
+   * 
+   * @param examId  (required)
+   * @param level  (optional, default to 0)
+   * @return Call&lt;FullExamBean&gt;
+   */
+  @GET("exams/{examId}/full")
+  Call<FullExamBean> getFull1(
+            @retrofit2.http.Path("examId") Long examId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
+  /**
+   * Get full exam period by id
+   * 
+   * @param periodId  (required)
+   * @param level  (optional, default to 0)
+   * @return Call&lt;FullExamPeriodBean&gt;
+   */
+  @GET("periods/{periodId}/full")
+  Call<FullExamPeriodBean> getFullPeriod(
+            @retrofit2.http.Path("periodId") Long periodId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
+  /**
+   * Get last period by exam
+   * 
+   * @param examId  (required)
+   * @return Call&lt;ExamPeriodBean&gt;
+   */
+  @GET("exams/{examId}/last-period")
+  Call<ExamPeriodBean> getLastPeriod(
+            @retrofit2.http.Path("examId") Long examId            
+  );
 
   /**
    * Get messages by an exam period

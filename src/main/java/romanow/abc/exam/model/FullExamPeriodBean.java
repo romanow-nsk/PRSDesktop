@@ -23,83 +23,62 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import romanow.abc.exam.model.ExamPeriodBean;
+import romanow.abc.exam.model.FullTicketBean;
 /**
- * Pageable
+ * FullExamPeriodBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
-public class Pageable {
-  @SerializedName("page")
-  private Integer page = null;
+public class FullExamPeriodBean {
+  @SerializedName("examPeriod")
+  private ExamPeriodBean examPeriod = null;
 
-  @SerializedName("size")
-  private Integer size = null;
+  @SerializedName("tickets")
+  private List<FullTicketBean> tickets = null;
 
-  @SerializedName("sort")
-  private List<String> sort = null;
-
-  public Pageable page(Integer page) {
-    this.page = page;
+  public FullExamPeriodBean examPeriod(ExamPeriodBean examPeriod) {
+    this.examPeriod = examPeriod;
     return this;
   }
 
    /**
-   * Get page
-   * minimum: 0
-   * @return page
+   * Get examPeriod
+   * @return examPeriod
   **/
   @Schema(description = "")
-  public Integer getPage() {
-    return page;
+  public ExamPeriodBean getExamPeriod() {
+    return examPeriod;
   }
 
-  public void setPage(Integer page) {
-    this.page = page;
+  public void setExamPeriod(ExamPeriodBean examPeriod) {
+    this.examPeriod = examPeriod;
   }
 
-  public Pageable size(Integer size) {
-    this.size = size;
+  public FullExamPeriodBean tickets(List<FullTicketBean> tickets) {
+    this.tickets = tickets;
     return this;
   }
 
-   /**
-   * Get size
-   * minimum: 1
-   * @return size
-  **/
-  @Schema(description = "")
-  public Integer getSize() {
-    return size;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
-  }
-
-  public Pageable sort(List<String> sort) {
-    this.sort = sort;
-    return this;
-  }
-
-  public Pageable addSortItem(String sortItem) {
-    if (this.sort == null) {
-      this.sort = new ArrayList<String>();
+  public FullExamPeriodBean addTicketsItem(FullTicketBean ticketsItem) {
+    if (this.tickets == null) {
+      this.tickets = new ArrayList<FullTicketBean>();
     }
-    this.sort.add(sortItem);
+    this.tickets.add(ticketsItem);
     return this;
   }
 
    /**
-   * Get sort
-   * @return sort
+   * Get tickets
+   * @return tickets
   **/
   @Schema(description = "")
-  public List<String> getSort() {
-    return sort;
+  public List<FullTicketBean> getTickets() {
+    return tickets;
   }
 
-  public void setSort(List<String> sort) {
-    this.sort = sort;
+  public void setTickets(List<FullTicketBean> tickets) {
+    this.tickets = tickets;
   }
 
 
@@ -111,26 +90,24 @@ public class Pageable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Pageable pageable = (Pageable) o;
-    return Objects.equals(this.page, pageable.page) &&
-        Objects.equals(this.size, pageable.size) &&
-        Objects.equals(this.sort, pageable.sort);
+    FullExamPeriodBean fullExamPeriodBean = (FullExamPeriodBean) o;
+    return Objects.equals(this.examPeriod, fullExamPeriodBean.examPeriod) &&
+        Objects.equals(this.tickets, fullExamPeriodBean.tickets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(page, size, sort);
+    return Objects.hash(examPeriod, tickets);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Pageable {\n");
+    sb.append("class FullExamPeriodBean {\n");
     
-    sb.append("    page: ").append(toIndentedString(page)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    sort: ").append(toIndentedString(sort)).append("\n");
+    sb.append("    examPeriod: ").append(toIndentedString(examPeriod)).append("\n");
+    sb.append("    tickets: ").append(toIndentedString(tickets)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -5,43 +5,47 @@
  */
 package romanow.abc.desktop;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import romanow.abc.bridge.APICallSync;
-import romanow.abc.bridge.constants.TaskType;
 import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
-import romanow.abc.core.Utils;
-import romanow.abc.core.entity.artifacts.ArtifactTypes;
+import romanow.abc.core.UniException;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.exam.model.*;
 import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
 
+import java.awt.event.KeyEvent;
 import java.io.*;
-import java.net.FileNameMap;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
  * @author romanow
  */
 public class ExamAdminPanel extends BasePanel{
-    private List<DisciplineBean> disciplines = new ArrayList<>();
-    private FullDisciplineBean cDiscipline = null;
-    private FullThemeBean cTheme = null;
-    private FullTaskBean cTask=null;
+    private List<DisciplineBean> disciplines = new ArrayList<>();       // Список дисциплин
+    private FullDisciplineBean cDiscipline = null;                      // Текущая дисциплина
+    private FullThemeBean cTheme = null;                                // Текущая тема
+    private FullTaskBean cTask=null;                                    // Текущая задача/тест
+    private HashMap<Long,FullThemeBean> disciplineThemesMap = new HashMap<>();
+    private HashMap<Long,FullThemeBean> ruleThemesMap = new HashMap<>();
+    private ArrayList<FullThemeBean> ruleThemes = new ArrayList<>();
+    private ExamRuleBean cRule=null;
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
-    private List<GroupBean> groups = new ArrayList<>();
-    private FullGroupBean cGroup = null;
+    private List<GroupBean> groups = new ArrayList<>();                 // Список групп
+    private FullGroupBean cGroup = null;                                // Текущая группа
+    private List<GroupBean> examGroupsList = new ArrayList<>();         // Экзамен для текущей дисциплины
+    private List<ExamBean> allExams = new ArrayList<>();                // Полный список экзаменов
+    private List<ExamRuleBean> allExamRules = new ArrayList<>();        // Полный список регламентов
+    private List<ExamRuleBean> cExamRules = new ArrayList<>();          // Список регламентов для дисциплины
+    private List<RatingSystemBean> ratings = new ArrayList<>();
     public ExamAdminPanel() {
         initComponents();
         }
@@ -58,7 +62,35 @@ public class ExamAdminPanel extends BasePanel{
     private void refreshAll(){
         refreshDisciplineList();
         refreshGroupsList();
+        refreshRatingsList();
         }
+
+    private void refreshRatingsList(){
+        new APICall<List<RatingSystemBean>>(main) {
+            @Override
+            public Call<List<RatingSystemBean>> apiFun() {
+                return main.client.getRatingSystemApi().getAll1();
+                }
+            @Override
+            public void onSucess(List<RatingSystemBean> oo) {
+                ratings = oo;
+                }
+            };
+        }
+
+    private void refreshAllRules(){
+        new APICall<List<ExamRuleBean>>(main) {
+            @Override
+            public Call<List<ExamRuleBean>> apiFun() {
+                return main.client.getExamRuleApi().getAll4();
+                }
+            @Override
+            public void onSucess(List<ExamRuleBean> oo) {
+                allExamRules = oo;
+                refreshRules();
+                }
+            };
+    }
 
     private void refreshDisciplineList(){
         Discipline.removeAll();
@@ -75,9 +107,50 @@ public class ExamAdminPanel extends BasePanel{
                 for(DisciplineBean dd : disciplines)
                     Discipline.add(dd.getName());
                 refreshDisciplineFull();
+                refreshAllRules();
                 }
             };
         }
+
+    private void refreshRules(){
+        cExamRules.clear();
+        ExamRulesList.removeAll();
+        for(ExamRuleBean examRule : allExamRules)
+            if (cDiscipline.getDiscipline().getId().longValue()==examRule.getDisciplineId().longValue()){
+                ExamRulesList.add(examRule.getName());
+                cExamRules.add(examRule);
+                }
+        refreshSelectedRule();
+        }
+
+    private void refreshSelectedRule(){
+        RuleName.setText("");
+        RuleDuration.setText("");
+        RuleExcerCount.setText("");
+        RuleThemesList.removeAll();
+        cRule=null;
+        if (cExamRules.size()==0)
+            return;
+        cRule = cExamRules.get(ExamRulesList.getSelectedIndex());
+        RuleName.setText(cRule.getName());
+        RuleDuration.setText(""+cRule.getDuration());
+        RuleExcerCount.setText(""+cRule.getExerciseCount());
+        RuleQurestionCount.setText(""+cRule.getQuestionCount());
+        ruleThemes.clear();
+        RuleThemesList.removeAll();
+        ruleThemesMap.clear();
+        for(Long themeId : cRule.getThemeIds()){
+            FullThemeBean theme  = disciplineThemesMap.get(themeId);
+            if (theme==null)
+                System.out.println("Не найдена тема id="+themeId);
+            else {
+                ruleThemes.add(theme);
+                RuleThemesList.add(theme.getTheme().getName());
+                ruleThemesMap.put(theme.getTheme().getId(),theme);
+                }
+            }
+        }
+
     private void refreshGroupsList(){
         Group.removeAll();
         Student.removeAll();
@@ -92,6 +165,20 @@ public class ExamAdminPanel extends BasePanel{
                 for(GroupBean dd : groups)
                     Group.add(dd.getName());
                 refreshGroupFull();
+                }
+            };
+        new APICall<List<ExamBean>>(main){
+            @Override
+            public Call<List<ExamBean>> apiFun() {
+                return main.client.getExamApi().getAll3();
+                }
+            @Override
+            public void onSucess(List<ExamBean> oo) {
+                allExams = oo;
+                AllExamsList.removeAll();
+                for(ExamBean exam : allExams){
+                    AllExamsList.add(exam.toString());
+                    }
                 }
             };
         }
@@ -122,19 +209,37 @@ public class ExamAdminPanel extends BasePanel{
         cDiscipline=null;
         if (disciplines.size()==0)
             return;
-        long oid = disciplines.get(Discipline.getSelectedIndex()).getId();
+        final long oid = disciplines.get(Discipline.getSelectedIndex()).getId();
         new APICall<FullDisciplineBean>(main) {
             @Override
             public Call<FullDisciplineBean> apiFun() {
-                return main.client.getDisciplineApi().getOne5(oid,2);
+                return main.client.getDisciplineApi().getFull3(oid,2);
                 }
             @Override
             public void onSucess(FullDisciplineBean oo) {
                 cDiscipline = oo;
                 Theme.removeAll();
-                for(FullThemeBean theme : cDiscipline.getThemes())
+                disciplineThemesMap.clear();
+                for(FullThemeBean theme : cDiscipline.getThemes()){
                     Theme.add(theme.getTheme().getName());
+                    disciplineThemesMap.put(theme.getTheme().getId(),theme);
+                    }
                 refreshThemeFull();
+                refreshRules();
+                }
+            };
+        new APICall<List<GroupBean>>(main){
+            @Override
+            public Call<List<GroupBean>> apiFun() {
+                return  main.client.getDisciplineApi().findGroups(oid);
+                }
+            @Override
+            public void onSucess(List<GroupBean> oo) {
+                examGroupsList = oo;
+                ExamGroupsList.removeAll();
+                for(GroupBean group : oo){
+                    ExamGroupsList.add(group.getName());
+                    }
                 }
             };
         }
@@ -210,7 +315,28 @@ public class ExamAdminPanel extends BasePanel{
         EditGroup = new javax.swing.JButton();
         EditStudent = new javax.swing.JButton();
         GroupsImport = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel6 = new javax.swing.JLabel();
+        ExamGroupsList = new java.awt.Choice();
+        AllExamsList = new java.awt.Choice();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        ExamRulesList = new java.awt.Choice();
+        jLabel9 = new javax.swing.JLabel();
+        RuleExcerCount = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        RuleDuration = new javax.swing.JTextField();
+        RuleName = new javax.swing.JTextField();
+        RuleThemeRemove = new javax.swing.JButton();
+        RuleAdd = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        RuleThemesList = new java.awt.Choice();
+        RuleThemeAdd = new javax.swing.JButton();
+        RuleDelete = new javax.swing.JButton();
+        jLabel13 = new javax.swing.JLabel();
+        RuleQurestionCount = new javax.swing.JTextField();
 
+        setVerifyInputWhenFocusTarget(false);
         setLayout(null);
 
         jLabel1.setText("Вопрос");
@@ -233,7 +359,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(Discipline);
-        Discipline.setBounds(20, 40, 240, 20);
+        Discipline.setBounds(20, 40, 300, 20);
 
         Theme.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -241,7 +367,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(Theme);
-        Theme.setBounds(20, 80, 240, 20);
+        Theme.setBounds(20, 80, 300, 20);
 
         RefreshDisciplines.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
         RefreshDisciplines.setBorderPainted(false);
@@ -252,7 +378,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RefreshDisciplines);
-        RefreshDisciplines.setBounds(230, 5, 30, 30);
+        RefreshDisciplines.setBounds(80, 5, 30, 30);
 
         DisciplineImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
         DisciplineImport.setBorderPainted(false);
@@ -263,7 +389,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(DisciplineImport);
-        DisciplineImport.setBounds(400, 40, 40, 30);
+        DisciplineImport.setBounds(210, 5, 30, 30);
 
         RemoveTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveTask.setBorderPainted(false);
@@ -274,7 +400,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RemoveTask);
-        RemoveTask.setBounds(310, 110, 30, 30);
+        RemoveTask.setBounds(370, 115, 30, 30);
 
         AddTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddTask.setBorderPainted(false);
@@ -285,7 +411,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(AddTask);
-        AddTask.setBounds(270, 110, 30, 30);
+        AddTask.setBounds(330, 115, 30, 30);
 
         AddDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddDiscipline.setBorderPainted(false);
@@ -296,7 +422,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(AddDiscipline);
-        AddDiscipline.setBounds(270, 35, 30, 30);
+        AddDiscipline.setBounds(330, 40, 30, 30);
 
         RemoveDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveDiscipline.setBorderPainted(false);
@@ -307,7 +433,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RemoveDiscipline);
-        RemoveDiscipline.setBounds(310, 35, 30, 30);
+        RemoveDiscipline.setBounds(370, 40, 30, 30);
 
         AddTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddTheme.setBorderPainted(false);
@@ -318,7 +444,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(AddTheme);
-        AddTheme.setBounds(270, 75, 30, 30);
+        AddTheme.setBounds(330, 75, 30, 30);
 
         RemoveTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveTheme.setBorderPainted(false);
@@ -329,7 +455,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RemoveTheme);
-        RemoveTheme.setBounds(310, 75, 30, 30);
+        RemoveTheme.setBounds(370, 75, 30, 30);
 
         Task.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -337,7 +463,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(Task);
-        Task.setBounds(20, 120, 240, 20);
+        Task.setBounds(20, 120, 300, 20);
 
         ArtifactView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
         ArtifactView.setBorderPainted(false);
@@ -381,7 +507,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(EditTask);
-        EditTask.setBounds(350, 110, 30, 30);
+        EditTask.setBounds(410, 115, 30, 30);
 
         EditDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditDiscipline.setBorderPainted(false);
@@ -392,7 +518,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(EditDiscipline);
-        EditDiscipline.setBounds(350, 35, 30, 30);
+        EditDiscipline.setBounds(410, 40, 30, 30);
 
         EditTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditTheme.setBorderPainted(false);
@@ -403,11 +529,11 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(EditTheme);
-        EditTheme.setBounds(350, 75, 30, 30);
+        EditTheme.setBounds(410, 75, 30, 30);
 
-        FullTrace.setText("тесты");
+        FullTrace.setText("трассировка импорта");
         add(FullTrace);
-        FullTrace.setBounds(380, 10, 60, 20);
+        FullTrace.setBounds(240, 10, 160, 20);
 
         DisciplineSaveImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
         DisciplineSaveImport.setBorderPainted(false);
@@ -418,15 +544,15 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(DisciplineSaveImport);
-        DisciplineSaveImport.setBounds(400, 75, 40, 30);
+        DisciplineSaveImport.setBounds(405, 5, 40, 30);
 
         jLabel4.setText("Группа");
         add(jLabel4);
-        jLabel4.setBounds(450, 25, 70, 16);
+        jLabel4.setBounds(490, 20, 70, 16);
 
         jLabel5.setText("Студент");
         add(jLabel5);
-        jLabel5.setBounds(450, 65, 70, 16);
+        jLabel5.setBounds(490, 60, 70, 16);
 
         Group.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -434,7 +560,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(Group);
-        Group.setBounds(450, 40, 240, 20);
+        Group.setBounds(490, 40, 240, 20);
 
         Student.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -442,7 +568,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(Student);
-        Student.setBounds(450, 80, 240, 20);
+        Student.setBounds(490, 80, 240, 20);
 
         RefreshGroups.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
         RefreshGroups.setBorderPainted(false);
@@ -453,7 +579,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RefreshGroups);
-        RefreshGroups.setBounds(660, 5, 30, 30);
+        RefreshGroups.setBounds(540, 5, 30, 30);
 
         AddGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddGroup.setBorderPainted(false);
@@ -464,7 +590,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(AddGroup);
-        AddGroup.setBounds(700, 35, 30, 30);
+        AddGroup.setBounds(740, 40, 30, 30);
 
         RemoveGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveGroup.setBorderPainted(false);
@@ -475,7 +601,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RemoveGroup);
-        RemoveGroup.setBounds(740, 35, 30, 30);
+        RemoveGroup.setBounds(780, 40, 30, 30);
 
         AddStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         AddStudent.setBorderPainted(false);
@@ -486,7 +612,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(AddStudent);
-        AddStudent.setBounds(700, 70, 30, 30);
+        AddStudent.setBounds(740, 70, 30, 30);
 
         RemoveStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RemoveStudent.setBorderPainted(false);
@@ -497,7 +623,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(RemoveStudent);
-        RemoveStudent.setBounds(740, 70, 30, 30);
+        RemoveStudent.setBounds(780, 70, 30, 30);
 
         EditGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditGroup.setBorderPainted(false);
@@ -508,7 +634,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(EditGroup);
-        EditGroup.setBounds(780, 35, 30, 30);
+        EditGroup.setBounds(820, 40, 30, 30);
 
         EditStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditStudent.setBorderPainted(false);
@@ -519,7 +645,7 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(EditStudent);
-        EditStudent.setBounds(780, 70, 30, 30);
+        EditStudent.setBounds(820, 70, 30, 30);
 
         GroupsImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
         GroupsImport.setBorderPainted(false);
@@ -530,7 +656,121 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
         add(GroupsImport);
-        GroupsImport.setBounds(820, 35, 40, 30);
+        GroupsImport.setBounds(860, 40, 40, 30);
+        add(jSeparator1);
+        jSeparator1.setBounds(490, 110, 400, 10);
+
+        jLabel6.setText("Все экзамены");
+        add(jLabel6);
+        jLabel6.setBounds(730, 590, 120, 20);
+        add(ExamGroupsList);
+        ExamGroupsList.setBounds(310, 380, 130, 20);
+        add(AllExamsList);
+        AllExamsList.setBounds(20, 620, 790, 20);
+
+        jLabel7.setText("Кол-во задач");
+        add(jLabel7);
+        jLabel7.setBounds(20, 530, 100, 20);
+
+        jLabel8.setText("Экзамен для групп");
+        add(jLabel8);
+        jLabel8.setBounds(180, 380, 120, 20);
+        add(ExamRulesList);
+        ExamRulesList.setBounds(20, 440, 230, 20);
+
+        jLabel9.setText("Регламенты");
+        add(jLabel9);
+        jLabel9.setBounds(20, 410, 80, 20);
+
+        RuleExcerCount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleExcerCountKeyPressed(evt);
+            }
+        });
+        add(RuleExcerCount);
+        RuleExcerCount.setBounds(110, 530, 40, 25);
+
+        jLabel10.setText("Продолж. (мин)");
+        add(jLabel10);
+        jLabel10.setBounds(160, 500, 100, 20);
+
+        RuleDuration.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleDurationKeyPressed(evt);
+            }
+        });
+        add(RuleDuration);
+        RuleDuration.setBounds(270, 500, 50, 25);
+
+        RuleName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleNameKeyPressed(evt);
+            }
+        });
+        add(RuleName);
+        RuleName.setBounds(20, 470, 230, 25);
+
+        RuleThemeRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        RuleThemeRemove.setBorderPainted(false);
+        RuleThemeRemove.setContentAreaFilled(false);
+        RuleThemeRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RuleThemeRemoveActionPerformed(evt);
+            }
+        });
+        add(RuleThemeRemove);
+        RuleThemeRemove.setBounds(400, 550, 30, 30);
+
+        RuleAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        RuleAdd.setBorderPainted(false);
+        RuleAdd.setContentAreaFilled(false);
+        RuleAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RuleAddActionPerformed(evt);
+            }
+        });
+        add(RuleAdd);
+        RuleAdd.setBounds(270, 440, 30, 30);
+
+        jLabel11.setText("Темы");
+        add(jLabel11);
+        jLabel11.setBounds(20, 560, 70, 16);
+        add(RuleThemesList);
+        RuleThemesList.setBounds(110, 560, 280, 20);
+
+        RuleThemeAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
+        RuleThemeAdd.setBorderPainted(false);
+        RuleThemeAdd.setContentAreaFilled(false);
+        RuleThemeAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RuleThemeAddActionPerformed(evt);
+            }
+        });
+        add(RuleThemeAdd);
+        RuleThemeAdd.setBounds(450, 75, 30, 30);
+
+        RuleDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        RuleDelete.setBorderPainted(false);
+        RuleDelete.setContentAreaFilled(false);
+        RuleDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RuleDeleteActionPerformed(evt);
+            }
+        });
+        add(RuleDelete);
+        RuleDelete.setBounds(310, 440, 30, 30);
+
+        jLabel13.setText("Кол-во тестов");
+        add(jLabel13);
+        jLabel13.setBounds(20, 500, 100, 20);
+
+        RuleQurestionCount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleQurestionCountKeyPressed(evt);
+            }
+        });
+        add(RuleQurestionCount);
+        RuleQurestionCount.setBounds(110, 500, 40, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -552,7 +792,7 @@ public class ExamAdminPanel extends BasePanel{
             System.out.println(sb.toString());
             DisciplineSaveImport.setEnabled(true);
             } catch (Exception ee){
-                System.out.println("Ошибка импорта тестов:\n"+ee.toString());
+                popup("Ошибка импорта тестов:\n"+ee.toString());
                 Discipline.setEnabled(false);
                 }
 
@@ -939,6 +1179,166 @@ public class ExamAdminPanel extends BasePanel{
                 }
     }//GEN-LAST:event_GroupsImportActionPerformed
 
+    private void ruleUpdate(KeyEvent evt){
+        if (cRule==null)
+            return;
+        cRule.setRatingSystemId(ratings.get(0).getId());
+        try {
+            new APICall2<ExamRuleBean>() {
+                @Override
+                public Call<ExamRuleBean> apiFun() {
+                    return main.client.getExamRuleApi().update1(cRule,cRule.getId());
+                    }
+                }.call(main);
+            refreshSelectedRule();
+            if (evt!=null)
+                main.viewUpdate(evt,true);
+            popup("Регламент обновлен");
+            } catch (UniException ee){
+                System.out.println(ee.toString());
+                if (evt!=null)
+                    main.viewUpdate(evt,false);
+                }
+        }
+
+    private static String shortString(String ss, int size){
+        return ss.length()<=size ? ss : ss.substring(0,size)+"...";
+        }
+
+    private void RuleThemeRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeRemoveActionPerformed
+        if (cRule==null)
+            return;
+        if (cRule.getThemeIds().size()==0)
+            return;
+        new OK(200, 200, "Удалить тему: " + shortString(cTheme.getTheme().getName(), 20), new I_Button() {
+            @Override
+            public void onPush() {
+                int idx = RuleThemesList.getSelectedIndex();
+                cRule.getThemeIds().remove(idx);
+                ruleUpdate(null);
+                }
+            });
+    }//GEN-LAST:event_RuleThemeRemoveActionPerformed
+
+    private void RuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleAddActionPerformed
+        if (cDiscipline==null)
+            return;
+        final ExamRuleBean ruleBean = new ExamRuleBean();
+        new OKName(200, 200, "Добавить регламент", new I_Value<String>() {
+            @Override
+            public void onEnter(String value) {
+                ExamRuleBean ruleBean = new ExamRuleBean();
+                ruleBean.setName(value);
+                ruleBean.setQuestionCount(10);
+                ruleBean.setExerciseCount(1);
+                ruleBean.setDuration(180);
+                ruleBean.setDisciplineId(cDiscipline.getDiscipline().getId());
+                ruleBean.setMinimalRating(0);
+                ruleBean.setRatingSystemId(0L);
+                ruleBean.setRatingSystemId(ratings.get(0).getId());
+                ArrayList<Long> xx = new ArrayList<>();
+                xx.add(cTheme.getTheme().getId());
+                ruleBean.setThemeIds(xx);
+                new APICall<ExamRuleBean>(main) {
+                    @Override
+                    public Call<ExamRuleBean> apiFun() {
+                        return main.client.getExamRuleApi().create3(ruleBean);
+                        }
+                    @Override
+                    public void onSucess(ExamRuleBean oo) {
+                        refreshAllRules();
+                        refreshRules();
+                        }
+                    };
+            }
+        });
+    }//GEN-LAST:event_RuleAddActionPerformed
+
+    private void RuleNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleNameKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        cRule.setName(RuleName.getText());
+        ruleUpdate(evt);
+    }//GEN-LAST:event_RuleNameKeyPressed
+
+    private void RuleDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDurationKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setDuration(Integer.parseInt(RuleDuration.getText()));
+            ruleUpdate(evt);
+            } catch (Exception ee){
+                popup("Ошибка формата целого");
+                main.viewUpdate(evt,false);
+                }
+    }//GEN-LAST:event_RuleDurationKeyPressed
+
+    private void RuleExcerCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExcerCountKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setExerciseCount(Integer.parseInt(RuleExcerCount.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+            }
+    }//GEN-LAST:event_RuleExcerCountKeyPressed
+
+    private void RuleThemeAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeAddActionPerformed
+        if (cRule==null)
+            return;
+        if (cTheme==null)
+            return;
+        if (ruleThemesMap.get(cTheme.getTheme().getId())!=null){
+            popup("Тема уже есть в регламенте");
+            return;
+            }
+        new OK(200, 200, "Добавить тему: " + shortString(cTheme.getTheme().getName(), 30), new I_Button() {
+            @Override
+            public void onPush() {
+                cRule.getThemeIds().add(cTheme.getTheme().getId());
+                ruleUpdate(null);
+                }
+            });
+    }//GEN-LAST:event_RuleThemeAddActionPerformed
+
+    private void RuleDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleDeleteActionPerformed
+        if (cRule==null)
+            return;
+        new OK(200, 200, "Удалить регламент: " + cRule.getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                popup("Удалить? Хрен Вам...");
+                /*
+                new APICall<Void>(main) {
+                    @Override
+                    public Call<Void> apiFun() {
+                        return main.client.getExamRuleApi().;
+                        }
+                    @Override
+                    public void onSucess(Void oo) {
+
+                    }
+                };
+                 */
+                }
+            });
+
+    }//GEN-LAST:event_RuleDeleteActionPerformed
+
+    private void RuleQurestionCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQurestionCountKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setQuestionCount(Integer.parseInt(RuleQurestionCount.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+            }
+    }//GEN-LAST:event_RuleQurestionCountKeyPressed
+
     @Override
     public void refresh() {}
 
@@ -962,6 +1362,7 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton AddStudent;
     private javax.swing.JButton AddTask;
     private javax.swing.JButton AddTheme;
+    private java.awt.Choice AllExamsList;
     private javax.swing.JButton ArtifactDownLoad;
     private javax.swing.JButton ArtifactUpload;
     private javax.swing.JButton ArtifactView;
@@ -973,6 +1374,8 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton EditStudent;
     private javax.swing.JButton EditTask;
     private javax.swing.JButton EditTheme;
+    private java.awt.Choice ExamGroupsList;
+    private java.awt.Choice ExamRulesList;
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
     private javax.swing.JButton GroupsImport;
@@ -983,14 +1386,31 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton RemoveStudent;
     private javax.swing.JButton RemoveTask;
     private javax.swing.JButton RemoveTheme;
+    private javax.swing.JButton RuleAdd;
+    private javax.swing.JButton RuleDelete;
+    private javax.swing.JTextField RuleDuration;
+    private javax.swing.JTextField RuleExcerCount;
+    private javax.swing.JTextField RuleName;
+    private javax.swing.JTextField RuleQurestionCount;
+    private javax.swing.JButton RuleThemeAdd;
+    private javax.swing.JButton RuleThemeRemove;
+    private java.awt.Choice RuleThemesList;
     private java.awt.Choice Student;
     private java.awt.Choice Task;
     private java.awt.TextArea TaskText;
     private java.awt.Choice Theme;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
 }

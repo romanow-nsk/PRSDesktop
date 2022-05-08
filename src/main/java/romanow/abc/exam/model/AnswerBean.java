@@ -21,24 +21,26 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import romanow.abc.exam.model.StudentTaskBean;
 /**
- * StudentAnswerBean
+ * AnswerBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
-public class StudentAnswerBean {
+public class AnswerBean {
   @SerializedName("id")
   private Long id = null;
 
-  @SerializedName("task")
-  private StudentTaskBean task = null;
+  @SerializedName("taskId")
+  private Long taskId = null;
 
   @SerializedName("rating")
   private Integer rating = null;
 
   @SerializedName("ticketId")
   private Long ticketId = null;
+
+  @SerializedName("number")
+  private Integer number = null;
 
   /**
    * Gets or Sets status
@@ -86,10 +88,7 @@ public class StudentAnswerBean {
   }  @SerializedName("status")
   private StatusEnum status = null;
 
-  @SerializedName("number")
-  private Integer number = null;
-
-  public StudentAnswerBean id(Long id) {
+  public AnswerBean id(Long id) {
     this.id = id;
     return this;
   }
@@ -107,25 +106,25 @@ public class StudentAnswerBean {
     this.id = id;
   }
 
-  public StudentAnswerBean task(StudentTaskBean task) {
-    this.task = task;
+  public AnswerBean taskId(Long taskId) {
+    this.taskId = taskId;
     return this;
   }
 
    /**
-   * Get task
-   * @return task
+   * Get taskId
+   * @return taskId
   **/
   @Schema(description = "")
-  public StudentTaskBean getTask() {
-    return task;
+  public Long getTaskId() {
+    return taskId;
   }
 
-  public void setTask(StudentTaskBean task) {
-    this.task = task;
+  public void setTaskId(Long taskId) {
+    this.taskId = taskId;
   }
 
-  public StudentAnswerBean rating(Integer rating) {
+  public AnswerBean rating(Integer rating) {
     this.rating = rating;
     return this;
   }
@@ -143,7 +142,7 @@ public class StudentAnswerBean {
     this.rating = rating;
   }
 
-  public StudentAnswerBean ticketId(Long ticketId) {
+  public AnswerBean ticketId(Long ticketId) {
     this.ticketId = ticketId;
     return this;
   }
@@ -161,25 +160,7 @@ public class StudentAnswerBean {
     this.ticketId = ticketId;
   }
 
-  public StudentAnswerBean status(StatusEnum status) {
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Get status
-   * @return status
-  **/
-  @Schema(description = "")
-  public StatusEnum getStatus() {
-    return status;
-  }
-
-  public void setStatus(StatusEnum status) {
-    this.status = status;
-  }
-
-  public StudentAnswerBean number(Integer number) {
+  public AnswerBean number(Integer number) {
     this.number = number;
     return this;
   }
@@ -197,6 +178,24 @@ public class StudentAnswerBean {
     this.number = number;
   }
 
+  public AnswerBean status(StatusEnum status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Get status
+   * @return status
+  **/
+  @Schema(description = "")
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -206,32 +205,32 @@ public class StudentAnswerBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StudentAnswerBean studentAnswerBean = (StudentAnswerBean) o;
-    return Objects.equals(this.id, studentAnswerBean.id) &&
-        Objects.equals(this.task, studentAnswerBean.task) &&
-        Objects.equals(this.rating, studentAnswerBean.rating) &&
-        Objects.equals(this.ticketId, studentAnswerBean.ticketId) &&
-        Objects.equals(this.status, studentAnswerBean.status) &&
-        Objects.equals(this.number, studentAnswerBean.number);
+    AnswerBean answerBean = (AnswerBean) o;
+    return Objects.equals(this.id, answerBean.id) &&
+        Objects.equals(this.taskId, answerBean.taskId) &&
+        Objects.equals(this.rating, answerBean.rating) &&
+        Objects.equals(this.ticketId, answerBean.ticketId) &&
+        Objects.equals(this.number, answerBean.number) &&
+        Objects.equals(this.status, answerBean.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, task, rating, ticketId, status, number);
+    return Objects.hash(id, taskId, rating, ticketId, number, status);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StudentAnswerBean {\n");
+    sb.append("class AnswerBean {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    task: ").append(toIndentedString(task)).append("\n");
+    sb.append("    taskId: ").append(toIndentedString(taskId)).append("\n");
     sb.append("    rating: ").append(toIndentedString(rating)).append("\n");
     sb.append("    ticketId: ").append(toIndentedString(ticketId)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    number: ").append(toIndentedString(number)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("}");
     return sb.toString();
   }

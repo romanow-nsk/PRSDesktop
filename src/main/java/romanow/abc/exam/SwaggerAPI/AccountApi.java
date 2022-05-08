@@ -18,20 +18,6 @@ import java.util.Map;
 
 public interface AccountApi {
   /**
-   * Change password
-   * 
-   * @param body  (required)
-   * @return Call&lt;Void&gt;
-   */
-  @Headers({
-    "Content-Type:application/json"
-  })
-  @POST("account/change-password")
-  Call<Void> changePassword(
-                    @retrofit2.http.Body AccountBean body    
-  );
-
-  /**
    * Create an account
    * Used by admins to create admins
    * @param body  (required)
@@ -73,5 +59,34 @@ public interface AccountApi {
   @GET("account/me")
   Call<AccountBean> me();
     
+
+  /**
+   * Update sender&#x27;s account
+   * 
+   * @param body  (required)
+   * @param accountId  (required)
+   * @return Call&lt;AccountBean&gt;
+   */
+  @Headers({
+    "Content-Type:application/json"
+  })
+  @PUT("account/{accountId}")
+  Call<AccountBean> updateAccount(
+                    @retrofit2.http.Body AccountBean body    ,         @retrofit2.http.Path("accountId") Long accountId            
+  );
+
+  /**
+   * Update sender&#x27;s account
+   * 
+   * @param body  (required)
+   * @return Call&lt;AccountBean&gt;
+   */
+  @Headers({
+    "Content-Type:application/json"
+  })
+  @PUT("account")
+  Call<AccountBean> updateMyAccount(
+                    @retrofit2.http.Body AccountBean body    
+  );
 
 }

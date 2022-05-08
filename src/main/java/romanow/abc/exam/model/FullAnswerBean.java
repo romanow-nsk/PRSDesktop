@@ -21,21 +21,45 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import romanow.abc.exam.model.ArtefactBean;
-import romanow.abc.exam.model.TaskBean;
+import java.util.ArrayList;
+import java.util.List;
+import romanow.abc.exam.model.AnswerBean;
+import romanow.abc.exam.model.FullMessageBean;
+import romanow.abc.exam.model.FullTaskBean;
 /**
- * FullTaskBean
+ * FullAnswerBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
-public class FullTaskBean {
+public class FullAnswerBean {
+  @SerializedName("answer")
+  private AnswerBean answer = null;
+
   @SerializedName("task")
-  private TaskBean task = null;
+  private FullTaskBean task = null;
 
-  @SerializedName("artefact")
-  private ArtefactBean artefact = null;
+  @SerializedName("messages")
+  private List<FullMessageBean> messages = null;
 
-  public FullTaskBean task(TaskBean task) {
+  public FullAnswerBean answer(AnswerBean answer) {
+    this.answer = answer;
+    return this;
+  }
+
+   /**
+   * Get answer
+   * @return answer
+  **/
+  @Schema(description = "")
+  public AnswerBean getAnswer() {
+    return answer;
+  }
+
+  public void setAnswer(AnswerBean answer) {
+    this.answer = answer;
+  }
+
+  public FullAnswerBean task(FullTaskBean task) {
     this.task = task;
     return this;
   }
@@ -45,30 +69,38 @@ public class FullTaskBean {
    * @return task
   **/
   @Schema(description = "")
-  public TaskBean getTask() {
+  public FullTaskBean getTask() {
     return task;
   }
 
-  public void setTask(TaskBean task) {
+  public void setTask(FullTaskBean task) {
     this.task = task;
   }
 
-  public FullTaskBean artefact(ArtefactBean artefact) {
-    this.artefact = artefact;
+  public FullAnswerBean messages(List<FullMessageBean> messages) {
+    this.messages = messages;
+    return this;
+  }
+
+  public FullAnswerBean addMessagesItem(FullMessageBean messagesItem) {
+    if (this.messages == null) {
+      this.messages = new ArrayList<FullMessageBean>();
+    }
+    this.messages.add(messagesItem);
     return this;
   }
 
    /**
-   * Get artefact
-   * @return artefact
+   * Get messages
+   * @return messages
   **/
   @Schema(description = "")
-  public ArtefactBean getArtefact() {
-    return artefact;
+  public List<FullMessageBean> getMessages() {
+    return messages;
   }
 
-  public void setArtefact(ArtefactBean artefact) {
-    this.artefact = artefact;
+  public void setMessages(List<FullMessageBean> messages) {
+    this.messages = messages;
   }
 
 
@@ -80,24 +112,26 @@ public class FullTaskBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FullTaskBean fullTaskBean = (FullTaskBean) o;
-    return Objects.equals(this.task, fullTaskBean.task) &&
-        Objects.equals(this.artefact, fullTaskBean.artefact);
+    FullAnswerBean fullAnswerBean = (FullAnswerBean) o;
+    return Objects.equals(this.answer, fullAnswerBean.answer) &&
+        Objects.equals(this.task, fullAnswerBean.task) &&
+        Objects.equals(this.messages, fullAnswerBean.messages);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(task, artefact);
+    return Objects.hash(answer, task, messages);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class FullTaskBean {\n");
+    sb.append("class FullAnswerBean {\n");
     
+    sb.append("    answer: ").append(toIndentedString(answer)).append("\n");
     sb.append("    task: ").append(toIndentedString(task)).append("\n");
-    sb.append("    artefact: ").append(toIndentedString(artefact)).append("\n");
+    sb.append("    messages: ").append(toIndentedString(messages)).append("\n");
     sb.append("}");
     return sb.toString();
   }
