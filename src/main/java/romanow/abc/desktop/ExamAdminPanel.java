@@ -13,6 +13,7 @@ import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
 import romanow.abc.core.UniException;
 import romanow.abc.core.utils.FileNameExt;
+import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.exam.model.*;
 import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
@@ -37,15 +38,21 @@ public class ExamAdminPanel extends BasePanel{
     private HashMap<Long,FullThemeBean> ruleThemesMap = new HashMap<>();
     private ArrayList<FullThemeBean> ruleThemes = new ArrayList<>();
     private ExamRuleBean cRule=null;
+    private ExamBean cExam=null;
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
     private List<GroupBean> groups = new ArrayList<>();                 // Список групп
+    private HashMap<Long,GroupBean> groupsMap = new HashMap<>();        // Мар всех групп
+    private HashMap<Long,Long> examGroupsMap = new HashMap<>();         // Мар групп для экзамена по дисциплине
+    private HashMap<Long,Long> examRulesMap = new HashMap<>();          // Мар имеющихся регламентов в экзаменах по дисциплине
     private FullGroupBean cGroup = null;                                // Текущая группа
     private List<GroupBean> examGroupsList = new ArrayList<>();         // Экзамен для текущей дисциплины
     private List<ExamBean> allExams = new ArrayList<>();                // Полный список экзаменов
+    private List<ExamBean> disciplineExams=new ArrayList<>();           // Экзамены для дисциплины
     private List<ExamRuleBean> allExamRules = new ArrayList<>();        // Полный список регламентов
     private List<ExamRuleBean> cExamRules = new ArrayList<>();          // Список регламентов для дисциплины
-    private List<RatingSystemBean> ratings = new ArrayList<>();
+    private HashMap<Long,ExamRuleBean> cExamRulesMap = new HashMap<>(); // Мар регламентов для дисциплины
+    private List<RatingSystemBean> ratings = new ArrayList<>();         // Список рейтингов ????
     public ExamAdminPanel() {
         initComponents();
         }
@@ -114,13 +121,23 @@ public class ExamAdminPanel extends BasePanel{
 
     private void refreshRules(){
         cExamRules.clear();
+        cExamRulesMap.clear();
         RulesList.removeAll();
-        for(ExamRuleBean examRule : allExamRules)
-            if (cDiscipline.getDiscipline().getId().longValue()==examRule.getDisciplineId().longValue()){
-                RulesList.add(examRule.getName());
-                cExamRules.add(examRule);
+        new APICall<List<ExamRuleBean>>(main) {
+            @Override
+            public Call<List<ExamRuleBean>> apiFun() {
+                return main.client.getDisciplineApi().findExamRules(cDiscipline.getDiscipline().getId());
                 }
-        refreshSelectedRule();
+            @Override
+            public void onSucess(List<ExamRuleBean> oo) {
+                for(ExamRuleBean examRule : oo){
+                    RulesList.add(examRule.getName());
+                    cExamRules.add(examRule);
+                    cExamRulesMap.put(examRule.getId(),examRule);
+                    }
+                refreshSelectedRule();
+                }
+            };
         }
 
     private void refreshSelectedRule(){
@@ -162,8 +179,12 @@ public class ExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(List<GroupBean> oo) {
                 groups = oo;
-                for(GroupBean dd : groups)
+                Group.removeAll();
+                groupsMap.clear();
+                for(GroupBean dd : groups){
                     Group.add(dd.getName());
+                    groupsMap.put(dd.getId(),dd);
+                    }
                 refreshGroupFull();
                 }
             };
@@ -175,9 +196,9 @@ public class ExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(List<ExamBean> oo) {
                 allExams = oo;
-                AllExamsList.removeAll();
+                ExamsTotalList.removeAll();
                 for(ExamBean exam : allExams){
-                    AllExamsList.add(exam.toString());
+                    ExamsTotalList.add(exam.toString());
                     }
                 }
             };
@@ -226,23 +247,76 @@ public class ExamAdminPanel extends BasePanel{
                     }
                 refreshThemeFull();
                 refreshRules();
-                }
-            };
-        new APICall<List<GroupBean>>(main){
-            @Override
-            public Call<List<GroupBean>> apiFun() {
-                return  main.client.getDisciplineApi().findGroups(oid);
-                }
-            @Override
-            public void onSucess(List<GroupBean> oo) {
-                examGroupsList = oo;
-                ExamGroupsList.removeAll();
-                for(GroupBean group : oo){
-                    ExamGroupsList.add(group.getName());
+                new APICall<List<GroupBean>>(main){
+                    @Override
+                    public Call<List<GroupBean>> apiFun() {
+                        return  main.client.getDisciplineApi().findGroups(oid);
                     }
+                    @Override
+                    public void onSucess(List<GroupBean> oo) {
+                        examGroupsList = oo;
+                        ExamsForGroupList.removeAll();
+                        for(GroupBean group : oo){
+                            ExamsForGroupList.add(group.getName());
+                            }
+                        refreshDisciplineExams();
+                        }
+                    };
                 }
             };
         }
+
+
+    private void refreshDisciplineExams(){
+        ExamList.removeAll();
+        disciplineExams.clear();
+        examGroupsMap.clear();
+        examRulesMap.clear();
+        if (cDiscipline==null)
+            return;
+        for(ExamBean exam : allExams){
+            if(cDiscipline.getDiscipline().getId().longValue()==exam.getDisciplineId().longValue()){
+                disciplineExams.add(exam);
+                ExamRuleBean examRule = cExamRulesMap.get(exam.getExamRuleId());
+                if (examRule==null){
+                    System.out.println("Не найден регламент для экзамена id="+exam.getExamRuleId());
+                    continue;
+                    }
+                for(Long groupId : exam.getGroupIds())
+                    examGroupsMap.put(groupId,0L);
+                ExamList.add(examRule.getName());
+                examRulesMap.put(exam.getExamRuleId(),0L);
+                }
+            }
+        refreshSelectedExam();
+        }
+
+    private void refreshSelectedExam(){
+        cExam=null;
+        ExamGroupsList.removeAll();
+        if (disciplineExams.size()==0)
+            return;
+        cExam = disciplineExams.get(ExamList.getSelectedIndex());
+        ExamGroupsList.removeAll();
+        for(Long id : cExam.getGroupIds()){
+            GroupBean group = groupsMap.get(id);
+            if (group==null){
+                System.out.println("Не найдена группа id="+id);
+                continue;
+                }
+            ExamGroupsList.add(group.getName());
+            }
+        refreshExamPeriods();
+        }
+
+    private void  refreshExamPeriods(){
+
+        }
+
+    private void  refreshSelectedExamPeriod(){
+
+        }
+
 
     private void refreshThemeFull(){
         Task.removeAll();
@@ -317,8 +391,8 @@ public class ExamAdminPanel extends BasePanel{
         GroupsImport = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel6 = new javax.swing.JLabel();
-        ExamGroupsList = new java.awt.Choice();
-        AllExamsList = new java.awt.Choice();
+        ExamsForGroupList = new java.awt.Choice();
+        ExamsTotalList = new java.awt.Choice();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         RulesList = new java.awt.Choice();
@@ -337,6 +411,28 @@ public class ExamAdminPanel extends BasePanel{
         RuleQurestionCount = new javax.swing.JTextField();
         RuleThemeAddAll = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        ExamList = new java.awt.Choice();
+        ExamGroupsList = new java.awt.Choice();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        PeriodForAll = new javax.swing.JCheckBox();
+        PeriodList = new java.awt.Choice();
+        PeriodData = new javax.swing.JTextField();
+        PeriodStartTime = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        PeriodState1 = new javax.swing.JTextField();
+        PeriodOneGroup = new java.awt.Choice();
+        ExamGroupAdd = new javax.swing.JButton();
+        ExamGroupRemove = new javax.swing.JButton();
+        ExamAdd = new javax.swing.JButton();
+        ExamRemove = new javax.swing.JButton();
+        PeriodAdd = new javax.swing.JButton();
+        PeriodRemove = new javax.swing.JButton();
+        jLabel21 = new javax.swing.JLabel();
+        PeriodEndTime = new javax.swing.JTextField();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -660,15 +756,15 @@ public class ExamAdminPanel extends BasePanel{
         add(GroupsImport);
         GroupsImport.setBounds(860, 40, 40, 30);
         add(jSeparator1);
-        jSeparator1.setBounds(490, 110, 400, 10);
+        jSeparator1.setBounds(460, 120, 480, 10);
 
         jLabel6.setText("Все экзамены");
         add(jLabel6);
         jLabel6.setBounds(730, 590, 120, 20);
-        add(ExamGroupsList);
-        ExamGroupsList.setBounds(310, 380, 130, 20);
-        add(AllExamsList);
-        AllExamsList.setBounds(20, 620, 790, 20);
+        add(ExamsForGroupList);
+        ExamsForGroupList.setBounds(310, 380, 130, 20);
+        add(ExamsTotalList);
+        ExamsTotalList.setBounds(20, 620, 790, 20);
 
         jLabel7.setText("Кол-во задач");
         add(jLabel7);
@@ -794,6 +890,151 @@ public class ExamAdminPanel extends BasePanel{
         jLabel12.setText("Все темы");
         add(jLabel12);
         jLabel12.setBounds(350, 420, 80, 16);
+
+        jLabel14.setText("Экзамены (по регламентам)");
+        add(jLabel14);
+        jLabel14.setBounds(460, 130, 250, 16);
+
+        ExamList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ExamListItemStateChanged(evt);
+            }
+        });
+        add(ExamList);
+        ExamList.setBounds(460, 150, 190, 20);
+        add(ExamGroupsList);
+        ExamGroupsList.setBounds(740, 150, 100, 20);
+
+        jLabel15.setText("Окончание");
+        add(jLabel15);
+        jLabel15.setBounds(650, 225, 80, 16);
+
+        jLabel16.setText("Группы");
+        add(jLabel16);
+        jLabel16.setBounds(740, 130, 42, 16);
+
+        PeriodForAll.setText("Группа/ведомость");
+        add(PeriodForAll);
+        PeriodForAll.setBounds(460, 300, 130, 20);
+        add(PeriodList);
+        PeriodList.setBounds(460, 200, 240, 20);
+
+        PeriodData.setEnabled(false);
+        PeriodData.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PeriodDataMouseClicked(evt);
+            }
+        });
+        add(PeriodData);
+        PeriodData.setBounds(460, 240, 110, 25);
+
+        PeriodStartTime.setEnabled(false);
+        PeriodStartTime.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PeriodStartTimeMouseClicked(evt);
+            }
+        });
+        add(PeriodStartTime);
+        PeriodStartTime.setBounds(590, 240, 50, 25);
+
+        jLabel18.setText("Сдача экзамена");
+        add(jLabel18);
+        jLabel18.setBounds(460, 180, 140, 16);
+
+        jLabel19.setText("Статус");
+        add(jLabel19);
+        jLabel19.setBounds(460, 270, 70, 16);
+
+        jLabel20.setText("Дата");
+        add(jLabel20);
+        jLabel20.setBounds(460, 225, 70, 16);
+
+        PeriodState1.setEnabled(false);
+        add(PeriodState1);
+        PeriodState1.setBounds(550, 270, 150, 25);
+
+        PeriodOneGroup.setEnabled(false);
+        add(PeriodOneGroup);
+        PeriodOneGroup.setBounds(600, 300, 100, 20);
+
+        ExamGroupAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        ExamGroupAdd.setBorderPainted(false);
+        ExamGroupAdd.setContentAreaFilled(false);
+        ExamGroupAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExamGroupAddActionPerformed(evt);
+            }
+        });
+        add(ExamGroupAdd);
+        ExamGroupAdd.setBounds(850, 140, 30, 30);
+
+        ExamGroupRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        ExamGroupRemove.setBorderPainted(false);
+        ExamGroupRemove.setContentAreaFilled(false);
+        ExamGroupRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExamGroupRemoveActionPerformed(evt);
+            }
+        });
+        add(ExamGroupRemove);
+        ExamGroupRemove.setBounds(890, 140, 30, 30);
+
+        ExamAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        ExamAdd.setBorderPainted(false);
+        ExamAdd.setContentAreaFilled(false);
+        ExamAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExamAddActionPerformed(evt);
+            }
+        });
+        add(ExamAdd);
+        ExamAdd.setBounds(660, 140, 30, 30);
+
+        ExamRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        ExamRemove.setBorderPainted(false);
+        ExamRemove.setContentAreaFilled(false);
+        ExamRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExamRemoveActionPerformed(evt);
+            }
+        });
+        add(ExamRemove);
+        ExamRemove.setBounds(700, 140, 30, 30);
+
+        PeriodAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        PeriodAdd.setBorderPainted(false);
+        PeriodAdd.setContentAreaFilled(false);
+        PeriodAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PeriodAddActionPerformed(evt);
+            }
+        });
+        add(PeriodAdd);
+        PeriodAdd.setBounds(710, 190, 30, 30);
+
+        PeriodRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        PeriodRemove.setBorderPainted(false);
+        PeriodRemove.setContentAreaFilled(false);
+        PeriodRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PeriodRemoveActionPerformed(evt);
+            }
+        });
+        add(PeriodRemove);
+        PeriodRemove.setBounds(750, 190, 30, 30);
+
+        jLabel21.setText("Начало");
+        add(jLabel21);
+        jLabel21.setBounds(590, 225, 70, 16);
+
+        PeriodEndTime.setEnabled(false);
+        PeriodEndTime.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PeriodEndTimeMouseClicked(evt);
+            }
+        });
+        add(PeriodEndTime);
+        PeriodEndTime.setBounds(650, 240, 50, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1243,6 +1484,15 @@ public class ExamAdminPanel extends BasePanel{
             });
     }//GEN-LAST:event_RuleThemeRemoveActionPerformed
 
+    private static CreateExamBean examClone(ExamBean src){
+        CreateExamBean out = new CreateExamBean();
+        out.setStartTime(new OwnDateTime().timeInMS());
+        out.setExamRuleId(src.getExamRuleId());
+        out.setDisciplineId(src.getDisciplineId());
+        out.setGroupIds(src.getGroupIds());
+        return out;
+    }
+
     private void RuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleAddActionPerformed
         if (cDiscipline==null)
             return;
@@ -1379,8 +1629,133 @@ public class ExamAdminPanel extends BasePanel{
                 ruleUpdate(null);
             }
         });
-
     }//GEN-LAST:event_RuleThemeAddAllActionPerformed
+
+    private void ExamGroupAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupAddActionPerformed
+        if (cGroup==null || cExam==null)
+            return;
+        if (examGroupsMap.get(cGroup.getGroup().getId())!=null){
+            popup("Группа "+cGroup.getGroup().getName()+" уже в экзамене");
+            return;
+            }
+        new OK(200, 200, "Добавить группу " + cGroup.getGroup().getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                cExam.getGroupIds().add(cGroup.getGroup().getId());
+                new APICall<ExamBean>(main) {
+                    @Override
+                    public Call<ExamBean> apiFun() {
+                        return main.client.getExamApi().updateExam(examClone(cExam),cExam.getId());
+                    }
+                    @Override
+                    public void onSucess(ExamBean oo) {
+                        popup("Группа "+cGroup.getGroup().getName()+" добавлена");
+                        refreshSelectedExam();
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_ExamGroupAddActionPerformed
+
+    private void ExamGroupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupRemoveActionPerformed
+        if (cGroup==null || cExam==null)
+            return;
+        long groupId = cExam.getGroupIds().get(ExamGroupsList.getSelectedIndex()).longValue();
+        final GroupBean group = groupsMap.get(groupId);
+        new OK(200, 200, "Удалить группу " + group.getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                cExam.getGroupIds().remove(ExamGroupsList.getSelectedIndex());
+                new APICall<ExamBean>(main) {
+                    @Override
+                    public Call<ExamBean> apiFun() {
+                        return main.client.getExamApi().updateExam(examClone(cExam),cExam.getId());
+                    }
+                    @Override
+                    public void onSucess(ExamBean oo) {
+                        popup("Группа "+group.getName()+" удалена");
+                        refreshSelectedExam();
+                    }
+                };
+            }
+        });
+
+    }//GEN-LAST:event_ExamGroupRemoveActionPerformed
+
+    private void ExamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamAddActionPerformed
+        if (cRule==null)
+            return;
+        if (examRulesMap.get(cRule.getId())!=null){
+            popup("Экзамен для регламента: "+cRule.getName()+" уже создан");
+            return;
+            }
+        new OK(200, 200, "Экзамен для регламента: " + cRule.getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                final CreateExamBean exam = new CreateExamBean();
+                exam.setExamRuleId(cRule.getId());
+                exam.setDisciplineId(cDiscipline.getDiscipline().getId());
+                exam.setStartTime(new OwnDateTime().timeInMS());
+                ArrayList<Long> xx = new ArrayList<>();
+                xx.add(groups.get(0).getId());
+                exam.setGroupIds(xx);                       // TODO - убрать !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                new APICall<ExamBean>(main) {
+                    @Override
+                    public Call<ExamBean> apiFun() {
+                        return main.client.getExamApi().createExam(exam);
+                        }
+                    @Override
+                    public void onSucess(ExamBean oo) {
+                        refreshDisciplineExams();
+                        }
+                    };
+                }
+            });
+    }//GEN-LAST:event_ExamAddActionPerformed
+
+    private void ExamRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamRemoveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ExamRemoveActionPerformed
+
+    private void PeriodAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodAddActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PeriodAddActionPerformed
+
+    private void PeriodRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodRemoveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PeriodRemoveActionPerformed
+
+    private void PeriodStartTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodStartTimeMouseClicked
+        if (evt.getClickCount()<2)
+            return;
+        new CalendarView("Окончание экзамена", new I_CalendarTime() {
+            @Override
+            public void onSelect(OwnDateTime time) {
+
+            }
+        }); 
+    }//GEN-LAST:event_PeriodStartTimeMouseClicked
+
+    private void PeriodDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodDataMouseClicked
+        if (evt.getClickCount()<2)
+            return;
+        new CalendarView("Начало экзамена", new I_CalendarTime() {
+            @Override
+            public void onSelect(OwnDateTime time) {
+                PeriodData.setText(time.dateToString());
+                PeriodStartTime.setText(time.timeToString());
+            }
+        }); 
+
+    }//GEN-LAST:event_PeriodDataMouseClicked
+
+    private void PeriodEndTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodEndTimeMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PeriodEndTimeMouseClicked
+
+    private void ExamListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ExamListItemStateChanged
+        refreshSelectedExam();
+    }//GEN-LAST:event_ExamListItemStateChanged
 
     @Override
     public void refresh() {}
@@ -1405,7 +1780,6 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton AddStudent;
     private javax.swing.JButton AddTask;
     private javax.swing.JButton AddTheme;
-    private java.awt.Choice AllExamsList;
     private javax.swing.JButton ArtifactDownLoad;
     private javax.swing.JButton ArtifactUpload;
     private javax.swing.JButton ArtifactView;
@@ -1417,10 +1791,26 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton EditStudent;
     private javax.swing.JButton EditTask;
     private javax.swing.JButton EditTheme;
+    private javax.swing.JButton ExamAdd;
+    private javax.swing.JButton ExamGroupAdd;
+    private javax.swing.JButton ExamGroupRemove;
     private java.awt.Choice ExamGroupsList;
+    private java.awt.Choice ExamList;
+    private javax.swing.JButton ExamRemove;
+    private java.awt.Choice ExamsForGroupList;
+    private java.awt.Choice ExamsTotalList;
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
     private javax.swing.JButton GroupsImport;
+    private javax.swing.JButton PeriodAdd;
+    private javax.swing.JTextField PeriodData;
+    private javax.swing.JTextField PeriodEndTime;
+    private javax.swing.JCheckBox PeriodForAll;
+    private java.awt.Choice PeriodList;
+    private java.awt.Choice PeriodOneGroup;
+    private javax.swing.JButton PeriodRemove;
+    private javax.swing.JTextField PeriodStartTime;
+    private javax.swing.JTextField PeriodState1;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RemoveDiscipline;
@@ -1448,7 +1838,14 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
