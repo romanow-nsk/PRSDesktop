@@ -41,7 +41,7 @@ public class ExamAdminPanel extends BasePanel{
     private List<GroupBean> groups = new ArrayList<>();                 // Список групп
     private HashMap<Long,GroupBean> groupsMap = new HashMap<>();        // Мар всех групп
     private HashMap<Long,Long> examGroupsMap = new HashMap<>();         // Мар групп для экзамена по дисциплине
-    private HashMap<Long,Long> examRulesMap = new HashMap<>();          // Мар имеющихся регламентов в экзаменах по дисциплине
+    private HashMap<Long,ExamRuleBean> examRulesMap = new HashMap<>();  // Мар имеющихся регламентов в экзаменах по дисциплине
     private FullGroupBean cGroup = null;                                // Текущая группа
     private List<GroupBean> examGroupsList = new ArrayList<>();         // Экзамен для текущей дисциплины
     private List<ExamBean> allExams = new ArrayList<>();                // Полный список экзаменов
@@ -51,6 +51,8 @@ public class ExamAdminPanel extends BasePanel{
     private HashMap<Long,ExamRuleBean> cExamRulesMap = new HashMap<>(); // Мар регламентов для дисциплины
     private List<RatingSystemBean> ratings = new ArrayList<>();         // Список рейтингов ????
     private boolean refresh=false;                                      // Признак обновления для событий  CheckBox
+    private List<ExamPeriodBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
+    private ExamPeriodBean cPeriod=null;                                // Текущая сдача
     private boolean taskTextChanged=false;
     public ExamAdminPanel() {
         initComponents();
@@ -284,7 +286,7 @@ public class ExamAdminPanel extends BasePanel{
                 for(Long groupId : exam.getGroupIds())
                     examGroupsMap.put(groupId,0L);
                 ExamList.add(examRule.getName());
-                examRulesMap.put(exam.getExamRuleId(),0L);
+                examRulesMap.put(exam.getExamRuleId(),examRule);
                 }
             }
         refreshSelectedExam();
@@ -309,12 +311,41 @@ public class ExamAdminPanel extends BasePanel{
         }
 
     private void  refreshExamPeriods(){
-
+        new APICall<List<ExamPeriodBean>>(main) {
+            @Override
+            public Call<List<ExamPeriodBean>> apiFun() {
+                return main.client.getExamApi().getPeriods(cExam.getId());
+                }
+            @Override
+            public void onSucess(List<ExamPeriodBean> oo) {
+                periods = oo;
+                PeriodList.removeAll();
+                for(ExamPeriodBean examPeriod : periods){
+                    PeriodList.add(new OwnDateTime(examPeriod.getStart()).dateTimeToString());
+                    }
+                refreshSelectedExamPeriod();
+                }
+            };
         }
 
     private void  refreshSelectedExamPeriod(){
-
-        }
+        cPeriod=null;
+        if (periods.size()==0)
+            return;
+        cPeriod = periods.get(PeriodList.getSelectedIndex());
+        if (cPeriod.getStart().longValue()==0){
+            PeriodData.setText("---");
+            PeriodStartTime.setText("---");
+            PeriodEndTime.setText("---");
+            }
+        else{
+            OwnDateTime date1 = new OwnDateTime(cPeriod.getStart());
+            OwnDateTime date2 = new OwnDateTime(cPeriod.getEnd());
+            PeriodData.setText(date1.dateToString());
+            PeriodStartTime.setText(date1.timeToString());
+            PeriodEndTime.setText(cPeriod.getEnd().longValue()==0 ? "---" : date2.timeToString());
+            }
+    }
 
 
     private void refreshThemeFull(){
@@ -395,19 +426,19 @@ public class ExamAdminPanel extends BasePanel{
         Theme = new java.awt.Choice();
         RefreshDisciplines = new javax.swing.JButton();
         DisciplineImport = new javax.swing.JButton();
-        RemoveTask = new javax.swing.JButton();
-        AddTask = new javax.swing.JButton();
-        AddDiscipline = new javax.swing.JButton();
-        RemoveDiscipline = new javax.swing.JButton();
-        AddTheme = new javax.swing.JButton();
-        RemoveTheme = new javax.swing.JButton();
+        TaskRemove = new javax.swing.JButton();
+        TaskAdd = new javax.swing.JButton();
+        DisciplineAdd = new javax.swing.JButton();
+        DisciplineRemove = new javax.swing.JButton();
+        ThemeAdd = new javax.swing.JButton();
+        ThemeRemove = new javax.swing.JButton();
         Task = new java.awt.Choice();
         ArtifactView = new javax.swing.JButton();
         ArtifactUpload = new javax.swing.JButton();
         ArtifactDownLoad = new javax.swing.JButton();
         TaskSaveText = new javax.swing.JButton();
-        EditDiscipline = new javax.swing.JButton();
-        EditTheme = new javax.swing.JButton();
+        DisciplineEdit = new javax.swing.JButton();
+        ThemeEdit = new javax.swing.JButton();
         FullTrace = new javax.swing.JCheckBox();
         DisciplineSaveImport = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
@@ -415,12 +446,12 @@ public class ExamAdminPanel extends BasePanel{
         Group = new java.awt.Choice();
         Student = new java.awt.Choice();
         RefreshGroups = new javax.swing.JButton();
-        AddGroup = new javax.swing.JButton();
-        RemoveGroup = new javax.swing.JButton();
-        AddStudent = new javax.swing.JButton();
-        RemoveStudent = new javax.swing.JButton();
-        EditGroup = new javax.swing.JButton();
-        EditStudent = new javax.swing.JButton();
+        GroupAdd = new javax.swing.JButton();
+        GroupRemove = new javax.swing.JButton();
+        StudentAdd = new javax.swing.JButton();
+        StudentRemove = new javax.swing.JButton();
+        GroupEdit = new javax.swing.JButton();
+        StudentEdit = new javax.swing.JButton();
         GroupsImport = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel6 = new javax.swing.JLabel();
@@ -490,6 +521,11 @@ public class ExamAdminPanel extends BasePanel{
                 TaskTextInputMethodTextChanged(evt);
             }
         });
+        TaskText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TaskTextKeyPressed(evt);
+            }
+        });
         add(TaskText);
         TaskText.setBounds(20, 150, 420, 220);
 
@@ -531,71 +567,71 @@ public class ExamAdminPanel extends BasePanel{
         add(DisciplineImport);
         DisciplineImport.setBounds(210, 5, 30, 30);
 
-        RemoveTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        RemoveTask.setBorderPainted(false);
-        RemoveTask.setContentAreaFilled(false);
-        RemoveTask.addActionListener(new java.awt.event.ActionListener() {
+        TaskRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        TaskRemove.setBorderPainted(false);
+        TaskRemove.setContentAreaFilled(false);
+        TaskRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RemoveTaskActionPerformed(evt);
+                TaskRemoveActionPerformed(evt);
             }
         });
-        add(RemoveTask);
-        RemoveTask.setBounds(370, 115, 30, 30);
+        add(TaskRemove);
+        TaskRemove.setBounds(370, 115, 30, 30);
 
-        AddTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        AddTask.setBorderPainted(false);
-        AddTask.setContentAreaFilled(false);
-        AddTask.addActionListener(new java.awt.event.ActionListener() {
+        TaskAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        TaskAdd.setBorderPainted(false);
+        TaskAdd.setContentAreaFilled(false);
+        TaskAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddTaskActionPerformed(evt);
+                TaskAddActionPerformed(evt);
             }
         });
-        add(AddTask);
-        AddTask.setBounds(330, 115, 30, 30);
+        add(TaskAdd);
+        TaskAdd.setBounds(330, 115, 30, 30);
 
-        AddDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        AddDiscipline.setBorderPainted(false);
-        AddDiscipline.setContentAreaFilled(false);
-        AddDiscipline.addActionListener(new java.awt.event.ActionListener() {
+        DisciplineAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        DisciplineAdd.setBorderPainted(false);
+        DisciplineAdd.setContentAreaFilled(false);
+        DisciplineAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddDisciplineActionPerformed(evt);
+                DisciplineAddActionPerformed(evt);
             }
         });
-        add(AddDiscipline);
-        AddDiscipline.setBounds(330, 40, 30, 30);
+        add(DisciplineAdd);
+        DisciplineAdd.setBounds(330, 40, 30, 30);
 
-        RemoveDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        RemoveDiscipline.setBorderPainted(false);
-        RemoveDiscipline.setContentAreaFilled(false);
-        RemoveDiscipline.addActionListener(new java.awt.event.ActionListener() {
+        DisciplineRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        DisciplineRemove.setBorderPainted(false);
+        DisciplineRemove.setContentAreaFilled(false);
+        DisciplineRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RemoveDisciplineActionPerformed(evt);
+                DisciplineRemoveActionPerformed(evt);
             }
         });
-        add(RemoveDiscipline);
-        RemoveDiscipline.setBounds(370, 40, 30, 30);
+        add(DisciplineRemove);
+        DisciplineRemove.setBounds(370, 40, 30, 30);
 
-        AddTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        AddTheme.setBorderPainted(false);
-        AddTheme.setContentAreaFilled(false);
-        AddTheme.addActionListener(new java.awt.event.ActionListener() {
+        ThemeAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        ThemeAdd.setBorderPainted(false);
+        ThemeAdd.setContentAreaFilled(false);
+        ThemeAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddThemeActionPerformed(evt);
+                ThemeAddActionPerformed(evt);
             }
         });
-        add(AddTheme);
-        AddTheme.setBounds(330, 75, 30, 30);
+        add(ThemeAdd);
+        ThemeAdd.setBounds(330, 75, 30, 30);
 
-        RemoveTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        RemoveTheme.setBorderPainted(false);
-        RemoveTheme.setContentAreaFilled(false);
-        RemoveTheme.addActionListener(new java.awt.event.ActionListener() {
+        ThemeRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        ThemeRemove.setBorderPainted(false);
+        ThemeRemove.setContentAreaFilled(false);
+        ThemeRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RemoveThemeActionPerformed(evt);
+                ThemeRemoveActionPerformed(evt);
             }
         });
-        add(RemoveTheme);
-        RemoveTheme.setBounds(370, 75, 30, 30);
+        add(ThemeRemove);
+        ThemeRemove.setBounds(370, 75, 30, 30);
 
         Task.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -650,27 +686,27 @@ public class ExamAdminPanel extends BasePanel{
         add(TaskSaveText);
         TaskSaveText.setBounds(410, 115, 30, 30);
 
-        EditDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
-        EditDiscipline.setBorderPainted(false);
-        EditDiscipline.setContentAreaFilled(false);
-        EditDiscipline.addActionListener(new java.awt.event.ActionListener() {
+        DisciplineEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        DisciplineEdit.setBorderPainted(false);
+        DisciplineEdit.setContentAreaFilled(false);
+        DisciplineEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditDisciplineActionPerformed(evt);
+                DisciplineEditActionPerformed(evt);
             }
         });
-        add(EditDiscipline);
-        EditDiscipline.setBounds(410, 40, 30, 30);
+        add(DisciplineEdit);
+        DisciplineEdit.setBounds(410, 40, 30, 30);
 
-        EditTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
-        EditTheme.setBorderPainted(false);
-        EditTheme.setContentAreaFilled(false);
-        EditTheme.addActionListener(new java.awt.event.ActionListener() {
+        ThemeEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        ThemeEdit.setBorderPainted(false);
+        ThemeEdit.setContentAreaFilled(false);
+        ThemeEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditThemeActionPerformed(evt);
+                ThemeEditActionPerformed(evt);
             }
         });
-        add(EditTheme);
-        EditTheme.setBounds(410, 75, 30, 30);
+        add(ThemeEdit);
+        ThemeEdit.setBounds(410, 75, 30, 30);
 
         FullTrace.setText("трассировка импорта");
         add(FullTrace);
@@ -722,71 +758,71 @@ public class ExamAdminPanel extends BasePanel{
         add(RefreshGroups);
         RefreshGroups.setBounds(540, 5, 30, 30);
 
-        AddGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        AddGroup.setBorderPainted(false);
-        AddGroup.setContentAreaFilled(false);
-        AddGroup.addActionListener(new java.awt.event.ActionListener() {
+        GroupAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        GroupAdd.setBorderPainted(false);
+        GroupAdd.setContentAreaFilled(false);
+        GroupAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddGroupActionPerformed(evt);
+                GroupAddActionPerformed(evt);
             }
         });
-        add(AddGroup);
-        AddGroup.setBounds(740, 40, 30, 30);
+        add(GroupAdd);
+        GroupAdd.setBounds(740, 40, 30, 30);
 
-        RemoveGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        RemoveGroup.setBorderPainted(false);
-        RemoveGroup.setContentAreaFilled(false);
-        RemoveGroup.addActionListener(new java.awt.event.ActionListener() {
+        GroupRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        GroupRemove.setBorderPainted(false);
+        GroupRemove.setContentAreaFilled(false);
+        GroupRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RemoveGroupActionPerformed(evt);
+                GroupRemoveActionPerformed(evt);
             }
         });
-        add(RemoveGroup);
-        RemoveGroup.setBounds(780, 40, 30, 30);
+        add(GroupRemove);
+        GroupRemove.setBounds(780, 40, 30, 30);
 
-        AddStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        AddStudent.setBorderPainted(false);
-        AddStudent.setContentAreaFilled(false);
-        AddStudent.addActionListener(new java.awt.event.ActionListener() {
+        StudentAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        StudentAdd.setBorderPainted(false);
+        StudentAdd.setContentAreaFilled(false);
+        StudentAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddStudentActionPerformed(evt);
+                StudentAddActionPerformed(evt);
             }
         });
-        add(AddStudent);
-        AddStudent.setBounds(740, 70, 30, 30);
+        add(StudentAdd);
+        StudentAdd.setBounds(740, 70, 30, 30);
 
-        RemoveStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        RemoveStudent.setBorderPainted(false);
-        RemoveStudent.setContentAreaFilled(false);
-        RemoveStudent.addActionListener(new java.awt.event.ActionListener() {
+        StudentRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        StudentRemove.setBorderPainted(false);
+        StudentRemove.setContentAreaFilled(false);
+        StudentRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RemoveStudentActionPerformed(evt);
+                StudentRemoveActionPerformed(evt);
             }
         });
-        add(RemoveStudent);
-        RemoveStudent.setBounds(780, 70, 30, 30);
+        add(StudentRemove);
+        StudentRemove.setBounds(780, 70, 30, 30);
 
-        EditGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
-        EditGroup.setBorderPainted(false);
-        EditGroup.setContentAreaFilled(false);
-        EditGroup.addActionListener(new java.awt.event.ActionListener() {
+        GroupEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        GroupEdit.setBorderPainted(false);
+        GroupEdit.setContentAreaFilled(false);
+        GroupEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditGroupActionPerformed(evt);
+                GroupEditActionPerformed(evt);
             }
         });
-        add(EditGroup);
-        EditGroup.setBounds(820, 40, 30, 30);
+        add(GroupEdit);
+        GroupEdit.setBounds(820, 40, 30, 30);
 
-        EditStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
-        EditStudent.setBorderPainted(false);
-        EditStudent.setContentAreaFilled(false);
-        EditStudent.addActionListener(new java.awt.event.ActionListener() {
+        StudentEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
+        StudentEdit.setBorderPainted(false);
+        StudentEdit.setContentAreaFilled(false);
+        StudentEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditStudentActionPerformed(evt);
+                StudentEditActionPerformed(evt);
             }
         });
-        add(EditStudent);
-        EditStudent.setBounds(820, 70, 30, 30);
+        add(StudentEdit);
+        StudentEdit.setBounds(820, 70, 30, 30);
 
         GroupsImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
         GroupsImport.setBorderPainted(false);
@@ -1115,7 +1151,7 @@ public class ExamAdminPanel extends BasePanel{
 
     }//GEN-LAST:event_DisciplineImportActionPerformed
 
-    private void RemoveTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveTaskActionPerformed
+    private void TaskRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskRemoveActionPerformed
         if (cTask==null)
             return;
         new OK(200, 200, "Удалить задание номер " + (cTaskNum+1), new I_Button() {
@@ -1133,9 +1169,9 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_RemoveTaskActionPerformed
+    }//GEN-LAST:event_TaskRemoveActionPerformed
 
-    private void AddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddTaskActionPerformed
+    private void TaskAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskAddActionPerformed
         if (cTheme==null)
             return;
         new OK(200, 200, "Добавить вопрос/задачу", new I_Button() {
@@ -1159,9 +1195,9 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_AddTaskActionPerformed
+    }//GEN-LAST:event_TaskAddActionPerformed
 
-    private void AddDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddDisciplineActionPerformed
+    private void DisciplineAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineAddActionPerformed
         new OKName(200,200,"Добавить дисциплину", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
@@ -1179,9 +1215,9 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_AddDisciplineActionPerformed
+    }//GEN-LAST:event_DisciplineAddActionPerformed
 
-    private void RemoveDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveDisciplineActionPerformed
+    private void DisciplineRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineRemoveActionPerformed
         if (cDiscipline==null)
             return;
         new OK(200, 200, "Удалить дисциплину: " + cDiscipline.getDiscipline().getName(), new I_Button() {
@@ -1199,9 +1235,9 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_RemoveDisciplineActionPerformed
+    }//GEN-LAST:event_DisciplineRemoveActionPerformed
 
-    private void AddThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddThemeActionPerformed
+    private void ThemeAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThemeAddActionPerformed
         if (cDiscipline==null)
             return;
         new OKName(200,200,"Добавить тему в "+cDiscipline.getDiscipline().getName(), new I_Value<String>() {
@@ -1222,9 +1258,9 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_AddThemeActionPerformed
+    }//GEN-LAST:event_ThemeAddActionPerformed
 
-    private void RemoveThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveThemeActionPerformed
+    private void ThemeRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThemeRemoveActionPerformed
         if (cTheme==null)
             return;
         new OK(200, 200, "Удалить тему: " + cTheme.getTheme().getName(), new I_Button() {
@@ -1242,7 +1278,7 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_RemoveThemeActionPerformed
+    }//GEN-LAST:event_ThemeRemoveActionPerformed
 
     private void DisciplineItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DisciplineItemStateChanged
         refreshDisciplineFull();
@@ -1282,7 +1318,7 @@ public class ExamAdminPanel extends BasePanel{
         taskUpdate();
     }//GEN-LAST:event_TaskSaveTextActionPerformed
 
-    private void EditDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditDisciplineActionPerformed
+    private void DisciplineEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineEditActionPerformed
         new OKName(200,200,"Изменить название дисциплины", cDiscipline.getDiscipline().getName(),new I_Value<String>() {
             @Override
             public void onEnter(String value) {
@@ -1300,11 +1336,11 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_EditDisciplineActionPerformed
+    }//GEN-LAST:event_DisciplineEditActionPerformed
 
-    private void EditThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditThemeActionPerformed
+    private void ThemeEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThemeEditActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_EditThemeActionPerformed
+    }//GEN-LAST:event_ThemeEditActionPerformed
     //-------------------------------------------------------------------------------------------------------------------
     private void DisciplineSaveImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineSaveImportActionPerformed
         if (owtImportData==null)
@@ -1374,7 +1410,7 @@ public class ExamAdminPanel extends BasePanel{
         refreshGroupsList();
     }//GEN-LAST:event_RefreshGroupsActionPerformed
 
-    private void AddGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddGroupActionPerformed
+    private void GroupAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupAddActionPerformed
         new OKName(200,200,"Добавить группу", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
@@ -1392,9 +1428,9 @@ public class ExamAdminPanel extends BasePanel{
                 };
             }
         });
-    }//GEN-LAST:event_AddGroupActionPerformed
+    }//GEN-LAST:event_GroupAddActionPerformed
 
-    private void RemoveGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveGroupActionPerformed
+    private void GroupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupRemoveActionPerformed
         if (cGroup==null)
             return;
         new OK(200, 200, "Удалить группу: " + cGroup.getGroup().getName(), new I_Button() {
@@ -1413,23 +1449,23 @@ public class ExamAdminPanel extends BasePanel{
             }
         });
 
-    }//GEN-LAST:event_RemoveGroupActionPerformed
+    }//GEN-LAST:event_GroupRemoveActionPerformed
 
-    private void AddStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddStudentActionPerformed
+    private void StudentAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentAddActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_AddStudentActionPerformed
+    }//GEN-LAST:event_StudentAddActionPerformed
 
-    private void RemoveStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveStudentActionPerformed
+    private void StudentRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentRemoveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_RemoveStudentActionPerformed
+    }//GEN-LAST:event_StudentRemoveActionPerformed
 
-    private void EditGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditGroupActionPerformed
+    private void GroupEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupEditActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_EditGroupActionPerformed
+    }//GEN-LAST:event_GroupEditActionPerformed
 
-    private void EditStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditStudentActionPerformed
+    private void StudentEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentEditActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_EditStudentActionPerformed
+    }//GEN-LAST:event_StudentEditActionPerformed
 
 
     private ExcelX2 excel;
@@ -1776,7 +1812,7 @@ public class ExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(ExamBean oo) {
-                        refreshDisciplineExams();
+                        refreshDisciplineFull();
                         }
                     };
                 }
@@ -1784,7 +1820,23 @@ public class ExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_ExamAddActionPerformed
 
     private void ExamRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamRemoveActionPerformed
-        // TODO add your handling code here:
+        if (cExam==null)
+            return;
+        new OK(200, 200, "Удалить экзамен для регламента: " + ExamList.getItem(ExamList.getSelectedIndex()), new I_Button() {
+            @Override
+            public void onPush() {
+                new APICall<Void>(main) {
+                    @Override
+                    public Call<Void> apiFun() {
+                        return main.client.getExamApi().deleteExam(cExam.getId());
+                        }
+                    @Override
+                    public void onSucess(Void oo) {
+                        refreshDisciplineFull();
+                    }
+                };
+            }
+        });
     }//GEN-LAST:event_ExamRemoveActionPerformed
 
     private void PeriodAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodAddActionPerformed
@@ -1841,6 +1893,11 @@ public class ExamAdminPanel extends BasePanel{
         TaskSaveText.setEnabled(true);
     }//GEN-LAST:event_TaskTextInputMethodTextChanged
 
+    private void TaskTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TaskTextKeyPressed
+        taskTextChanged=true;
+        TaskSaveText.setEnabled(true);
+    }//GEN-LAST:event_TaskTextKeyPressed
+
 
     public void taskUpdate(){
         if (cTask==null)
@@ -1876,21 +1933,15 @@ public class ExamAdminPanel extends BasePanel{
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton AddDiscipline;
-    private javax.swing.JButton AddGroup;
-    private javax.swing.JButton AddStudent;
-    private javax.swing.JButton AddTask;
-    private javax.swing.JButton AddTheme;
     private javax.swing.JButton ArtifactDownLoad;
     private javax.swing.JButton ArtifactUpload;
     private javax.swing.JButton ArtifactView;
     private java.awt.Choice Discipline;
+    private javax.swing.JButton DisciplineAdd;
+    private javax.swing.JButton DisciplineEdit;
     private javax.swing.JButton DisciplineImport;
+    private javax.swing.JButton DisciplineRemove;
     private javax.swing.JButton DisciplineSaveImport;
-    private javax.swing.JButton EditDiscipline;
-    private javax.swing.JButton EditGroup;
-    private javax.swing.JButton EditStudent;
-    private javax.swing.JButton EditTheme;
     private javax.swing.JButton ExamAdd;
     private javax.swing.JButton ExamGroupAdd;
     private javax.swing.JButton ExamGroupRemove;
@@ -1901,6 +1952,9 @@ public class ExamAdminPanel extends BasePanel{
     private java.awt.Choice ExamsTotalList;
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
+    private javax.swing.JButton GroupAdd;
+    private javax.swing.JButton GroupEdit;
+    private javax.swing.JButton GroupRemove;
     private javax.swing.JButton GroupsImport;
     private javax.swing.JButton PeriodAdd;
     private javax.swing.JTextField PeriodData;
@@ -1913,11 +1967,6 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JTextField PeriodState1;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RefreshGroups;
-    private javax.swing.JButton RemoveDiscipline;
-    private javax.swing.JButton RemoveGroup;
-    private javax.swing.JButton RemoveStudent;
-    private javax.swing.JButton RemoveTask;
-    private javax.swing.JButton RemoveTheme;
     private javax.swing.JButton RuleAdd;
     private javax.swing.JButton RuleDelete;
     private javax.swing.JTextField RuleDuration;
@@ -1930,12 +1979,20 @@ public class ExamAdminPanel extends BasePanel{
     private java.awt.Choice RuleThemesList;
     private java.awt.Choice RulesList;
     private java.awt.Choice Student;
+    private javax.swing.JButton StudentAdd;
+    private javax.swing.JButton StudentEdit;
+    private javax.swing.JButton StudentRemove;
     private java.awt.Choice Task;
+    private javax.swing.JButton TaskAdd;
+    private javax.swing.JButton TaskRemove;
     private javax.swing.JButton TaskSaveText;
     private java.awt.TextArea TaskText;
     private javax.swing.JCheckBox TaskType;
     private javax.swing.JLabel TaskTypeLabel;
     private java.awt.Choice Theme;
+    private javax.swing.JButton ThemeAdd;
+    private javax.swing.JButton ThemeEdit;
+    private javax.swing.JButton ThemeRemove;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
