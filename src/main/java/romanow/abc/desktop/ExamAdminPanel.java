@@ -20,10 +20,7 @@ import romanow.abc.excel.I_ExcelBack;
 
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  *
@@ -53,6 +50,8 @@ public class ExamAdminPanel extends BasePanel{
     private List<ExamRuleBean> cExamRules = new ArrayList<>();          // Список регламентов для дисциплины
     private HashMap<Long,ExamRuleBean> cExamRulesMap = new HashMap<>(); // Мар регламентов для дисциплины
     private List<RatingSystemBean> ratings = new ArrayList<>();         // Список рейтингов ????
+    private boolean refresh=false;                                      // Признак обновления для событий  CheckBox
+    private boolean taskTextChanged=false;
     public ExamAdminPanel() {
         initComponents();
         }
@@ -323,18 +322,33 @@ public class ExamAdminPanel extends BasePanel{
         if (cDiscipline.getThemes().size()==0)
             return;
         cTheme = cDiscipline.getThemes().get(Theme.getSelectedIndex());
-        int i=1;
+        cTheme.getTasks().sort(new Comparator<FullTaskBean>() {
+            @Override
+            public int compare(FullTaskBean o1, FullTaskBean o2) {              // Сортировать по id (в порядке поступления)
+                return o1.getTask().getId()-o2.getTask().getId() >0 ? 1 : -1;
+                }
+            });
+        int iq=1,it=1;
         for(FullTaskBean task : cTheme.getTasks())
-            Task.add("Вопрос "+i++);
+            if (task.getTask().getTaskType()== TaskBean.TaskTypeEnum.QUESTION)
+                Task.add("Вопрос "+iq++);
+        for(FullTaskBean task : cTheme.getTasks())
+            if (task.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE)
+                Task.add("Задача "+it++);
         refreshTaskFull();
         }
 
-    private void refreshTaskFull(){
+    private void refreshTaskFullForce(){
         TaskText.setText("");
         if (cTheme.getTasks().size()==0)
             return;
+        refresh=true;
+        TaskSaveText.setEnabled(false);
         cTaskNum = Task.getSelectedIndex();
         cTask = cTheme.getTasks().get(cTaskNum);
+        boolean isTask = cTask.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE;
+        TaskType.setSelected(isTask);
+        TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
         TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),60));
         boolean bb = cTask.getArtefact()!=null;
         ArtifactView.setEnabled(bb);
@@ -343,7 +357,26 @@ public class ExamAdminPanel extends BasePanel{
             ArtefactBean artefact = cTask.getArtefact();
             TaskText.append("\n"+artefact.getFileName());
             }
-    }
+        refresh=false;
+        }
+
+    private void refreshTaskFull(){
+        if (!taskTextChanged){
+            refreshTaskFullForce();
+            return;
+            }
+        taskTextChanged=false;
+        TaskSaveText.setEnabled(false);
+        new OKFull(200, 200, "Сохранить изменения текста", new I_ButtonFull() {
+            @Override
+            public void onPush(boolean yes) {
+                if (yes)
+                    taskUpdate();
+                else
+                    refreshTaskFullForce();
+                }
+            });
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -354,7 +387,7 @@ public class ExamAdminPanel extends BasePanel{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        TaskTypeLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         TaskText = new java.awt.TextArea();
@@ -372,7 +405,7 @@ public class ExamAdminPanel extends BasePanel{
         ArtifactView = new javax.swing.JButton();
         ArtifactUpload = new javax.swing.JButton();
         ArtifactDownLoad = new javax.swing.JButton();
-        EditTask = new javax.swing.JButton();
+        TaskSaveText = new javax.swing.JButton();
         EditDiscipline = new javax.swing.JButton();
         EditTheme = new javax.swing.JButton();
         FullTrace = new javax.swing.JCheckBox();
@@ -433,13 +466,14 @@ public class ExamAdminPanel extends BasePanel{
         PeriodRemove = new javax.swing.JButton();
         jLabel21 = new javax.swing.JLabel();
         PeriodEndTime = new javax.swing.JTextField();
+        TaskType = new javax.swing.JCheckBox();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
 
-        jLabel1.setText("Вопрос");
-        add(jLabel1);
-        jLabel1.setBounds(20, 105, 70, 16);
+        TaskTypeLabel.setText("Вопрос");
+        add(TaskTypeLabel);
+        TaskTypeLabel.setBounds(20, 105, 100, 16);
 
         jLabel2.setText("Предмет");
         add(jLabel2);
@@ -448,6 +482,14 @@ public class ExamAdminPanel extends BasePanel{
         jLabel3.setText("Тема");
         add(jLabel3);
         jLabel3.setBounds(20, 65, 70, 16);
+
+        TaskText.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                TaskTextInputMethodTextChanged(evt);
+            }
+        });
         add(TaskText);
         TaskText.setBounds(20, 150, 420, 220);
 
@@ -596,16 +638,17 @@ public class ExamAdminPanel extends BasePanel{
         add(ArtifactDownLoad);
         ArtifactDownLoad.setBounds(60, 380, 40, 30);
 
-        EditTask.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
-        EditTask.setBorderPainted(false);
-        EditTask.setContentAreaFilled(false);
-        EditTask.addActionListener(new java.awt.event.ActionListener() {
+        TaskSaveText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/save.png"))); // NOI18N
+        TaskSaveText.setBorderPainted(false);
+        TaskSaveText.setContentAreaFilled(false);
+        TaskSaveText.setEnabled(false);
+        TaskSaveText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditTaskActionPerformed(evt);
+                TaskSaveTextActionPerformed(evt);
             }
         });
-        add(EditTask);
-        EditTask.setBounds(410, 115, 30, 30);
+        add(TaskSaveText);
+        TaskSaveText.setBounds(410, 115, 30, 30);
 
         EditDiscipline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/edit.png"))); // NOI18N
         EditDiscipline.setBorderPainted(false);
@@ -1035,6 +1078,15 @@ public class ExamAdminPanel extends BasePanel{
         });
         add(PeriodEndTime);
         PeriodEndTime.setBounds(650, 240, 50, 25);
+
+        TaskType.setText("Задача(1)/Вопрос(0)");
+        TaskType.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                TaskTypeItemStateChanged(evt);
+            }
+        });
+        add(TaskType);
+        TaskType.setBounds(180, 100, 160, 20);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1084,7 +1136,29 @@ public class ExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_RemoveTaskActionPerformed
 
     private void AddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddTaskActionPerformed
-        // TODO add your handling code here:
+        if (cTheme==null)
+            return;
+        new OK(200, 200, "Добавить вопрос/задачу", new I_Button() {
+            @Override
+            public void onPush() {
+                final TaskBean task = new TaskBean();
+                task.setArtefactId(null);
+                task.setText("Новый вопрос/задача");
+                task.setTaskType(TaskBean.TaskTypeEnum.QUESTION);
+                task.setThemeId(cTheme.getTheme().getId());
+                new APICall<TaskBean>(main) {
+                    @Override
+                    public Call<TaskBean> apiFun() {
+                        return main.client.getTaskApi().createTask(task);
+                        }
+                    @Override
+                    public void onSucess(TaskBean oo) {
+                        System.out.println("taskId="+oo.getId());
+                        refreshThemeFull();
+                    }
+                };
+            }
+        });
     }//GEN-LAST:event_AddTaskActionPerformed
 
     private void AddDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddDisciplineActionPerformed
@@ -1191,16 +1265,7 @@ public class ExamAdminPanel extends BasePanel{
             @Override
             public void onEnter(ArtefactBean value) {
                 cTask.getTask().setArtefactId(value.getId());
-                new APICall<TaskBean>(main) {
-                    @Override
-                    public Call<TaskBean> apiFun() {
-                        return main.client.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
-                        }
-                    @Override
-                    public void onSucess(TaskBean oo) {
-                        refreshTaskFull();
-                        }
-                    };
+                taskUpdate();
                 }
             });
         }//GEN-LAST:event_ArtifactUploadActionPerformed
@@ -1208,9 +1273,14 @@ public class ExamAdminPanel extends BasePanel{
         // TODO add your handling code here:
     }//GEN-LAST:event_ArtifactDownLoadActionPerformed
 
-    private void EditTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditTaskActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_EditTaskActionPerformed
+    private void TaskSaveTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskSaveTextActionPerformed
+        TaskSaveText.setEnabled(false);
+        taskTextChanged = false;
+        if (cTask==null)
+            return;
+        cTask.getTask().setText(TaskText.getText());
+        taskUpdate();
+    }//GEN-LAST:event_TaskSaveTextActionPerformed
 
     private void EditDisciplineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditDisciplineActionPerformed
         new OKName(200,200,"Изменить название дисциплины", cDiscipline.getDiscipline().getName(),new I_Value<String>() {
@@ -1757,6 +1827,37 @@ public class ExamAdminPanel extends BasePanel{
         refreshSelectedExam();
     }//GEN-LAST:event_ExamListItemStateChanged
 
+    private void TaskTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TaskTypeItemStateChanged
+        if (refresh)
+            return;
+        if (cTask==null)
+            return;
+        cTask.getTask().setTaskType(TaskType.isSelected() ? TaskBean.TaskTypeEnum.EXERCISE : TaskBean.TaskTypeEnum.QUESTION);
+        taskUpdate();
+    }//GEN-LAST:event_TaskTypeItemStateChanged
+
+    private void TaskTextInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_TaskTextInputMethodTextChanged
+        taskTextChanged=true;
+        TaskSaveText.setEnabled(true);
+    }//GEN-LAST:event_TaskTextInputMethodTextChanged
+
+
+    public void taskUpdate(){
+        if (cTask==null)
+            return;
+        new APICall<TaskBean>(main) {
+            @Override
+            public Call<TaskBean> apiFun() {
+                return main.client.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
+                }
+            @Override
+            public void onSucess(TaskBean oo) {
+                popup("Вопрос/задача изменены");
+                refreshThemeFull();
+                }
+            };
+        }
+
     @Override
     public void refresh() {}
 
@@ -1789,7 +1890,6 @@ public class ExamAdminPanel extends BasePanel{
     private javax.swing.JButton EditDiscipline;
     private javax.swing.JButton EditGroup;
     private javax.swing.JButton EditStudent;
-    private javax.swing.JButton EditTask;
     private javax.swing.JButton EditTheme;
     private javax.swing.JButton ExamAdd;
     private javax.swing.JButton ExamGroupAdd;
@@ -1831,9 +1931,11 @@ public class ExamAdminPanel extends BasePanel{
     private java.awt.Choice RulesList;
     private java.awt.Choice Student;
     private java.awt.Choice Task;
+    private javax.swing.JButton TaskSaveText;
     private java.awt.TextArea TaskText;
+    private javax.swing.JCheckBox TaskType;
+    private javax.swing.JLabel TaskTypeLabel;
     private java.awt.Choice Theme;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
