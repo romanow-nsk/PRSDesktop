@@ -14,6 +14,7 @@ import romanow.abc.convert.onewayticket.OWTTheme;
 import romanow.abc.core.UniException;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
+import romanow.abc.desktop.exam.ExamPeriodStateFactory;
 import romanow.abc.exam.model.*;
 import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
@@ -54,6 +55,7 @@ public class ExamAdminPanel extends BasePanel{
     private List<ExamPeriodBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
     private ExamPeriodBean cPeriod=null;                                // Текущая сдача
     private boolean taskTextChanged=false;
+    private ExamPeriodStateFactory stateFactory = new ExamPeriodStateFactory();
     public ExamAdminPanel() {
         initComponents();
         }
@@ -64,6 +66,11 @@ public class ExamAdminPanel extends BasePanel{
         DisciplineSaveImport.setEnabled(false);
         ArtifactDownLoad.setEnabled(false);
         ArtifactView.setEnabled(false);
+        PeriodState.removeAll();
+        PeriodState.add("...");
+        for(ExamPeriodStateFactory.EnumPeriodStatePair pair : stateFactory.getList())
+            PeriodState.add(pair.name);
+        PeriodState.select(0);
         refreshAll();
         }
 
@@ -329,23 +336,37 @@ public class ExamAdminPanel extends BasePanel{
         }
 
     private void  refreshSelectedExamPeriod(){
+        PeriodState.select(0);
         cPeriod=null;
         if (periods.size()==0)
             return;
         cPeriod = periods.get(PeriodList.getSelectedIndex());
-        if (cPeriod.getStart().longValue()==0){
-            PeriodData.setText("---");
-            PeriodStartTime.setText("---");
-            PeriodEndTime.setText("---");
-            }
-        else{
-            OwnDateTime date1 = new OwnDateTime(cPeriod.getStart());
-            OwnDateTime date2 = new OwnDateTime(cPeriod.getEnd());
-            PeriodData.setText(date1.dateToString());
-            PeriodStartTime.setText(date1.timeToString());
-            PeriodEndTime.setText(cPeriod.getEnd().longValue()==0 ? "---" : date2.timeToString());
-            }
-    }
+        new APICall<ExamPeriodBean>(main) {
+            @Override
+            public Call<ExamPeriodBean> apiFun() {
+                return main.client.getExamApi().getPeriod(cPeriod.getId());
+                }
+            @Override
+            public void onSucess(ExamPeriodBean oo) {
+                cPeriod = oo;
+                periods.set(PeriodList.getSelectedIndex(),cPeriod);
+                if (cPeriod.getStart().longValue()==0){
+                    PeriodData.setText("---");
+                    PeriodStartTime.setText("---");
+                    PeriodEndTime.setText("---");
+                }
+                else{
+                    OwnDateTime date1 = new OwnDateTime(cPeriod.getStart());
+                    OwnDateTime date2 = new OwnDateTime(cPeriod.getEnd());
+                    PeriodData.setText(date1.dateToString());
+                    PeriodStartTime.setText(date1.timeToString());
+                    PeriodEndTime.setText(cPeriod.getEnd().longValue()==0 ? "---" : date2.timeToString());
+                }
+                int idx = stateFactory.getValueIdx(cPeriod.getState());
+                PeriodState.select(idx+1);
+                }
+            };
+        }
 
 
     private void refreshThemeFull(){
@@ -487,7 +508,6 @@ public class ExamAdminPanel extends BasePanel{
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        PeriodState1 = new javax.swing.JTextField();
         PeriodOneGroup = new java.awt.Choice();
         ExamGroupAdd = new javax.swing.JButton();
         ExamGroupRemove = new javax.swing.JButton();
@@ -498,6 +518,7 @@ public class ExamAdminPanel extends BasePanel{
         jLabel21 = new javax.swing.JLabel();
         PeriodEndTime = new javax.swing.JTextField();
         TaskType = new javax.swing.JCheckBox();
+        PeriodState = new java.awt.Choice();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -1022,15 +1043,11 @@ public class ExamAdminPanel extends BasePanel{
 
         jLabel19.setText("Статус");
         add(jLabel19);
-        jLabel19.setBounds(460, 270, 70, 16);
+        jLabel19.setBounds(460, 275, 60, 16);
 
         jLabel20.setText("Дата");
         add(jLabel20);
         jLabel20.setBounds(460, 225, 70, 16);
-
-        PeriodState1.setEnabled(false);
-        add(PeriodState1);
-        PeriodState1.setBounds(550, 270, 150, 25);
 
         PeriodOneGroup.setEnabled(false);
         add(PeriodOneGroup);
@@ -1123,6 +1140,14 @@ public class ExamAdminPanel extends BasePanel{
         });
         add(TaskType);
         TaskType.setBounds(180, 100, 160, 20);
+
+        PeriodState.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                PeriodStateItemStateChanged(evt);
+            }
+        });
+        add(PeriodState);
+        PeriodState.setBounds(520, 275, 180, 20);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1499,7 +1524,7 @@ public class ExamAdminPanel extends BasePanel{
                             String ss[] = UtilsEM.parseFIO(values[0]);
                             account.setName(ss[0]);
                             account.setSurname(ss[1]);
-                            account.setPassword("");
+                            account.setPassword("1234");                    // TODO - пустой-не пустой
                             ArrayList roles = new ArrayList<UserRole>();
                             roles.add(UserRole.ROLE_STUDENT);
                             account.setRoles(roles);
@@ -1552,7 +1577,7 @@ public class ExamAdminPanel extends BasePanel{
     private void ruleUpdate(KeyEvent evt){
         if (cRule==null)
             return;
-        cRule.setRatingSystemId(ratings.get(0).getId());
+        cRule.setRatingSystemId(ratings.get(0).getId());        // TODO ---------------- какие
         try {
             new APICall2<ExamRuleBean>() {
                 @Override
@@ -1569,6 +1594,37 @@ public class ExamAdminPanel extends BasePanel{
                 if (evt!=null)
                     main.viewUpdate(evt,false);
                 }
+        }
+
+    private void periodStartTimeUpdate(long timeInMS){
+        UpdateExamPeriodBean out  = new UpdateExamPeriodBean();
+        out.setStart(timeInMS);
+        new APICall<ExamPeriodBean>(main) {
+            @Override
+            public Call<ExamPeriodBean> apiFun() {
+                return main.client.getExamApi().updatePeriod(out,cPeriod.getId());
+                }
+            @Override
+            public void onSucess(ExamPeriodBean oo) {
+                popup("Время сдачи изменено");
+                refreshSelectedExamPeriod();
+                }
+            };
+        }
+    private void periodStateUpdate(ExamPeriodBean.StateEnum state){
+        final UpdateExamPeriodBean out  = new UpdateExamPeriodBean();
+        out.setState(UpdateExamPeriodBean.StateEnum.fromValue(state.getValue()));  // TODO ------------ Элементарно, Ватсон
+        new APICall<ExamPeriodBean>(main) {
+            @Override
+            public Call<ExamPeriodBean> apiFun() {
+                return main.client.getExamApi().updatePeriod(out,cPeriod.getId());
+                }
+            @Override
+            public void onSucess(ExamPeriodBean oo) {
+                popup("Состояние сдачи изменено");
+                refreshSelectedExamPeriod();
+                }
+            };
         }
 
     private static String shortString(String ss, int size){
@@ -1840,7 +1896,13 @@ public class ExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_ExamRemoveActionPerformed
 
     private void PeriodAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodAddActionPerformed
-        // TODO add your handling code here:
+        if (cExam==null)
+            return;
+        new OK(200, 200, "Добавить сдачу экзамена по: " + cDiscipline.getDiscipline().getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                }
+            });
     }//GEN-LAST:event_PeriodAddActionPerformed
 
     private void PeriodRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodRemoveActionPerformed
@@ -1848,27 +1910,19 @@ public class ExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_PeriodRemoveActionPerformed
 
     private void PeriodStartTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodStartTimeMouseClicked
-        if (evt.getClickCount()<2)
-            return;
-        new CalendarView("Окончание экзамена", new I_CalendarTime() {
-            @Override
-            public void onSelect(OwnDateTime time) {
-
-            }
-        }); 
     }//GEN-LAST:event_PeriodStartTimeMouseClicked
 
     private void PeriodDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodDataMouseClicked
         if (evt.getClickCount()<2)
             return;
+        if (cPeriod==null)
+            return;
         new CalendarView("Начало экзамена", new I_CalendarTime() {
             @Override
             public void onSelect(OwnDateTime time) {
-                PeriodData.setText(time.dateToString());
-                PeriodStartTime.setText(time.timeToString());
-            }
-        }); 
-
+                periodStartTimeUpdate(time.timeInMS());
+                }
+            });
     }//GEN-LAST:event_PeriodDataMouseClicked
 
     private void PeriodEndTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodEndTimeMouseClicked
@@ -1898,6 +1952,12 @@ public class ExamAdminPanel extends BasePanel{
         TaskSaveText.setEnabled(true);
     }//GEN-LAST:event_TaskTextKeyPressed
 
+    private void PeriodStateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PeriodStateItemStateChanged
+        int idx = PeriodState.getSelectedIndex();
+        if (idx==0)
+            return;
+        periodStateUpdate(stateFactory.getList().get(idx-1).value);
+    }//GEN-LAST:event_PeriodStateItemStateChanged
 
     public void taskUpdate(){
         if (cTask==null)
@@ -1964,7 +2024,7 @@ public class ExamAdminPanel extends BasePanel{
     private java.awt.Choice PeriodOneGroup;
     private javax.swing.JButton PeriodRemove;
     private javax.swing.JTextField PeriodStartTime;
-    private javax.swing.JTextField PeriodState1;
+    private java.awt.Choice PeriodState;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RuleAdd;
