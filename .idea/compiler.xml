@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="EMDesktop" />
         <module name="EMDataServer" />
+        <module name="ABCDesktop" />
         <module name="ABCCore" />
         <module name="EMCore" />
         <module name="ABCDataServer" />

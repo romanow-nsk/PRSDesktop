@@ -57,7 +57,7 @@ public class PopupList extends JTextField {
                 if (ss.length()<2)
                     return;
                 JPopupMenu menu = new JPopupMenu();
-                new APICall<EntityList<EntityNamed>>((Client)main){
+                new APICall<EntityList<EntityNamed>>((EMStudentClient)main){
                     @Override
                     public Call<EntityList<EntityNamed>> apiFun() {
                         return main.service.getNamesByPattern(main.debugToken,entityName,ss);

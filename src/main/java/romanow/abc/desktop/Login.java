@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package romanow.abc.desktop;
 
 import retrofit2.Call;
@@ -53,14 +48,14 @@ public class Login extends JFrame implements I_LogArea{
         Password.setText("password");
         main.setMES(LOG);
         setVisible(true);
-        }
+    }
 
     public void setLoginName(String name){
         Login.setText(name);
-        }
+    }
     public void setPassword(String name){
         Password.setText(name);
-        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -181,11 +176,11 @@ public class Login extends JFrame implements I_LogArea{
     @Override
     public TextArea getLogArea() {
         return LOG;
-        }
+    }
 
     public void disConnect(){
         emClient.clear();
-        }
+    }
 
     private void LButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LButtonActionPerformed
         emClient.clear();
@@ -193,14 +188,14 @@ public class Login extends JFrame implements I_LogArea{
         if (answer.length()!=0){
             System.out.println("Нет соединения с сервером:\n"+answer);
             return;
-            }
+        }
         main.setClient(emClient);
         main.debugToken = emClient.getToken();   // Токен новой сессии
         main.loginUser.setTypeId(ValuesBase.UserAdminType);
         main.onLoginSuccess();
         back.onPush();
         dispose();
-        }//GEN-LAST:event_LButtonActionPerformed
+    }//GEN-LAST:event_LButtonActionPerformed
 
     private void ClientIPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ClientIPItemStateChanged
         //disConnect();

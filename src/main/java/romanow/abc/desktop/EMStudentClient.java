@@ -27,7 +27,7 @@ import static romanow.abc.core.constants.ValuesBase.*;
  *
  * @author romanow
  */
-public class Client extends MainBaseFrame   {
+public class EMStudentClient extends MainBaseFrame   {
     public final static int PanelOffsetY=60;
     public final static int RatioW=4;
     public final static int RatioH=3;
@@ -81,15 +81,15 @@ public class Client extends MainBaseFrame   {
             @Override
             public void onPush() {
                 startUser();
-                Client.this.setVisible(true);
+                EMStudentClient.this.setVisible(true);
                 }
             });
         }
 
-    public Client() {
+    public EMStudentClient() {
         this(true);
         }
-    public Client(boolean setLog) {
+    public EMStudentClient(boolean setLog) {
         super(setLog);
         secondForm=false;
         initComponents();
@@ -98,7 +98,7 @@ public class Client extends MainBaseFrame   {
         login();
         }
 
-    public Client(RestAPIBase service0, User user0, I_OK disposeBack0) throws UniException{
+    public EMStudentClient(RestAPIBase service0, User user0, I_OK disposeBack0) throws UniException{
         ValuesBase.init();
         initComponents();
         disposeBack = disposeBack0;
@@ -182,7 +182,7 @@ public class Client extends MainBaseFrame   {
             }
         });
         getContentPane().add(ShowLog);
-        ShowLog.setBounds(650, 720, 60, 25);
+        ShowLog.setBounds(650, 720, 60, 21);
         getContentPane().add(MESLOC);
         MESLOC.setBounds(10, 720, 630, 25);
 
@@ -261,20 +261,21 @@ public class Client extends MainBaseFrame   {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Client();
+                new EMStudentClient();
             }
         });
     }
@@ -283,6 +284,5 @@ public class Client extends MainBaseFrame   {
     private javax.swing.JTextField MESLOC;
     private javax.swing.JTabbedPane PanelList;
     private javax.swing.JCheckBox ShowLog;
-
     // End of variables declaration//GEN-END:variables
 }

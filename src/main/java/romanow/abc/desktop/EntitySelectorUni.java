@@ -25,7 +25,7 @@ public class EntitySelectorUni<T extends Entity> extends javax.swing.JFrame {
     PopupList popup;
     String token;
     I_OK ok;
-    public EntitySelectorUni(int x0, int y0,String name, int level,Client main, I_OK ok0) {
+    public EntitySelectorUni(int x0, int y0,String name, int level,EMStudentClient main, I_OK ok0) {
         initComponents();
         setTitle(ValuesBase.EntityFactory().getEntityNameBySimpleClass(name));
         ok = ok0;

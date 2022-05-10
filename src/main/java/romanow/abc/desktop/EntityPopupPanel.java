@@ -245,11 +245,11 @@ public abstract class EntityPopupPanel extends EntityBasePanel {
 
 
     private void AddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AddMouseClicked
-        main.onRightButton(main,Add,Client.PanelOffsetY+this.getY(),evt,"Добавить "+entityName);
+        main.onRightButton(main,Add,EMStudentClient.PanelOffsetY+this.getY(),evt,"Добавить "+entityName);
     }//GEN-LAST:event_AddMouseClicked
 
     private void DeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DeleteMouseClicked
-        main.onRightButton(main,Delete,Client.PanelOffsetY+this.getY(),evt,"Удалить "+entityName);
+        main.onRightButton(main,Delete,EMStudentClient.PanelOffsetY+this.getY(),evt,"Удалить "+entityName);
     }//GEN-LAST:event_DeleteMouseClicked
 
     public JButton getAddButton(){

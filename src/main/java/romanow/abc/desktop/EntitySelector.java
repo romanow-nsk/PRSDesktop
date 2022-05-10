@@ -22,7 +22,7 @@ public abstract class EntitySelector<T extends Entity> extends javax.swing.JFram
     PopupList popup;
     String token;
     I_OK ok;
-    public EntitySelector(int x0, int y0,String title, Client main, I_OK ok0) {
+    public EntitySelector(int x0, int y0,String title, EMStudentClient main, I_OK ok0) {
         initComponents();
         setTitle(title);
         ok = ok0;
