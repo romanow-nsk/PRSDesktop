@@ -12,7 +12,19 @@ import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
 import romanow.abc.core.API.RestAPIEM;
+import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
+import romanow.abc.core.constants.ConstValue;
+import romanow.abc.core.constants.Values;
+import romanow.abc.core.entity.Entity;
+import romanow.abc.core.entity.EntityLink;
+import romanow.abc.core.entity.artifacts.Artifact;
+import romanow.abc.core.entity.baseentityes.JBoolean;
+import romanow.abc.core.entity.baseentityes.JEmpty;
+import romanow.abc.core.entity.baseentityes.JLong;
+import romanow.abc.core.entity.subjectarea.*;
+import romanow.abc.core.entity.users.Account;
+import romanow.abc.core.entity.users.User;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.desktop.exam.ExamPeriodStateFactory;
@@ -29,35 +41,27 @@ import java.util.*;
  * @author romanow
  */
 public class EMExamAdminPanel extends BasePanel{
-    private List<DisciplineBean> disciplines = new ArrayList<>();       // Список дисциплин
-    private FullDisciplineBean cDiscipline = null;                      // Текущая дисциплина
-    private FullThemeBean cTheme = null;                                // Текущая тема
-    private FullTaskBean cTask=null;                                    // Текущая задача/тест
-    private HashMap<Long,FullThemeBean> disciplineThemesMap = new HashMap<>();
-    private HashMap<Long,FullThemeBean> ruleThemesMap = new HashMap<>();
-    private ArrayList<FullThemeBean> ruleThemes = new ArrayList<>();
-    private ExamRuleBean cRule=null;
-    private ExamBean cExam=null;
+    private ArrayList<EMDiscipline> disciplines = new ArrayList<>();    // Список дисциплин
+    private EMDiscipline cDiscipline = null;                            // Текущая дисциплина
+    private EMTheme cTheme = null;                                      // Текущая тема
+    private EMTask cTask=null;                                          // Текущая задача/тест
+    private EMExamRule cRule=null;
+    private EMExam cExam=null;
+    private EMGroup cGroup = null;                                      // Текущая группа
+    private EMExamTaking  cPeriod=null;                                 // Текущий прием
+    private ArrayList<EMGroup> groups = new ArrayList<>();              // Список групп полный
+    private ArrayList<EMExamTaking> cTakings = new ArrayList<>();       // Список приема для экзамена
+    private ArrayList<ConstValue> takingStateList = new ArrayList<>();
+    //----------------------------------------------------------------------------------------
+    private ArrayList<EMTheme> ruleThemes = new ArrayList<>();          // Темы регламента
+    private HashMap<Long,EMTheme> ruleThemesMap = new HashMap<>();
+    private HashMap<Long,EMGroup> groupsMap = new HashMap<>();          // Мар всех групп
+    private HashMap<Long,Long> groupsExamMap = new HashMap<>();         // Мар групп с экзаменом
+    //----------------------------------------------------------------------------------------
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
-    private List<GroupBean> groups = new ArrayList<>();                 // Список групп
-    private HashMap<Long,GroupBean> groupsMap = new HashMap<>();        // Мар всех групп
-    private HashMap<Long,Long> examGroupsMap = new HashMap<>();         // Мар групп для экзамена по дисциплине
-    private HashMap<Long,ExamRuleBean> examRulesMap = new HashMap<>();  // Мар имеющихся регламентов в экзаменах по дисциплине
-    private FullGroupBean cGroup = null;                                // Текущая группа
-    private List<GroupBean> examGroupsList = new ArrayList<>();         // Экзамен для текущей дисциплины
-    private List<ExamBean> allExams = new ArrayList<>();                // Полный список экзаменов
-    private List<ExamBean> disciplineExams=new ArrayList<>();           // Экзамены для дисциплины
-    private List<ExamRuleBean> allExamRules = new ArrayList<>();        // Полный список регламентов
-    private List<ExamRuleBean> cExamRules = new ArrayList<>();          // Список регламентов для дисциплины
-    private HashMap<Long,ExamRuleBean> cExamRulesMap = new HashMap<>(); // Мар регламентов для дисциплины
-    private List<RatingSystemBean> ratings = new ArrayList<>();         // Список рейтингов ????
     private boolean refresh=false;                                      // Признак обновления для событий  CheckBox
-    private List<ExamPeriodBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
-    private ExamPeriodBean cPeriod=null;                                // Текущая сдача
     private boolean taskTextChanged=false;
-    private RestAPIEM vkrClient;
-    private ExamPeriodStateFactory stateFactory = new ExamPeriodStateFactory();
     public EMExamAdminPanel() {
         initComponents();
         }
@@ -70,8 +74,9 @@ public class EMExamAdminPanel extends BasePanel{
         ArtifactView.setEnabled(false);
         PeriodState.removeAll();
         PeriodState.add("...");
-        for(ExamPeriodStateFactory.EnumPeriodStatePair pair : stateFactory.getList())
-            PeriodState.add(pair.name);
+        takingStateList = Values.constMap().getGroupList("Taking");
+        for(ConstValue cc : takingStateList)
+            PeriodState.add(cc.title());
         PeriodState.select(0);
         refreshAll();
         }
@@ -79,105 +84,71 @@ public class EMExamAdminPanel extends BasePanel{
     private void refreshAll(){
         refreshDisciplineList();
         refreshGroupsList();
-        refreshRatingsList();
         }
-
-    private void refreshRatingsList(){
-        new APICall<List<RatingSystemBean>>(main) {
-            @Override
-            public Call<List<RatingSystemBean>> apiFun() {
-                return null;
-                //return vkrClient.getRatingSystemApi().getAll1();
-                }
-            @Override
-            public void onSucess(List<RatingSystemBean> oo) {
-                ratings = oo;
-                }
-            };
-        }
-
-    private void refreshAllRules(){
-        new APICall<List<ExamRuleBean>>(main) {
-            @Override
-            public Call<List<ExamRuleBean>> apiFun() {
-                return null;
-                //return vkrClient.getExamRuleApi().getAll4();
-                }
-            @Override
-            public void onSucess(List<ExamRuleBean> oo) {
-                allExamRules = oo;
-                refreshRules();
-                }
-            };
-    }
 
     private void refreshDisciplineList(){
         Discipline.removeAll();
         Theme.removeAll();
         TaskText.setText("");
-        new APICall<List<DisciplineBean>>(main) {
+        new APICall<ArrayList<DBRequest>>(main){
             @Override
-            public Call<List<DisciplineBean>> apiFun() {
-                return null;
-                //return vkrClient.getDisciplineApi().getAll5();
+            public Call<ArrayList<DBRequest>> apiFun() {
+                return main.service.getEntityList(main.debugToken,"EMDiscipline", Values.GetAllModeActual,0);
                 }
             @Override
-            public void onSucess(List<DisciplineBean> oo) {
-                disciplines = oo;
-                for(DisciplineBean dd : disciplines)
-                    Discipline.add(dd.getName());
-                refreshDisciplineFull();
-                refreshAllRules();
+            public void onSucess(ArrayList<DBRequest> oo) {
+                disciplines.clear();
+                Discipline.removeAll();
+                try {
+                for(DBRequest request : oo){
+                    EMDiscipline discipline = (EMDiscipline) request.get(main.gson);
+                    Discipline.add(discipline.getName());
+                    disciplines.add(discipline);
+                    }
+                } catch (Exception ee){
+                    System.out.println(ee.toString());
+                    popup("Ошибка чтения списка дисциплин");
+                    }
+                refreshSelectedDiscipline();
                 }
             };
         }
 
     private void refreshRules(){
-        cExamRules.clear();
-        cExamRulesMap.clear();
         RulesList.removeAll();
-        new APICall<List<ExamRuleBean>>(main) {
-            @Override
-            public Call<List<ExamRuleBean>> apiFun() {
-                return null;
-                //return vkrClient.getDisciplineApi().findExamRules(cDiscipline.getDiscipline().getId());
-                }
-            @Override
-            public void onSucess(List<ExamRuleBean> oo) {
-                for(ExamRuleBean examRule : oo){
-                    RulesList.add(examRule.getName());
-                    cExamRules.add(examRule);
-                    cExamRulesMap.put(examRule.getId(),examRule);
-                    }
-                refreshSelectedRule();
-                }
-            };
+        for(EMExamRule rule : cDiscipline.getRules()){
+            RulesList.add(rule.getName());
+            }
+        refreshSelectedRule();
         }
 
     private void refreshSelectedRule(){
         RuleName.setText("");
-        RuleDuration.setText("");
-        RuleExcerCount.setText("");
+        RuleOwnRating.setText("");
+        RuleExceciseForOne.setText("");
         RuleThemesList.removeAll();
         cRule=null;
-        if (cExamRules.size()==0)
+        if (cDiscipline.getRules().size()==0)
             return;
-        cRule = cExamRules.get(RulesList.getSelectedIndex());
+        cRule = cDiscipline.getRules().get(RulesList.getSelectedIndex());
         RuleName.setText(cRule.getName());
-        RuleDuration.setText(""+cRule.getDuration());
-        RuleExcerCount.setText(""+cRule.getExerciseCount());
-        RuleQurestionCount.setText(""+cRule.getQuestionCount());
+        RuleOwnRating.setText(""+cRule.getExamDuration());
+        RuleExceciseForOne.setText(""+cRule.getOneExcerciceDefBall());
+        RuleExcerciseSum.setText(""+cRule.getExcerciceRating());
+        RuleQuestionForOne.setText(""+cRule.getOneQuestionDefBall());
+        RuleQuestionSum.setText(""+cRule.getQuestionRating());
+        RuleMinRating.setText(""+cRule.getMinimalRating());
+        RuleOwnRating.setText(""+cRule.getExamOwnRating());
         ruleThemes.clear();
         RuleThemesList.removeAll();
-        ruleThemesMap.clear();
-        for(Long themeId : cRule.getThemeIds()){
-            FullThemeBean theme  = disciplineThemesMap.get(themeId);
+        for(EntityLink themeId : cRule.getThemes()){
+            EMTheme theme  = cDiscipline.getThemes().getById(themeId.getOid());
             if (theme==null)
                 System.out.println("Не найдена тема id="+themeId);
             else {
                 ruleThemes.add(theme);
-                RuleThemesList.add(theme.getTheme().getName());
-                ruleThemesMap.put(theme.getTheme().getId(),theme);
+                RuleThemesList.add(theme.getName());
+                ruleThemesMap.put(theme.getOid(),theme);
                 }
             }
         }
@@ -185,127 +156,104 @@ public class EMExamAdminPanel extends BasePanel{
     private void refreshGroupsList(){
         Group.removeAll();
         Student.removeAll();
-        new APICall<List<GroupBean>>(main) {
+        new APICall<ArrayList<DBRequest>>(main) {
             @Override
-            public Call<List<GroupBean>> apiFun() {
-                return null;
-                //return vkrClient.getGroupApi().getAll2();
-            }
+            public Call<ArrayList<DBRequest>> apiFun() {
+                return main.service.getEntityList(main.debugToken,"EMGroup",Values.GetAllModeActual,0);
+                }
             @Override
-            public void onSucess(List<GroupBean> oo) {
-                groups = oo;
-                Group.removeAll();
+            public void onSucess(ArrayList<DBRequest> oo) {
                 groupsMap.clear();
-                for(GroupBean dd : groups){
-                    Group.add(dd.getName());
-                    groupsMap.put(dd.getId(),dd);
+                groups.clear();
+                Group.removeAll();
+                try {
+                    for (DBRequest dd : oo) {
+                        EMGroup group = (EMGroup)dd.get(main.gson);
+                        Group.add(group.getName());
+                        groupsMap.put(group.getOid(), group);
+                        groups.add(group);
+                        }
+                    refreshGroupFull();
+                    } catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Не прочитан список групп");
+                        return;
+                        }
                     }
-                refreshGroupFull();
-                }
-            };
-        new APICall<List<ExamBean>>(main){
-            @Override
-            public Call<List<ExamBean>> apiFun() {
-                return null;
-                //return vkrClient.getExamApi().getAll3();
-                }
-            @Override
-            public void onSucess(List<ExamBean> oo) {
-                allExams = oo;
-                ExamsTotalList.removeAll();
-                for(ExamBean exam : allExams){
-                    ExamsTotalList.add(exam.toString());
-                    }
-                }
-            };
+                };
         }
     private void refreshGroupFull(){
         Student.removeAll();
         cGroup=null;
         if (groups.size()==0)
             return;
-        long oid = groups.get(Group.getSelectedIndex()).getId();
-        new APICall<FullGroupBean>(main) {
+        long oid = groups.get(Group.getSelectedIndex()).getOid();
+        new APICall<DBRequest>(main) {
             @Override
-            public Call<FullGroupBean> apiFun() {
-                return null;
-                //return vkrClient.getGroupApi().getOne2(oid,1);
+            public Call<DBRequest> apiFun() {
+                return main.service.getEntity(main.debugToken,"EMGroup",cGroup.getOid(),2);
                 }
             @Override
-            public void onSucess(FullGroupBean oo) {
-                cGroup = oo;
-                Student.removeAll();
-                for(StudentBean student : cGroup.getStudents())
-                    Student.add(student.getAccount().getName());
-                //refreshStudentFull();
-            }
-        };
-    }
-    private void refreshDisciplineFull(){
+            public void onSucess(DBRequest oo) {
+                try{
+                    cGroup = (EMGroup)oo.get(main.gson);
+                    Student.removeAll();
+                    for(EMStudent student : cGroup.getStudents())
+                        Student.add(student.getTitle());
+                    //refreshStudentFull();
+                    }catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Не прочитаны данные группы "+cGroup.getName());
+                        }
+                }
+            };
+        }
+    private void refreshSelectedDiscipline(){
         Theme.removeAll();
         Task.removeAll();
         cDiscipline=null;
         if (disciplines.size()==0)
             return;
-        final long oid = disciplines.get(Discipline.getSelectedIndex()).getId();
-        new APICall<FullDisciplineBean>(main) {
+        final long oid = disciplines.get(Discipline.getSelectedIndex()).getOid();
+        new APICall<DBRequest>(main) {
             @Override
-            public Call<FullDisciplineBean> apiFun() {
-                return null;
-                //return vkrClient.getDisciplineApi().getFull3(oid,2);
+            public Call<DBRequest> apiFun() {
+                return main.service.getEntity(main.debugToken,"EMDiscipline",cDiscipline.getOid(),1);
                 }
             @Override
-            public void onSucess(FullDisciplineBean oo) {
-                cDiscipline = oo;
+            public void onSucess(DBRequest oo) {
+                try {
+                    cDiscipline = (EMDiscipline) oo.get(main.gson);
+                    } catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Ошибка чтения дисциплины "+cDiscipline.getName());
+                        return;
+                        }
+                cDiscipline.createMaps();
+                cDiscipline.getTakings().clear();
                 Theme.removeAll();
-                disciplineThemesMap.clear();
-                for(FullThemeBean theme : cDiscipline.getThemes()){
-                    Theme.add(theme.getTheme().getName());
-                    disciplineThemesMap.put(theme.getTheme().getId(),theme);
-                    }
                 refreshThemeFull();
                 refreshRules();
-                new APICall<List<GroupBean>>(main){
-                    @Override
-                    public Call<List<GroupBean>> apiFun() {
-                        return null;
-                        //return  vkrClient.getDisciplineApi().findGroups(oid);
+                refreshDisciplineExams();
+                ExamsForGroupList.removeAll();
+                for(EntityLink<EMGroup> group : cDiscipline.getGroups()){
+                    ExamsForGroupList.add(group.getRef().getName());
                     }
-                    @Override
-                    public void onSucess(List<GroupBean> oo) {
-                        examGroupsList = oo;
-                        ExamsForGroupList.removeAll();
-                        for(GroupBean group : oo){
-                            ExamsForGroupList.add(group.getName());
-                            }
-                        refreshDisciplineExams();
-                        }
-                    };
+                groupsExamMap.clear();
+                for(EMExam exam :  cDiscipline.getExamens())
+                    for(EntityLink gg : exam.getGroups())
+                        groupsExamMap.put(gg.getOid(),gg.getOid());
                 }
             };
         }
 
-
     private void refreshDisciplineExams(){
         ExamList.removeAll();
-        disciplineExams.clear();
-        examGroupsMap.clear();
-        examRulesMap.clear();
         if (cDiscipline==null)
             return;
-        for(ExamBean exam : allExams){
-            if(cDiscipline.getDiscipline().getId().longValue()==exam.getDisciplineId().longValue()){
-                disciplineExams.add(exam);
-                ExamRuleBean examRule = cExamRulesMap.get(exam.getExamRuleId());
-                if (examRule==null){
-                    System.out.println("Не найден регламент для экзамена id="+exam.getExamRuleId());
-                    continue;
-                    }
-                for(Long groupId : exam.getGroupIds())
-                    examGroupsMap.put(groupId,0L);
-                ExamList.add(examRule.getName());
-                examRulesMap.put(exam.getExamRuleId(),examRule);
-                }
+        for(EMExam exam : cDiscipline.getExamens()){
+            EMExamRule rule = cDiscipline.getRules().getById(exam.getRule().getOid());
+            ExamList.add((exam.getName().length()==0 ?  "..." : exam.getName())+" "+(rule==null ? "???" : rule.getName()));
             }
         refreshSelectedExam();
         }
@@ -313,12 +261,12 @@ public class EMExamAdminPanel extends BasePanel{
     private void refreshSelectedExam(){
         cExam=null;
         ExamGroupsList.removeAll();
-        if (disciplineExams.size()==0)
+        if (cDiscipline.getExamens().size()==0)
             return;
-        cExam = disciplineExams.get(ExamList.getSelectedIndex());
+        cExam = cDiscipline.getExamens().get(ExamList.getSelectedIndex());
         ExamGroupsList.removeAll();
-        for(Long id : cExam.getGroupIds()){
-            GroupBean group = groupsMap.get(id);
+        for(EntityLink id : cExam.getGroups()){
+            EMGroup group = groupsMap.get(id);
             if (group==null){
                 System.out.println("Не найдена группа id="+id);
                 continue;
@@ -329,57 +277,44 @@ public class EMExamAdminPanel extends BasePanel{
         }
 
     private void  refreshExamPeriods(){
-        new APICall<List<ExamPeriodBean>>(main) {
-            @Override
-            public Call<List<ExamPeriodBean>> apiFun() {
-                return null;
-                //return vkrClient.getExamApi().getPeriods(cExam.getId());
-                }
-            @Override
-            public void onSucess(List<ExamPeriodBean> oo) {
-                periods = oo;
-                PeriodList.removeAll();
-                for(ExamPeriodBean examPeriod : periods){
-                    PeriodList.add(new OwnDateTime(examPeriod.getStart()).dateTimeToString());
-                    }
-                refreshSelectedExamPeriod();
-                }
-            };
+        PeriodList.removeAll();
+        cTakings.clear();
+        for(EMExamTaking taking : cDiscipline.getTakings()){
+            if (taking.getExam().getOid()!=cExam.getOid())
+                continue;
+            cTakings.add(taking);
+            PeriodList.add(taking.getName().length()==0 ? "..." : taking.getName()+" "+taking.getStartTime().dateTimeToString());
+            }
+        refreshSelectedExamPeriod();
         }
 
     private void  refreshSelectedExamPeriod(){
         PeriodState.select(0);
         cPeriod=null;
-        if (periods.size()==0)
+        if (cTakings.size()==0)
             return;
-        cPeriod = periods.get(PeriodList.getSelectedIndex());
-        new APICall<ExamPeriodBean>(main) {
-            @Override
-            public Call<ExamPeriodBean> apiFun() {
-                return null;
-                //return vkrClient.getExamApi().getPeriod(cPeriod.getId());
+        cPeriod = cTakings.get(PeriodList.getSelectedIndex());
+        if (cPeriod.getStartTime().timeInMS()==0){
+            PeriodData.setText("---");
+            PeriodStartTime.setText("---");
+            PeriodEndTime.setText("---");
+            }
+        else{
+            OwnDateTime date1 = new OwnDateTime(cPeriod.getStartTime().timeInMS());
+            OwnDateTime date2 = new OwnDateTime(cPeriod.getEndTime().timeInMS());
+            PeriodData.setText(date1.dateToString());
+            PeriodStartTime.setText(date1.timeToString());
+            PeriodEndTime.setText(cPeriod.getEndTime().timeInMS()==0 ? "---" : date2.timeToString());
+            }
+        int state = cPeriod.getState();
+        PeriodState.select(0);
+        for(int i=0; i<takingStateList.size();i++){
+            ConstValue cc = takingStateList.get(i);
+            if (cc.value()==state){}
+                PeriodState.select(i+1);
+                break;
                 }
-            @Override
-            public void onSucess(ExamPeriodBean oo) {
-                cPeriod = oo;
-                periods.set(PeriodList.getSelectedIndex(),cPeriod);
-                if (cPeriod.getStart().longValue()==0){
-                    PeriodData.setText("---");
-                    PeriodStartTime.setText("---");
-                    PeriodEndTime.setText("---");
-                }
-                else{
-                    OwnDateTime date1 = new OwnDateTime(cPeriod.getStart());
-                    OwnDateTime date2 = new OwnDateTime(cPeriod.getEnd());
-                    PeriodData.setText(date1.dateToString());
-                    PeriodStartTime.setText(date1.timeToString());
-                    PeriodEndTime.setText(cPeriod.getEnd().longValue()==0 ? "---" : date2.timeToString());
-                }
-                int idx = stateFactory.getValueIdx(cPeriod.getState());
-                PeriodState.select(idx+1);
-                }
-            };
-        }
+            }
 
 
     private void refreshThemeFull(){
@@ -387,21 +322,37 @@ public class EMExamAdminPanel extends BasePanel{
         if (cDiscipline.getThemes().size()==0)
             return;
         cTheme = cDiscipline.getThemes().get(Theme.getSelectedIndex());
-        cTheme.getTasks().sort(new Comparator<FullTaskBean>() {
+        new APICall<DBRequest>(main) {
             @Override
-            public int compare(FullTaskBean o1, FullTaskBean o2) {              // Сортировать по id (в порядке поступления)
-                return o1.getTask().getId()-o2.getTask().getId() >0 ? 1 : -1;
+            public Call<DBRequest> apiFun() {
+                return main.service.getEntity(main.debugToken, "EMTheme",Values.GetAllModeActual,2);
                 }
-            });
-        int iq=1,it=1;
-        for(FullTaskBean task : cTheme.getTasks())
-            if (task.getTask().getTaskType()== TaskBean.TaskTypeEnum.QUESTION)
-                Task.add("Вопрос "+iq++);
-        for(FullTaskBean task : cTheme.getTasks())
-            if (task.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE)
-                Task.add("Задача "+it++);
-        refreshTaskFull();
-        }
+            @Override
+            public void onSucess(DBRequest oo) {
+                try {
+                    cTheme = (EMTheme) oo.get(main.gson);
+                    cTheme.getTasks().sort(new Comparator<EMTask>() {
+                        @Override
+                        public int compare(EMTask o1, EMTask o2) {              // Сортировать по id (в порядке поступления)
+                            return o1.getOwnRating() - o2.getOid() > 0 ? 1 : -1;
+                            }
+                        });
+                    int iq = 1, it = 1;
+                    for (EMTask task : cTheme.getTasks())
+                        if (task.getType() == Values.TaskQuestion)
+                            Task.add("Вопрос " + iq++ + " " + task.getName());
+                    for (EMTask task : cTheme.getTasks())
+                        if (task.getType() == Values.TaskExercise)
+                            Task.add("Задача " + it++ + " " + task.getName());
+                    refreshTaskFull();
+                    } catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Не прочитана тем: "+cTheme.getName());
+                        return;
+                        }
+                    }
+                };
+            }
 
     private void refreshTaskFullForce(){
         TaskText.setText("");
@@ -411,16 +362,16 @@ public class EMExamAdminPanel extends BasePanel{
         TaskSaveText.setEnabled(false);
         cTaskNum = Task.getSelectedIndex();
         cTask = cTheme.getTasks().get(cTaskNum);
-        boolean isTask = cTask.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE;
+        boolean isTask = cTask.getType()== Values.TaskExercise;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
-        TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),60));
-        boolean bb = cTask.getArtefact()!=null;
+        TaskText.setText(UtilsEM.formatSize(cTask.getTaskText(),60));
+        boolean bb = cTask.getArtifact().getOid()!=0;
         ArtifactView.setEnabled(bb);
         ArtifactDownLoad.setEnabled(bb);
         if (bb){
-            ArtefactBean artefact = cTask.getArtefact();
-            TaskText.append("\n"+artefact.getFileName());
+            Artifact artifact = cTask.getArtifact().getRef();
+            TaskText.append("\n"+artifact.getOriginalName());
             }
         refresh=false;
         }
@@ -488,16 +439,14 @@ public class EMExamAdminPanel extends BasePanel{
         StudentEdit = new javax.swing.JButton();
         GroupsImport = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel6 = new javax.swing.JLabel();
         ExamsForGroupList = new java.awt.Choice();
-        ExamsTotalList = new java.awt.Choice();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         RulesList = new java.awt.Choice();
         jLabel9 = new javax.swing.JLabel();
-        RuleExcerCount = new javax.swing.JTextField();
+        RuleExceciseForOne = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        RuleDuration = new javax.swing.JTextField();
+        RuleOwnRating = new javax.swing.JTextField();
         RuleName = new javax.swing.JTextField();
         RuleThemeRemove = new javax.swing.JButton();
         RuleAdd = new javax.swing.JButton();
@@ -506,7 +455,7 @@ public class EMExamAdminPanel extends BasePanel{
         RuleThemeAdd = new javax.swing.JButton();
         RuleDelete = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
-        RuleQurestionCount = new javax.swing.JTextField();
+        RuleExcerciseSum = new javax.swing.JTextField();
         RuleThemeAddAll = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
@@ -532,6 +481,12 @@ public class EMExamAdminPanel extends BasePanel{
         PeriodEndTime = new javax.swing.JTextField();
         TaskType = new javax.swing.JCheckBox();
         PeriodState = new java.awt.Choice();
+        RuleQuestionForOne = new javax.swing.JTextField();
+        RuleQuestionSum = new javax.swing.JTextField();
+        RuleDuration1 = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        RuleMinRating = new javax.swing.JTextField();
+        jLabel22 = new javax.swing.JLabel();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -870,18 +825,12 @@ public class EMExamAdminPanel extends BasePanel{
         GroupsImport.setBounds(860, 40, 40, 30);
         add(jSeparator1);
         jSeparator1.setBounds(460, 120, 480, 10);
-
-        jLabel6.setText("Все экзамены");
-        add(jLabel6);
-        jLabel6.setBounds(730, 590, 120, 20);
         add(ExamsForGroupList);
         ExamsForGroupList.setBounds(310, 380, 130, 20);
-        add(ExamsTotalList);
-        ExamsTotalList.setBounds(20, 620, 790, 20);
 
-        jLabel7.setText("Кол-во задач");
+        jLabel7.setText("Задача: за одну - сумма ");
         add(jLabel7);
-        jLabel7.setBounds(20, 530, 100, 20);
+        jLabel7.setBounds(20, 530, 140, 20);
 
         jLabel8.setText("Экзамен для групп");
         add(jLabel8);
@@ -899,25 +848,25 @@ public class EMExamAdminPanel extends BasePanel{
         add(jLabel9);
         jLabel9.setBounds(20, 410, 80, 20);
 
-        RuleExcerCount.addKeyListener(new java.awt.event.KeyAdapter() {
+        RuleExceciseForOne.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleExcerCountKeyPressed(evt);
+                RuleExceciseForOneKeyPressed(evt);
             }
         });
-        add(RuleExcerCount);
-        RuleExcerCount.setBounds(110, 530, 40, 25);
+        add(RuleExceciseForOne);
+        RuleExceciseForOne.setBounds(170, 530, 30, 25);
 
-        jLabel10.setText("Продолж. (мин)");
+        jLabel10.setText("Рейтинг экзамена");
         add(jLabel10);
-        jLabel10.setBounds(160, 500, 100, 20);
+        jLabel10.setBounds(270, 530, 110, 20);
 
-        RuleDuration.addKeyListener(new java.awt.event.KeyAdapter() {
+        RuleOwnRating.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleDurationKeyPressed(evt);
+                RuleOwnRatingKeyPressed(evt);
             }
         });
-        add(RuleDuration);
-        RuleDuration.setBounds(270, 500, 50, 25);
+        add(RuleOwnRating);
+        RuleOwnRating.setBounds(390, 530, 50, 25);
 
         RuleName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -936,7 +885,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(RuleThemeRemove);
-        RuleThemeRemove.setBounds(400, 550, 30, 30);
+        RuleThemeRemove.setBounds(400, 570, 30, 30);
 
         RuleAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         RuleAdd.setBorderPainted(false);
@@ -951,9 +900,9 @@ public class EMExamAdminPanel extends BasePanel{
 
         jLabel11.setText("Темы");
         add(jLabel11);
-        jLabel11.setBounds(20, 560, 70, 16);
+        jLabel11.setBounds(20, 580, 70, 16);
         add(RuleThemesList);
-        RuleThemesList.setBounds(110, 560, 280, 20);
+        RuleThemesList.setBounds(110, 580, 280, 20);
 
         RuleThemeAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
         RuleThemeAdd.setBorderPainted(false);
@@ -977,17 +926,17 @@ public class EMExamAdminPanel extends BasePanel{
         add(RuleDelete);
         RuleDelete.setBounds(310, 440, 30, 30);
 
-        jLabel13.setText("Кол-во тестов");
+        jLabel13.setText("Тест: за один - сумма");
         add(jLabel13);
-        jLabel13.setBounds(20, 500, 100, 20);
+        jLabel13.setBounds(20, 500, 140, 20);
 
-        RuleQurestionCount.addKeyListener(new java.awt.event.KeyAdapter() {
+        RuleExcerciseSum.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleQurestionCountKeyPressed(evt);
+                RuleExcerciseSumKeyPressed(evt);
             }
         });
-        add(RuleQurestionCount);
-        RuleQurestionCount.setBounds(110, 500, 40, 25);
+        add(RuleExcerciseSum);
+        RuleExcerciseSum.setBounds(210, 530, 40, 25);
 
         RuleThemeAddAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
         RuleThemeAddAll.setBorderPainted(false);
@@ -1029,6 +978,12 @@ public class EMExamAdminPanel extends BasePanel{
         PeriodForAll.setText("Группа/ведомость");
         add(PeriodForAll);
         PeriodForAll.setBounds(460, 300, 130, 20);
+
+        PeriodList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                PeriodListItemStateChanged(evt);
+            }
+        });
         add(PeriodList);
         PeriodList.setBounds(460, 200, 240, 20);
 
@@ -1161,6 +1116,46 @@ public class EMExamAdminPanel extends BasePanel{
         });
         add(PeriodState);
         PeriodState.setBounds(520, 275, 180, 20);
+
+        RuleQuestionForOne.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleQuestionForOneKeyPressed(evt);
+            }
+        });
+        add(RuleQuestionForOne);
+        RuleQuestionForOne.setBounds(170, 500, 30, 25);
+
+        RuleQuestionSum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleQuestionSumKeyPressed(evt);
+            }
+        });
+        add(RuleQuestionSum);
+        RuleQuestionSum.setBounds(210, 500, 40, 25);
+
+        RuleDuration1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleDuration1KeyPressed(evt);
+            }
+        });
+        add(RuleDuration1);
+        RuleDuration1.setBounds(390, 470, 50, 25);
+
+        jLabel17.setText("Продолж. (мин)");
+        add(jLabel17);
+        jLabel17.setBounds(270, 475, 100, 20);
+
+        RuleMinRating.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleMinRatingKeyPressed(evt);
+            }
+        });
+        add(RuleMinRating);
+        RuleMinRating.setBounds(390, 500, 50, 25);
+
+        jLabel22.setText("Рейтинг допуска");
+        add(jLabel22);
+        jLabel22.setBounds(270, 500, 110, 20);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1195,14 +1190,13 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Удалить задание номер " + (cTaskNum+1), new I_Button() {
             @Override
             public void onPush() {
-                new APICall<Void>(main) {
+                new APICall<JBoolean>(main) {
                     @Override
-                    public Call<Void> apiFun() {
-                        return null;
-                        //return vkrClient.getTaskApi().deleteTask(cTask.getTask().getId());
+                    public Call<JBoolean> apiFun() {
+                        return main.service.deleteById(main.debugToken,"EMTask",cTask.getOid());
                         }
                     @Override
-                    public void onSucess(Void oo) {
+                    public void onSucess(JBoolean oo) {
                         refreshThemeFull();
                     }
                 };
@@ -1216,20 +1210,18 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Добавить вопрос/задачу", new I_Button() {
             @Override
             public void onPush() {
-                final TaskBean task = new TaskBean();
-                task.setArtefactId(null);
-                task.setText("Новый вопрос/задача");
-                task.setTaskType(TaskBean.TaskTypeEnum.QUESTION);
-                task.setThemeId(cTheme.getTheme().getId());
-                new APICall<TaskBean>(main) {
+                final EMTask task = new EMTask();
+                task.setTaskText("Новый вопрос/задача");
+                task.setType(Values.TaskQuestion);
+                task.getEMTheme().setOid(cTheme.getOid());
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<TaskBean> apiFun() {
-                        return null;
-                        //return vkrClient.getTaskApi().createTask(task);
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(task,main.gson),0);
                         }
                     @Override
-                    public void onSucess(TaskBean oo) {
-                        System.out.println("taskId="+oo.getId());
+                    public void onSucess(JLong oo) {
+                        System.out.println("taskId="+oo.getValue());
                         refreshThemeFull();
                     }
                 };
@@ -1241,16 +1233,15 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200,200,"Добавить дисциплину", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                DisciplineBean bean = new DisciplineBean();
-                bean.setName(value);
-                new APICall<DisciplineBean>(main) {
+                EMDiscipline discipline = new EMDiscipline();
+                discipline.setName(value);
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<DisciplineBean> apiFun() {
-                        return null;
-                        //return vkrClient.getDisciplineApi().create4(bean);
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(discipline,main.gson),0);
                         }
                     @Override
-                    public void onSucess(DisciplineBean oo) {
+                    public void onSucess(JLong oo) {
                         refreshDisciplineList();
                     }
                 };
@@ -1261,17 +1252,16 @@ public class EMExamAdminPanel extends BasePanel{
     private void DisciplineRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineRemoveActionPerformed
         if (cDiscipline==null)
             return;
-        new OK(200, 200, "Удалить дисциплину: " + cDiscipline.getDiscipline().getName(), new I_Button() {
+        new OK(200, 200, "Удалить дисциплину: " + cDiscipline.getName(), new I_Button() {
             @Override
             public void onPush() {
-                new APICall<Void>(main) {
+                new APICall<JBoolean>(main) {
                     @Override
-                    public Call<Void> apiFun() {
-                        return null;
-                        //return vkrClient.getDisciplineApi().delete2(cDiscipline.getDiscipline().getId());
+                    public Call<JBoolean> apiFun() {
+                        return main.service.deleteById(main.debugToken,"EMDiscipline",cDiscipline.getOid());
                         }
                     @Override
-                    public void onSucess(Void oo) {
+                    public void onSucess(JBoolean oo) {
                         refreshDisciplineList();
                     }
                 };
@@ -1282,21 +1272,20 @@ public class EMExamAdminPanel extends BasePanel{
     private void ThemeAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThemeAddActionPerformed
         if (cDiscipline==null)
             return;
-        new OKName(200,200,"Добавить тему в "+cDiscipline.getDiscipline().getName(), new I_Value<String>() {
+        new OKName(200,200,"Добавить тему в "+cDiscipline.getName(), new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                ThemeBean bean = new ThemeBean();
+                EMTheme bean = new EMTheme();
                 bean.setName(value);
-                bean.setDisciplineId(cDiscipline.getDiscipline().getId());
-                new APICall<ThemeBean>(main) {
+                bean.getEMDiscipline().setOid(cDiscipline.getOid());
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<ThemeBean> apiFun() {
-                        return null;
-                        //return vkrClient.getThemeApi().create(bean);
-                    }
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(bean,main.gson),0);
+                        }
                     @Override
-                    public void onSucess(ThemeBean oo) {
-                        refreshDisciplineFull();
+                    public void onSucess(JLong oo) {
+                        refreshSelectedDiscipline();
                     }
                 };
             }
@@ -1306,17 +1295,16 @@ public class EMExamAdminPanel extends BasePanel{
     private void ThemeRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThemeRemoveActionPerformed
         if (cTheme==null)
             return;
-        new OK(200, 200, "Удалить тему: " + cTheme.getTheme().getName(), new I_Button() {
+        new OK(200, 200, "Удалить тему: " + cTheme.getName(), new I_Button() {
             @Override
             public void onPush() {
-                new APICall<Void>(main) {
+                new APICall<JBoolean>(main) {
                     @Override
-                    public Call<Void> apiFun() {        // TODO - это удаление
-                        return null;
-                        //return vkrClient.getThemeApi().delete(cTheme.getTheme().getId());
+                    public Call<JBoolean> apiFun() {        // TODO - это удаление
+                        return main.service.deleteById(main.debugToken,"EMTheme",cTheme.getOid());
                         }
                     @Override
-                    public void onSucess(Void oo) {
+                    public void onSucess(JBoolean oo) {
                         refreshDisciplineList();
                     }
                 };
@@ -1325,7 +1313,7 @@ public class EMExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_ThemeRemoveActionPerformed
 
     private void DisciplineItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DisciplineItemStateChanged
-        refreshDisciplineFull();
+        refreshSelectedDiscipline();
     }//GEN-LAST:event_DisciplineItemStateChanged
 
     private void ThemeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ThemeItemStateChanged
@@ -1341,15 +1329,27 @@ public class EMExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_ArtifactViewActionPerformed
 
     private void ArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactUploadActionPerformed
-        /*
-        main.uploadFileAsync(new I_Value<ArtefactBean>() {
+        new UploadPanel(200, 200, main, new I_OK() {
             @Override
-            public void onEnter(ArtefactBean value) {
-                cTask.getTask().setArtefactId(value.getId());
-                taskUpdate();
+            public void onOK(final Entity ent) {
+                if (cTask.getArtifact().getOid()==0){
+                    cTask.getArtifact().setOidRef((Artifact) ent);
+                    taskUpdate();
+                    }
+                new APICall<JEmpty>(main) {
+                    @Override
+                    public Call<JEmpty> apiFun() {
+                        return main.service.removeArtifact(main.debugToken,cTask.getArtifact().getOid());
+                        }
+
+                    @Override
+                    public void onSucess(JEmpty oo) {
+                        cTask.getArtifact().setOidRef((Artifact) ent);
+                        taskUpdate();
+                        }
+                    };
                 }
             });
-         */
         }//GEN-LAST:event_ArtifactUploadActionPerformed
     private void ArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactDownLoadActionPerformed
         // TODO add your handling code here:
@@ -1360,23 +1360,22 @@ public class EMExamAdminPanel extends BasePanel{
         taskTextChanged = false;
         if (cTask==null)
             return;
-        cTask.getTask().setText(TaskText.getText());
+        cTask.setTaskText(TaskText.getText());
         taskUpdate();
     }//GEN-LAST:event_TaskSaveTextActionPerformed
 
     private void DisciplineEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisciplineEditActionPerformed
-        new OKName(200,200,"Изменить название дисциплины", cDiscipline.getDiscipline().getName(),new I_Value<String>() {
+        new OKName(200,200,"Изменить название дисциплины", cDiscipline.getName(),new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                cDiscipline.getDiscipline().setName(value);
-                new APICall<DisciplineBean>(main) {
+                cDiscipline.setName(value);
+                new APICall<JEmpty>(main) {
                     @Override
-                    public Call<DisciplineBean> apiFun() {
-                        return null;
-                        //return vkrClient.getDisciplineApi().update2(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
+                    public Call<JEmpty> apiFun() {
+                        return main.service.updateEntity(main.debugToken, new DBRequest(cDiscipline,main.gson));
                         }
                     @Override
-                    public void onSucess(DisciplineBean oo) {
+                    public void onSucess(JEmpty oo) {
                         refreshDisciplineList();
                     }
                 };
@@ -1394,43 +1393,40 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200, 200, "Дисциплина с тестами: " + owtImportData.getHead(), owtImportData.getHead(),new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                DisciplineBean discipline = new DisciplineBean();
+                EMDiscipline discipline = new EMDiscipline();
                 discipline.setName(value);
-                new APICall<DisciplineBean>(main) {
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<DisciplineBean> apiFun() {
-                        return null;
-                        //return vkrClient.getDisciplineApi().create4(discipline);
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(discipline,main.gson),0);
                         }
                     @Override
-                    public void onSucess(final DisciplineBean oo) {
+                    public void onSucess(final JLong oo) {
                         int idx1=0;
                         int idx2=0;
                         OWTTheme owtTheme=null;
                         try {
-                            final ThemeBean theme = new ThemeBean();
-                            final TaskBean task = new TaskBean();
+                            final EMTheme theme = new EMTheme();
+                            final EMTask task = new EMTask();
                             for (idx1 = 0; idx1 < owtImportData.size(); idx1++) {
                                 idx2=-1;
                                 owtTheme = owtImportData.get(idx1);
-                                theme.disciplineId(oo.getId());
+                                theme.getEMDiscipline().setOid(oo.getValue());
                                 theme.setName(owtTheme.getQuestion());
-                                final ThemeBean theme2 = new APICallSync<ThemeBean>() {
+                                final JLong theme1 = new APICallSync<JLong>() {
                                     @Override
-                                    public Call<ThemeBean> apiFun() {
-                                        return null;
-                                        //return vkrClient.getThemeApi().create(theme);
+                                    public Call<JLong> apiFun() {
+                                        return main.service.addEntity(main.debugToken,new DBRequest(theme,main.gson),0);
                                         }
                                     }.call();
                                 for(idx2=0;idx2 < owtTheme.size();idx2++){
-                                    task.setThemeId(theme2.getId());
-                                    task.setTaskType(TaskBean.TaskTypeEnum.QUESTION);
-                                    task.setText(owtTheme.get(idx2).toString());
-                                    new APICallSync<TaskBean>() {
+                                    task.getEMTheme().setOid(theme1.getValue());
+                                    task.setType(Values.TaskQuestion);
+                                    task.setTaskText(owtTheme.get(idx2).toString());
+                                    new APICallSync<JLong>() {
                                         @Override
-                                        public Call<TaskBean> apiFun() {
-                                            return null;
-                                            //return vkrClient.getTaskApi().createTask(task);
+                                        public Call<JLong> apiFun() {
+                                            return main.service.addEntity(main.debugToken,new DBRequest(task,main.gson),0);
                                             }
                                         }.call();
                                     }
@@ -1463,37 +1459,35 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200,200,"Добавить группу", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                GroupBean bean = new GroupBean();
+                EMGroup bean = new EMGroup();
                 bean.setName(value);
-                new APICall<GroupBean>(main) {
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<GroupBean> apiFun() {
-                        return null;
-                        //return vkrClient.getGroupApi().create2(bean);
-                    }
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken, new DBRequest(bean,main.gson),0);
+                        }
                     @Override
-                    public void onSucess(GroupBean oo) {
+                    public void onSucess(JLong oo) {
                         refreshGroupsList();
-                    }
-                };
-            }
-        });
+                        }
+                    };
+                }
+            });
     }//GEN-LAST:event_GroupAddActionPerformed
 
     private void GroupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupRemoveActionPerformed
         if (cGroup==null)
             return;
-        new OK(200, 200, "Удалить группу: " + cGroup.getGroup().getName(), new I_Button() {
+        new OK(200, 200, "Удалить группу: " + cGroup.getName(), new I_Button() {
             @Override
             public void onPush() {
-                new APICall<Void>(main) {
+                new APICall<JBoolean>(main) {
                     @Override
-                    public Call<Void> apiFun() {
-                        return null;
-                        //return vkrClient.getGroupApi().delete1(cGroup.getGroup().getId());
+                    public Call<JBoolean> apiFun() {
+                        return main.service.deleteById(main.debugToken,"EMGroup",cGroup.getOid());
                         }
                     @Override
-                    public void onSucess(Void oo) {
+                    public void onSucess(JBoolean oo) {
                         refreshGroupsList();
                         }
                 };
@@ -1532,38 +1526,44 @@ public class EMExamAdminPanel extends BasePanel{
                     return;
                     }
                 System.out.println("Импорт группы "+sheets[idx]);
-                final  GroupBean group = new GroupBean();
+                final  EMGroup group = new EMGroup();
                 group.setName(sheets[idx]);
                 try {
-                    final GroupBean group2 = new APICallSync<GroupBean>() {
+                    final JLong group2 = new APICallSync<JLong>() {
                         @Override
-                        public Call<GroupBean> apiFun() {
-                            return null;
-                            //return vkrClient.getGroupApi().create2(group);
+                        public Call<JLong> apiFun() {
+                            return main.service.addEntity(main.debugToken,new DBRequest(group,main.gson),0);
                             }
                         }.call();
                     excel.procSheet(sheets[idx], new I_ExcelBack() {
                         @Override
                         public void onRow(String[] values) {
                             System.out.println(values[0] + " " + values[1]);
-                            AccountBean account = new AccountBean();
-                            account.setUsername(values[1]);
+                            Account account = new Account();
+                            User user = new User();
+                            account.setLogin(values[1]);
                             String ss[] = UtilsEM.parseFIO(values[0]);
-                            account.setName(ss[0]);
-                            account.setSurname(ss[1]);
-                            account.setPassword("1234");                    // TODO - пустой-не пустой
-                            ArrayList roles = new ArrayList<UserRole>();
-                            roles.add(UserRole.ROLE_STUDENT);
-                            account.setRoles(roles);
-                            StudentBean student = new StudentBean();
-                            student.setGroupId(group2.getId());
-                            student.setAccount(account);
+                            user.setFirstName(ss[0]);
+                            user.setLastName(ss[1]);
+                            user.setMiddleName(ss[2]);
+                            account.setPassword("1234");
+                            user.setTypeId(Values.UserEMStudent);
+                            user.setAccount(account);
+                            EMStudent student = new EMStudent();
+                            student.setState(Values.StudentStateNormal);
+                            student.getEMGroup().setOid(group2.getValue());
                             try {
-                                new APICallSync<StudentBean>() {
+                                JLong userOid = new APICallSync<JLong>() {
                                     @Override
-                                    public Call<StudentBean> apiFun() {
-                                        return null;
-                                        //return vkrClient.getOnlyStudentApi().createStudent(student);
+                                    public Call<JLong> apiFun() {
+                                        return main.service.addUser(main.debugToken,user);
+                                        }
+                                    }.call();
+                                student.getUser().setOid(userOid.getValue());
+                                JLong studOid = new APICallSync<JLong>() {
+                                    @Override
+                                    public Call<JLong> apiFun() {
+                                        return main.service.addEntity(main.debugToken,new DBRequest(student,main.gson),0);
                                         }
                                     }.call();
                                 } catch (IOException ee){
@@ -1605,13 +1605,11 @@ public class EMExamAdminPanel extends BasePanel{
     private void ruleUpdate(KeyEvent evt){
         if (cRule==null)
             return;
-        cRule.setRatingSystemId(ratings.get(0).getId());        // TODO ---------------- какие
         try {
-            new APICall2<ExamRuleBean>() {
+            new APICall2<JEmpty>() {
                 @Override
-                public Call<ExamRuleBean> apiFun() {
-                    return null;
-                    //return vkrClient.getExamRuleApi().update1(cRule,cRule.getId());
+                public Call<JEmpty> apiFun() {
+                    return main.service.updateEntity(main.debugToken,new DBRequest(cRule,main.gson));
                     }
                 }.call(main);
             refreshSelectedRule();
@@ -1626,33 +1624,15 @@ public class EMExamAdminPanel extends BasePanel{
         }
 
     private void periodStartTimeUpdate(long timeInMS){
-        UpdateExamPeriodBean out  = new UpdateExamPeriodBean();
-        out.setStart(timeInMS);
-        new APICall<ExamPeriodBean>(main) {
+        cPeriod.setStartTime(new OwnDateTime(timeInMS));
+        new APICall<JEmpty>(main) {
             @Override
-            public Call<ExamPeriodBean> apiFun() {
-                return null;
-                //return vkrClient.getExamApi().updatePeriod(out,cPeriod.getId());
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken, new DBRequest(cPeriod,main.gson));
                 }
             @Override
-            public void onSucess(ExamPeriodBean oo) {
+            public void onSucess(JEmpty oo) {
                 popup("Время сдачи изменено");
-                refreshSelectedExamPeriod();
-                }
-            };
-        }
-    private void periodStateUpdate(ExamPeriodBean.StateEnum state){
-        final UpdateExamPeriodBean out  = new UpdateExamPeriodBean();
-        out.setState(UpdateExamPeriodBean.StateEnum.fromValue(state.getValue()));  // TODO ------------ Элементарно, Ватсон
-        new APICall<ExamPeriodBean>(main) {
-            @Override
-            public Call<ExamPeriodBean> apiFun() {
-                return null;
-                //return vkrClient.getExamApi().updatePeriod(out,cPeriod.getId());
-                }
-            @Override
-            public void onSucess(ExamPeriodBean oo) {
-                popup("Состояние сдачи изменено");
                 refreshSelectedExamPeriod();
                 }
             };
@@ -1665,55 +1645,45 @@ public class EMExamAdminPanel extends BasePanel{
     private void RuleThemeRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeRemoveActionPerformed
         if (cRule==null)
             return;
-        if (cRule.getThemeIds().size()==0)
+        if (cRule.getThemes().size()==0)
             return;
-        new OK(200, 200, "Удалить тему: " + shortString(cTheme.getTheme().getName(), 20), new I_Button() {
+        long oid = cRule.getThemes().getById(RuleThemesList.getSelectedIndex()).getOid();
+        EMTheme theme = cDiscipline.getThemes().getById(oid);
+        new OK(200, 200, "Удалить тему: " + shortString(theme.getName(), 20), new I_Button() {
             @Override
             public void onPush() {
                 int idx = RuleThemesList.getSelectedIndex();
-                cRule.getThemeIds().remove(idx);
+                cRule.getThemes().remove(idx);
                 ruleUpdate(null);
                 }
             });
     }//GEN-LAST:event_RuleThemeRemoveActionPerformed
 
-    private static CreateExamBean examClone(ExamBean src){
-        CreateExamBean out = new CreateExamBean();
-        out.setStartTime(new OwnDateTime().timeInMS());
-        out.setExamRuleId(src.getExamRuleId());
-        out.setDisciplineId(src.getDisciplineId());
-        out.setGroupIds(src.getGroupIds());
-        return out;
-    }
 
     private void RuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleAddActionPerformed
         if (cDiscipline==null)
             return;
-        final ExamRuleBean ruleBean = new ExamRuleBean();
+        final EMExamRule ruleBean = new EMExamRule();
         new OKName(200, 200, "Добавить регламент", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                ExamRuleBean ruleBean = new ExamRuleBean();
                 ruleBean.setName(value);
-                ruleBean.setQuestionCount(10);
-                ruleBean.setExerciseCount(1);
-                ruleBean.setDuration(180);
-                ruleBean.setDisciplineId(cDiscipline.getDiscipline().getId());
+                ruleBean.setExamDuration(180);
+                ruleBean.setMinimalRating(30);
+                ruleBean.setExamOwnRating(40);
+                ruleBean.setExcerciceRating(20);
+                ruleBean.setQuestionRating(20);
+                ruleBean.setOneExcerciceDefBall(10);
+                ruleBean.setOneQuestionDefBall(2);
+                ruleBean.getEMDiscipline().setOid(cDiscipline.getOid());
                 ruleBean.setMinimalRating(0);
-                ruleBean.setRatingSystemId(0L);
-                ruleBean.setRatingSystemId(ratings.get(0).getId());
-                ArrayList<Long> xx = new ArrayList<>();
-                xx.add(cTheme.getTheme().getId());
-                ruleBean.setThemeIds(xx);
-                new APICall<ExamRuleBean>(main) {
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<ExamRuleBean> apiFun() {
-                        return null;
-                        //return vkrClient.getExamRuleApi().create3(ruleBean);
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(ruleBean,main.gson),0);
                         }
                     @Override
-                    public void onSucess(ExamRuleBean oo) {
-                        refreshAllRules();
+                    public void onSucess(JLong oo) {
                         refreshRules();
                         }
                     };
@@ -1728,43 +1698,43 @@ public class EMExamAdminPanel extends BasePanel{
         ruleUpdate(evt);
     }//GEN-LAST:event_RuleNameKeyPressed
 
-    private void RuleDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDurationKeyPressed
+    private void RuleOwnRatingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleOwnRatingKeyPressed
         if(evt.getKeyCode()!=10) return;
         if (cRule==null) return;
         try {
-            cRule.setDuration(Integer.parseInt(RuleDuration.getText()));
+            cRule.setExamOwnRating(Integer.parseInt(RuleOwnRating.getText()));
             ruleUpdate(evt);
             } catch (Exception ee){
                 popup("Ошибка формата целого");
                 main.viewUpdate(evt,false);
                 }
-    }//GEN-LAST:event_RuleDurationKeyPressed
+    }//GEN-LAST:event_RuleOwnRatingKeyPressed
 
-    private void RuleExcerCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExcerCountKeyPressed
+    private void RuleExceciseForOneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExceciseForOneKeyPressed
         if(evt.getKeyCode()!=10) return;
         if (cRule==null) return;
         try {
-            cRule.setExerciseCount(Integer.parseInt(RuleExcerCount.getText()));
+            cRule.setOneExcerciceDefBall(Integer.parseInt(RuleExceciseForOne.getText()));
             ruleUpdate(evt);
         } catch (Exception ee){
             popup("Ошибка формата целого");
             main.viewUpdate(evt,false);
             }
-    }//GEN-LAST:event_RuleExcerCountKeyPressed
+    }//GEN-LAST:event_RuleExceciseForOneKeyPressed
 
     private void RuleThemeAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeAddActionPerformed
         if (cRule==null)
             return;
         if (cTheme==null)
             return;
-        if (ruleThemesMap.get(cTheme.getTheme().getId())!=null){
+        if (ruleThemesMap.get(cTheme.getOid())!=null){
             popup("Тема уже есть в регламенте");
             return;
             }
-        new OK(200, 200, "Добавить тему: " + shortString(cTheme.getTheme().getName(), 30), new I_Button() {
+        new OK(200, 200, "Добавить тему: " + shortString(cTheme.getName(), 30), new I_Button() {
             @Override
             public void onPush() {
-                cRule.getThemeIds().add(cTheme.getTheme().getId());
+                cRule.getThemes().add(cTheme.getOid());
                 ruleUpdate(null);
                 }
             });
@@ -1776,35 +1746,32 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Удалить регламент: " + cRule.getName(), new I_Button() {
             @Override
             public void onPush() {
-                popup("Удалить? Хрен Вам...");
-                /*
-                new APICall<Void>(main) {
+                new APICall<JBoolean>(main) {
                     @Override
-                    public Call<Void> apiFun() {
-                        return vkrClient.getExamRuleApi().;
+                    public Call<JBoolean> apiFun() {
+                        return main.service.deleteById(main.debugToken,"EMExamRule",cRule.getOid());
                         }
                     @Override
-                    public void onSucess(Void oo) {
-
-                    }
-                };
-                 */
+                    public void onSucess(JBoolean oo) {
+                        refreshRules();
+                        }
+                    };
                 }
             });
 
     }//GEN-LAST:event_RuleDeleteActionPerformed
 
-    private void RuleQurestionCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQurestionCountKeyPressed
+    private void RuleExcerciseSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExcerciseSumKeyPressed
         if(evt.getKeyCode()!=10) return;
         if (cRule==null) return;
         try {
-            cRule.setQuestionCount(Integer.parseInt(RuleQurestionCount.getText()));
+            cRule.setExcerciceRating(Integer.parseInt(RuleExcerciseSum.getText()));
             ruleUpdate(evt);
         } catch (Exception ee){
             popup("Ошибка формата целого");
             main.viewUpdate(evt,false);
             }
-    }//GEN-LAST:event_RuleQurestionCountKeyPressed
+    }//GEN-LAST:event_RuleExcerciseSumKeyPressed
 
     private void RulesListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RulesListItemStateChanged
         refreshSelectedRule();
@@ -1816,59 +1783,56 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Копировать все темы", new I_Button() {
             @Override
             public void onPush() {
-                List<Long> idsList = cRule.getThemeIds();
-                idsList.clear();
-                for(FullThemeBean theme : cDiscipline.getThemes())
-                    idsList.add(theme.getTheme().getId());
+                cRule.getThemes().clear();
+                for(EMTheme theme : cDiscipline.getThemes())
+                    cRule.getThemes().add(theme.getOid());
                 ruleUpdate(null);
-            }
-        });
+                }
+            });
     }//GEN-LAST:event_RuleThemeAddAllActionPerformed
 
     private void ExamGroupAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupAddActionPerformed
         if (cGroup==null || cExam==null)
             return;
-        if (examGroupsMap.get(cGroup.getGroup().getId())!=null){
-            popup("Группа "+cGroup.getGroup().getName()+" уже в экзамене");
+        if (groupsExamMap.get(cGroup.getOid())!=null){
+            popup("Группа "+cGroup.getName()+" уже в экзамене");
             return;
             }
-        new OK(200, 200, "Добавить группу " + cGroup.getGroup().getName(), new I_Button() {
+        new OK(200, 200, "Добавить группу " + cGroup.getName(), new I_Button() {
             @Override
             public void onPush() {
-                cExam.getGroupIds().add(cGroup.getGroup().getId());
-                new APICall<ExamBean>(main) {
+                cExam.getGroups().add(cGroup.getOid());
+                new APICall<JEmpty>(main) {
                     @Override
-                    public Call<ExamBean> apiFun() {
-                        return null;
-                        //return vkrClient.getExamApi().updateExam(examClone(cExam),cExam.getId());
-                    }
+                    public Call<JEmpty> apiFun() {
+                        return main.service.updateEntity(main.debugToken, new DBRequest(cExam,main.gson));
+                        }
                     @Override
-                    public void onSucess(ExamBean oo) {
-                        popup("Группа "+cGroup.getGroup().getName()+" добавлена");
+                    public void onSucess(JEmpty oo) {
+                        popup("Группа "+cGroup.getName()+" добавлена");
                         refreshSelectedExam();
-                    }
-                };
-            }
-        });
+                        }
+                    };
+                }
+            });
     }//GEN-LAST:event_ExamGroupAddActionPerformed
 
     private void ExamGroupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupRemoveActionPerformed
         if (cGroup==null || cExam==null)
             return;
-        long groupId = cExam.getGroupIds().get(ExamGroupsList.getSelectedIndex()).longValue();
-        final GroupBean group = groupsMap.get(groupId);
+        long groupId = cExam.getGroups().get(ExamGroupsList.getSelectedIndex()).getOid();
+        final EMGroup group = groupsMap.get(groupId);
         new OK(200, 200, "Удалить группу " + group.getName(), new I_Button() {
             @Override
             public void onPush() {
-                cExam.getGroupIds().remove(ExamGroupsList.getSelectedIndex());
-                new APICall<ExamBean>(main) {
+                cExam.getGroups().remove(ExamGroupsList.getSelectedIndex());
+                new APICall<JEmpty>(main) {
                     @Override
-                    public Call<ExamBean> apiFun() {
-                        return null;
-                        //return vkrClient.getExamApi().updateExam(examClone(cExam),cExam.getId());
-                    }
+                    public Call<JEmpty> apiFun() {
+                        return main.service.updateEntity(main.debugToken,new DBRequest(cExam,main.gson));
+                        }
                     @Override
-                    public void onSucess(ExamBean oo) {
+                    public void onSucess(JEmpty oo) {
                         popup("Группа "+group.getName()+" удалена");
                         refreshSelectedExam();
                     }
@@ -1881,29 +1845,20 @@ public class EMExamAdminPanel extends BasePanel{
     private void ExamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamAddActionPerformed
         if (cRule==null)
             return;
-        if (examRulesMap.get(cRule.getId())!=null){
-            popup("Экзамен для регламента: "+cRule.getName()+" уже создан");
-            return;
-            }
         new OK(200, 200, "Экзамен для регламента: " + cRule.getName(), new I_Button() {
             @Override
             public void onPush() {
-                final CreateExamBean exam = new CreateExamBean();
-                exam.setExamRuleId(cRule.getId());
-                exam.setDisciplineId(cDiscipline.getDiscipline().getId());
-                exam.setStartTime(new OwnDateTime().timeInMS());
-                ArrayList<Long> xx = new ArrayList<>();
-                xx.add(groups.get(0).getId());
-                exam.setGroupIds(xx);                       // TODO - убрать !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                new APICall<ExamBean>(main) {
+                final EMExam exam = new EMExam();
+                exam.getRule().setOid(cRule.getOid());
+                exam.getEMDiscipline().setOid(cDiscipline.getOid());
+                new APICall<JLong>(main) {
                     @Override
-                    public Call<ExamBean> apiFun() {
-                        return null;
-                        //return vkrClient.getExamApi().createExam(exam);
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(exam,main.gson),0);
                         }
                     @Override
-                    public void onSucess(ExamBean oo) {
-                        refreshDisciplineFull();
+                    public void onSucess(JLong oo) {
+                        refreshSelectedDiscipline();
                         }
                     };
                 }
@@ -1913,18 +1868,17 @@ public class EMExamAdminPanel extends BasePanel{
     private void ExamRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamRemoveActionPerformed
         if (cExam==null)
             return;
-        new OK(200, 200, "Удалить экзамен для регламента: " + ExamList.getItem(ExamList.getSelectedIndex()), new I_Button() {
+        new OK(200, 200, "Удалить экзамен: " + ExamList.getItem(ExamList.getSelectedIndex()), new I_Button() {
             @Override
             public void onPush() {
-                new APICall<Void>(main) {
+                new APICall<JBoolean>(main) {
                     @Override
-                    public Call<Void> apiFun() {
-                        return null;
-                        //return vkrClient.getExamApi().deleteExam(cExam.getId());
+                    public Call<JBoolean> apiFun() {
+                        return main.service.deleteById(main.debugToken,"EMExam",cExam.getOid());
                         }
                     @Override
-                    public void onSucess(Void oo) {
-                        refreshDisciplineFull();
+                    public void onSucess(JBoolean oo) {
+                        refreshSelectedDiscipline();
                     }
                 };
             }
@@ -1934,9 +1888,24 @@ public class EMExamAdminPanel extends BasePanel{
     private void PeriodAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodAddActionPerformed
         if (cExam==null)
             return;
-        new OK(200, 200, "Добавить сдачу экзамена по: " + cDiscipline.getDiscipline().getName(), new I_Button() {
+        new OK(200, 200, "Добавить сдачу экзамена по: " + cDiscipline.getName(), new I_Button() {
             @Override
             public void onPush() {
+                EMExamTaking taking = new EMExamTaking();
+                taking.setState(Values.TakingEdited);
+                taking.setName("Новый прием экзамена");
+                taking.getEMDiscipline().setOid(cDiscipline.getOid());
+                taking.getExam().setOid(cExam.getOid());
+                new APICall<JLong>(main) {
+                    @Override
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(taking,main.gson),0);
+                        }
+                    @Override
+                    public void onSucess(JLong oo) {
+                        refreshSelectedDiscipline();
+                        }
+                    };
                 }
             });
     }//GEN-LAST:event_PeriodAddActionPerformed
@@ -1956,7 +1925,8 @@ public class EMExamAdminPanel extends BasePanel{
         new CalendarView("Начало экзамена", new I_CalendarTime() {
             @Override
             public void onSelect(OwnDateTime time) {
-                periodStartTimeUpdate(time.timeInMS());
+                cPeriod.setStartTime(time);
+                periodUpdate();
                 }
             });
     }//GEN-LAST:event_PeriodDataMouseClicked
@@ -1974,7 +1944,7 @@ public class EMExamAdminPanel extends BasePanel{
             return;
         if (cTask==null)
             return;
-        cTask.getTask().setTaskType(TaskType.isSelected() ? TaskBean.TaskTypeEnum.EXERCISE : TaskBean.TaskTypeEnum.QUESTION);
+        cTask.setType(TaskType.isSelected() ? Values.TaskExercise : Values.TaskQuestion);
         taskUpdate();
     }//GEN-LAST:event_TaskTypeItemStateChanged
 
@@ -1988,24 +1958,91 @@ public class EMExamAdminPanel extends BasePanel{
         TaskSaveText.setEnabled(true);
     }//GEN-LAST:event_TaskTextKeyPressed
 
+    private void periodUpdate(){
+        new APICall<JEmpty>(main) {
+            @Override
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken, new DBRequest(cPeriod,main.gson));
+                }
+            @Override
+            public void onSucess(JEmpty oo) {
+                refreshSelectedExamPeriod();
+                }
+            };
+        }
+
     private void PeriodStateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PeriodStateItemStateChanged
         int idx = PeriodState.getSelectedIndex();
         if (idx==0)
             return;
-        periodStateUpdate(stateFactory.getList().get(idx-1).value);
+        if (cPeriod==null)
+            return;
+        cPeriod.setState(takingStateList.get(idx-1).value());
+        periodUpdate();
     }//GEN-LAST:event_PeriodStateItemStateChanged
+
+    private void RuleQuestionForOneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQuestionForOneKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setOneQuestionDefBall(Integer.parseInt(RuleQuestionForOne.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleQuestionForOneKeyPressed
+
+    private void RuleQuestionSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQuestionSumKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setQuestionRating(Integer.parseInt(RuleQuestionSum.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleQuestionSumKeyPressed
+
+    private void RuleDuration1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDuration1KeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setExamDuration(Integer.parseInt(RuleDuration1.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleDuration1KeyPressed
+
+    private void RuleMinRatingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleMinRatingKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setMinimalRating(Integer.parseInt(RuleMinRating.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleMinRatingKeyPressed
+
+    private void PeriodListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PeriodListItemStateChanged
+        refreshSelectedExamPeriod();
+    }//GEN-LAST:event_PeriodListItemStateChanged
 
     public void taskUpdate(){
         if (cTask==null)
             return;
-        new APICall<TaskBean>(main) {
+        new APICall<JEmpty>(main) {
             @Override
-            public Call<TaskBean> apiFun() {
-                return null;
-                //return vkrClient.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken,new DBRequest(cTask,main.gson));
                 }
             @Override
-            public void onSucess(TaskBean oo) {
+            public void onSucess(JEmpty oo) {
                 popup("Вопрос/задача изменены");
                 refreshThemeFull();
                 }
@@ -2046,7 +2083,6 @@ public class EMExamAdminPanel extends BasePanel{
     private java.awt.Choice ExamList;
     private javax.swing.JButton ExamRemove;
     private java.awt.Choice ExamsForGroupList;
-    private java.awt.Choice ExamsTotalList;
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
     private javax.swing.JButton GroupAdd;
@@ -2066,10 +2102,14 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RuleAdd;
     private javax.swing.JButton RuleDelete;
-    private javax.swing.JTextField RuleDuration;
-    private javax.swing.JTextField RuleExcerCount;
+    private javax.swing.JTextField RuleDuration1;
+    private javax.swing.JTextField RuleExceciseForOne;
+    private javax.swing.JTextField RuleExcerciseSum;
+    private javax.swing.JTextField RuleMinRating;
     private javax.swing.JTextField RuleName;
-    private javax.swing.JTextField RuleQurestionCount;
+    private javax.swing.JTextField RuleOwnRating;
+    private javax.swing.JTextField RuleQuestionForOne;
+    private javax.swing.JTextField RuleQuestionSum;
     private javax.swing.JButton RuleThemeAdd;
     private javax.swing.JButton RuleThemeAddAll;
     private javax.swing.JButton RuleThemeRemove;
@@ -2097,15 +2137,16 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
