@@ -19,7 +19,7 @@ public class PersonPanel extends javax.swing.JFrame {
     /**
      * Creates new form PersonPanel
      */
-    public PersonPanel(EMStudentClient main, long oid, String title, I_OK ok0) {
+    public PersonPanel(EMVKRClient main, long oid, String title, I_OK ok0) {
         initComponents();
         ok = ok0;
         setTitle(title);

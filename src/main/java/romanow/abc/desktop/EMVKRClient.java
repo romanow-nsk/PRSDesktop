@@ -5,20 +5,15 @@
  */
 package romanow.abc.desktop;
 
-import com.google.gson.Gson;
 import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.API.RestAPIBase;
-import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
 import romanow.abc.core.Utils;
 import romanow.abc.core.constants.ValuesBase;
-import romanow.abc.core.entity.base.WorkSettingsBase;
 import romanow.abc.core.entity.baseentityes.JEmpty;
 import romanow.abc.core.entity.users.User;
-import retrofit2.Call;
 import retrofit2.Response;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 import static romanow.abc.core.constants.ValuesBase.*;
@@ -27,7 +22,7 @@ import static romanow.abc.core.constants.ValuesBase.*;
  *
  * @author romanow
  */
-public class EMStudentClient extends MainBaseFrame   {
+public class EMVKRClient extends EMVKRMainBaseFrame   {
     public final static int PanelOffsetY=60;
     public final static int RatioW=4;
     public final static int RatioH=3;
@@ -40,12 +35,12 @@ public class EMStudentClient extends MainBaseFrame   {
     public final static int Y0 = 50;
     private LogView logView = new LogView();
     private LogPanel logPanel;
-    private Login loginForm=null;
+    private EMVKRLogin loginForm=null;
     private I_OK disposeBack = null;
     private ArrayList<I_PanelEvent> panels = new ArrayList();
     private boolean secondForm=false;
     //----------------------------------------------------------------
-    public final ArrayList<PanelDescriptor> panelDescList=new ArrayList<>();
+    public final ArrayList<EMVKRPanelDescriptor> panelDescList=new ArrayList<>();
     public void setLoginName(String name){
         loginForm.setLoginName(name);
         }
@@ -53,10 +48,10 @@ public class EMStudentClient extends MainBaseFrame   {
         loginForm.setPassword(name);
     }
     public void initPanels(){
-        panelDescList.add(new PanelDescriptor("Трассировка", LogPanel.class,new UserRole[]
+        panelDescList.add(new EMVKRPanelDescriptor("Трассировка", LogPanel.class,new UserRole[]
                 {UserRole.ROLE_ADMIN}));
         //---------- <0 - readOnly Mode
-        panelDescList.add(new PanelDescriptor("Пользователи", UserPanelBase.class,new UserRole[]
+        panelDescList.add(new EMVKRPanelDescriptor("Пользователи", UserPanelBase.class,new UserRole[]
                 {UserRole.ROLE_ADMIN}));
         //panelDescList.add(new PanelDescriptor("Отчеты/Уведомления", ReportsPanelBase.class,new int[]
         //        {UserRole.ROLE_ADMIN, UserAdminType}));
@@ -68,7 +63,7 @@ public class EMStudentClient extends MainBaseFrame   {
         //        {UserRole.ROLE_ADMIN}));
         //panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new UserRole[]
         //        {UserRole.ROLE_ADMIN}));
-        panelDescList.add(new PanelDescriptor("Тьютор",ExamAdminPanel.class,new UserRole[]
+        panelDescList.add(new EMVKRPanelDescriptor("Тьютор",EMVKRExamAdminPanel.class,new UserRole[]
                 {UserRole.ROLE_ADMIN,UserRole.ROLE_TEACHER}));
         }
 
@@ -77,19 +72,19 @@ public class EMStudentClient extends MainBaseFrame   {
         if (loginForm!=null)
             loginForm.setVisible(true);
         else
-        loginForm = new Login(this,new I_Button(){
+        loginForm = new EMVKRLogin(this,new I_Button(){
             @Override
             public void onPush() {
                 startUser();
-                EMStudentClient.this.setVisible(true);
+                EMVKRClient.this.setVisible(true);
                 }
             });
         }
 
-    public EMStudentClient() {
+    public EMVKRClient() {
         this(true);
         }
-    public EMStudentClient(boolean setLog) {
+    public EMVKRClient(boolean setLog) {
         super(setLog);
         secondForm=false;
         initComponents();
@@ -98,7 +93,7 @@ public class EMStudentClient extends MainBaseFrame   {
         login();
         }
 
-    public EMStudentClient(RestAPIBase service0, User user0, I_OK disposeBack0) throws UniException{
+    public EMVKRClient(RestAPIBase service0, User user0, I_OK disposeBack0) throws UniException{
         ValuesBase.init();
         initComponents();
         disposeBack = disposeBack0;
@@ -117,7 +112,7 @@ public class EMStudentClient extends MainBaseFrame   {
             ShowLog.setSelected(false);
             PanelList.removeAll();
             panels.clear();
-            for(PanelDescriptor pp : panelDescList){
+            for(EMVKRPanelDescriptor pp : panelDescList){
                 boolean bb=false;
                 boolean editMode = true;
                 for(UserRole vv : pp.userTypes){
@@ -231,7 +226,6 @@ public class EMStudentClient extends MainBaseFrame   {
         for(I_PanelEvent xx : panels)
             xx.eventPanel(code, par1,par2,par3,oo);
         }
-    @Override
     public void panelToFront(BasePanel pp){
         for (int i=0;i<panels.size();i++)
             if (panels.get(i) == pp) {
@@ -261,21 +255,23 @@ public class EMStudentClient extends MainBaseFrame   {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new EMStudentClient();
+                new EMVKRClient();
             }
         });
     }

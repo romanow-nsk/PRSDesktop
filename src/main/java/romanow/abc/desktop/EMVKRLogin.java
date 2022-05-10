@@ -1,33 +1,23 @@
 package romanow.abc.desktop;
 
-import retrofit2.Call;
-import romanow.abc.bridge.APICallSync;
-import romanow.abc.bridge.ConsoleClient;
-import romanow.abc.core.Utils;
+import romanow.abc.bridge.EMVKRConsoleClient;
 import romanow.abc.core.constants.ValuesBase;
-import romanow.abc.core.entity.users.User;
-import retrofit2.Response;
-import romanow.abc.exam.model.DisciplineBean;
-import romanow.abc.exam.model.TeacherBean;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author romanow
  */
-public class Login extends JFrame implements I_LogArea{
-    private MainBaseFrame main;
+public class EMVKRLogin extends JFrame implements I_LogArea{
+    private EMVKRMainBaseFrame main;
     private I_Button back;
-    private ConsoleClient emClient = new ConsoleClient();
+    private EMVKRConsoleClient emClient = new EMVKRConsoleClient();
     /**
      * Creates new form Login
      */
-    public Login(MainBaseFrame main0, I_Button back0) {
+    public EMVKRLogin(EMVKRMainBaseFrame main0, I_Button back0) {
         main=main0;
         back = back0;
         initComponents();
@@ -115,19 +105,19 @@ public class Login extends JFrame implements I_LogArea{
 
         jLabel1.setText("Порт");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(20, 90, 60, 14);
+        jLabel1.setBounds(20, 90, 60, 16);
 
         jLabel2.setText("Пароль");
         getContentPane().add(jLabel2);
-        jLabel2.setBounds(20, 150, 85, 14);
+        jLabel2.setBounds(20, 150, 85, 16);
 
         jLabel3.setText("Сервер данных");
         getContentPane().add(jLabel3);
-        jLabel3.setBounds(20, 65, 100, 14);
+        jLabel3.setBounds(20, 65, 100, 16);
 
         jLabel4.setText("Логин (телефон)");
         getContentPane().add(jLabel4);
-        jLabel4.setBounds(20, 120, 110, 14);
+        jLabel4.setBounds(20, 120, 110, 16);
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel5.setText("Дистанционная сдача экзамена");
@@ -166,7 +156,7 @@ public class Login extends JFrame implements I_LogArea{
         getContentPane().add(LOG);
         LOG.setBounds(20, 220, 320, 210);
         getContentPane().add(ConnectToServer);
-        ConnectToServer.setBounds(260, 90, 40, 21);
+        ConnectToServer.setBounds(260, 90, 40, 19);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

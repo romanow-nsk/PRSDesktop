@@ -11,6 +11,7 @@ import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
+import romanow.abc.core.API.RestAPIEM;
 import romanow.abc.core.UniException;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
@@ -27,7 +28,7 @@ import java.util.*;
  *
  * @author romanow
  */
-public class ExamAdminPanel extends BasePanel{
+public class EMExamAdminPanel extends BasePanel{
     private List<DisciplineBean> disciplines = new ArrayList<>();       // Список дисциплин
     private FullDisciplineBean cDiscipline = null;                      // Текущая дисциплина
     private FullThemeBean cTheme = null;                                // Текущая тема
@@ -55,8 +56,9 @@ public class ExamAdminPanel extends BasePanel{
     private List<ExamPeriodBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
     private ExamPeriodBean cPeriod=null;                                // Текущая сдача
     private boolean taskTextChanged=false;
+    private RestAPIEM vkrClient;
     private ExamPeriodStateFactory stateFactory = new ExamPeriodStateFactory();
-    public ExamAdminPanel() {
+    public EMExamAdminPanel() {
         initComponents();
         }
     public void initPanel(MainBaseFrame main0){
@@ -84,7 +86,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<RatingSystemBean>>(main) {
             @Override
             public Call<List<RatingSystemBean>> apiFun() {
-                return main.client.getRatingSystemApi().getAll1();
+                return null;
+                //return vkrClient.getRatingSystemApi().getAll1();
                 }
             @Override
             public void onSucess(List<RatingSystemBean> oo) {
@@ -97,7 +100,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<ExamRuleBean>>(main) {
             @Override
             public Call<List<ExamRuleBean>> apiFun() {
-                return main.client.getExamRuleApi().getAll4();
+                return null;
+                //return vkrClient.getExamRuleApi().getAll4();
                 }
             @Override
             public void onSucess(List<ExamRuleBean> oo) {
@@ -114,7 +118,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<DisciplineBean>>(main) {
             @Override
             public Call<List<DisciplineBean>> apiFun() {
-                return main.client.getDisciplineApi().getAll5();
+                return null;
+                //return vkrClient.getDisciplineApi().getAll5();
                 }
             @Override
             public void onSucess(List<DisciplineBean> oo) {
@@ -134,7 +139,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<ExamRuleBean>>(main) {
             @Override
             public Call<List<ExamRuleBean>> apiFun() {
-                return main.client.getDisciplineApi().findExamRules(cDiscipline.getDiscipline().getId());
+                return null;
+                //return vkrClient.getDisciplineApi().findExamRules(cDiscipline.getDiscipline().getId());
                 }
             @Override
             public void onSucess(List<ExamRuleBean> oo) {
@@ -182,7 +188,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<GroupBean>>(main) {
             @Override
             public Call<List<GroupBean>> apiFun() {
-                return main.client.getGroupApi().getAll2();
+                return null;
+                //return vkrClient.getGroupApi().getAll2();
             }
             @Override
             public void onSucess(List<GroupBean> oo) {
@@ -199,7 +206,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<ExamBean>>(main){
             @Override
             public Call<List<ExamBean>> apiFun() {
-                return main.client.getExamApi().getAll3();
+                return null;
+                //return vkrClient.getExamApi().getAll3();
                 }
             @Override
             public void onSucess(List<ExamBean> oo) {
@@ -220,7 +228,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<FullGroupBean>(main) {
             @Override
             public Call<FullGroupBean> apiFun() {
-                return main.client.getGroupApi().getOne2(oid,1);
+                return null;
+                //return vkrClient.getGroupApi().getOne2(oid,1);
                 }
             @Override
             public void onSucess(FullGroupBean oo) {
@@ -242,7 +251,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<FullDisciplineBean>(main) {
             @Override
             public Call<FullDisciplineBean> apiFun() {
-                return main.client.getDisciplineApi().getFull3(oid,2);
+                return null;
+                //return vkrClient.getDisciplineApi().getFull3(oid,2);
                 }
             @Override
             public void onSucess(FullDisciplineBean oo) {
@@ -258,7 +268,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<List<GroupBean>>(main){
                     @Override
                     public Call<List<GroupBean>> apiFun() {
-                        return  main.client.getDisciplineApi().findGroups(oid);
+                        return null;
+                        //return  vkrClient.getDisciplineApi().findGroups(oid);
                     }
                     @Override
                     public void onSucess(List<GroupBean> oo) {
@@ -321,7 +332,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<List<ExamPeriodBean>>(main) {
             @Override
             public Call<List<ExamPeriodBean>> apiFun() {
-                return main.client.getExamApi().getPeriods(cExam.getId());
+                return null;
+                //return vkrClient.getExamApi().getPeriods(cExam.getId());
                 }
             @Override
             public void onSucess(List<ExamPeriodBean> oo) {
@@ -344,7 +356,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<ExamPeriodBean>(main) {
             @Override
             public Call<ExamPeriodBean> apiFun() {
-                return main.client.getExamApi().getPeriod(cPeriod.getId());
+                return null;
+                //return vkrClient.getExamApi().getPeriod(cPeriod.getId());
                 }
             @Override
             public void onSucess(ExamPeriodBean oo) {
@@ -1185,7 +1198,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getTaskApi().deleteTask(cTask.getTask().getId());
+                        return null;
+                        //return vkrClient.getTaskApi().deleteTask(cTask.getTask().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1210,7 +1224,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<TaskBean>(main) {
                     @Override
                     public Call<TaskBean> apiFun() {
-                        return main.client.getTaskApi().createTask(task);
+                        return null;
+                        //return vkrClient.getTaskApi().createTask(task);
                         }
                     @Override
                     public void onSucess(TaskBean oo) {
@@ -1231,7 +1246,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<DisciplineBean>(main) {
                     @Override
                     public Call<DisciplineBean> apiFun() {
-                        return main.client.getDisciplineApi().create4(bean);
+                        return null;
+                        //return vkrClient.getDisciplineApi().create4(bean);
                         }
                     @Override
                     public void onSucess(DisciplineBean oo) {
@@ -1251,7 +1267,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getDisciplineApi().delete2(cDiscipline.getDiscipline().getId());
+                        return null;
+                        //return vkrClient.getDisciplineApi().delete2(cDiscipline.getDiscipline().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1274,7 +1291,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<ThemeBean>(main) {
                     @Override
                     public Call<ThemeBean> apiFun() {
-                        return main.client.getThemeApi().create(bean);
+                        return null;
+                        //return vkrClient.getThemeApi().create(bean);
                     }
                     @Override
                     public void onSucess(ThemeBean oo) {
@@ -1294,7 +1312,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {        // TODO - это удаление
-                        return main.client.getThemeApi().delete(cTheme.getTheme().getId());
+                        return null;
+                        //return vkrClient.getThemeApi().delete(cTheme.getTheme().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1322,6 +1341,7 @@ public class ExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_ArtifactViewActionPerformed
 
     private void ArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactUploadActionPerformed
+        /*
         main.uploadFileAsync(new I_Value<ArtefactBean>() {
             @Override
             public void onEnter(ArtefactBean value) {
@@ -1329,6 +1349,7 @@ public class ExamAdminPanel extends BasePanel{
                 taskUpdate();
                 }
             });
+         */
         }//GEN-LAST:event_ArtifactUploadActionPerformed
     private void ArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactDownLoadActionPerformed
         // TODO add your handling code here:
@@ -1351,8 +1372,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<DisciplineBean>(main) {
                     @Override
                     public Call<DisciplineBean> apiFun() {
-                        return main.client.getDisciplineApi().update2(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
-                        //return main.client.getDisciplineApi().update1(cDiscipline,cDiscipline.getId());
+                        return null;
+                        //return vkrClient.getDisciplineApi().update2(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
                         }
                     @Override
                     public void onSucess(DisciplineBean oo) {
@@ -1378,7 +1399,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<DisciplineBean>(main) {
                     @Override
                     public Call<DisciplineBean> apiFun() {
-                        return main.client.getDisciplineApi().create4(discipline);
+                        return null;
+                        //return vkrClient.getDisciplineApi().create4(discipline);
                         }
                     @Override
                     public void onSucess(final DisciplineBean oo) {
@@ -1396,7 +1418,8 @@ public class ExamAdminPanel extends BasePanel{
                                 final ThemeBean theme2 = new APICallSync<ThemeBean>() {
                                     @Override
                                     public Call<ThemeBean> apiFun() {
-                                        return main.client.getThemeApi().create(theme);
+                                        return null;
+                                        //return vkrClient.getThemeApi().create(theme);
                                         }
                                     }.call();
                                 for(idx2=0;idx2 < owtTheme.size();idx2++){
@@ -1406,7 +1429,8 @@ public class ExamAdminPanel extends BasePanel{
                                     new APICallSync<TaskBean>() {
                                         @Override
                                         public Call<TaskBean> apiFun() {
-                                            return main.client.getTaskApi().createTask(task);
+                                            return null;
+                                            //return vkrClient.getTaskApi().createTask(task);
                                             }
                                         }.call();
                                     }
@@ -1444,7 +1468,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<GroupBean>(main) {
                     @Override
                     public Call<GroupBean> apiFun() {
-                        return main.client.getGroupApi().create2(bean);
+                        return null;
+                        //return vkrClient.getGroupApi().create2(bean);
                     }
                     @Override
                     public void onSucess(GroupBean oo) {
@@ -1464,7 +1489,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getGroupApi().delete1(cGroup.getGroup().getId());
+                        return null;
+                        //return vkrClient.getGroupApi().delete1(cGroup.getGroup().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1512,7 +1538,8 @@ public class ExamAdminPanel extends BasePanel{
                     final GroupBean group2 = new APICallSync<GroupBean>() {
                         @Override
                         public Call<GroupBean> apiFun() {
-                            return main.client.getGroupApi().create2(group);
+                            return null;
+                            //return vkrClient.getGroupApi().create2(group);
                             }
                         }.call();
                     excel.procSheet(sheets[idx], new I_ExcelBack() {
@@ -1535,7 +1562,8 @@ public class ExamAdminPanel extends BasePanel{
                                 new APICallSync<StudentBean>() {
                                     @Override
                                     public Call<StudentBean> apiFun() {
-                                        return main.client.getOnlyStudentApi().createStudent(student);
+                                        return null;
+                                        //return vkrClient.getOnlyStudentApi().createStudent(student);
                                         }
                                     }.call();
                                 } catch (IOException ee){
@@ -1582,7 +1610,8 @@ public class ExamAdminPanel extends BasePanel{
             new APICall2<ExamRuleBean>() {
                 @Override
                 public Call<ExamRuleBean> apiFun() {
-                    return main.client.getExamRuleApi().update1(cRule,cRule.getId());
+                    return null;
+                    //return vkrClient.getExamRuleApi().update1(cRule,cRule.getId());
                     }
                 }.call(main);
             refreshSelectedRule();
@@ -1602,7 +1631,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<ExamPeriodBean>(main) {
             @Override
             public Call<ExamPeriodBean> apiFun() {
-                return main.client.getExamApi().updatePeriod(out,cPeriod.getId());
+                return null;
+                //return vkrClient.getExamApi().updatePeriod(out,cPeriod.getId());
                 }
             @Override
             public void onSucess(ExamPeriodBean oo) {
@@ -1617,7 +1647,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<ExamPeriodBean>(main) {
             @Override
             public Call<ExamPeriodBean> apiFun() {
-                return main.client.getExamApi().updatePeriod(out,cPeriod.getId());
+                return null;
+                //return vkrClient.getExamApi().updatePeriod(out,cPeriod.getId());
                 }
             @Override
             public void onSucess(ExamPeriodBean oo) {
@@ -1677,7 +1708,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<ExamRuleBean>(main) {
                     @Override
                     public Call<ExamRuleBean> apiFun() {
-                        return main.client.getExamRuleApi().create3(ruleBean);
+                        return null;
+                        //return vkrClient.getExamRuleApi().create3(ruleBean);
                         }
                     @Override
                     public void onSucess(ExamRuleBean oo) {
@@ -1749,7 +1781,7 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getExamRuleApi().;
+                        return vkrClient.getExamRuleApi().;
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1807,7 +1839,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<ExamBean>(main) {
                     @Override
                     public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().updateExam(examClone(cExam),cExam.getId());
+                        return null;
+                        //return vkrClient.getExamApi().updateExam(examClone(cExam),cExam.getId());
                     }
                     @Override
                     public void onSucess(ExamBean oo) {
@@ -1831,7 +1864,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<ExamBean>(main) {
                     @Override
                     public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().updateExam(examClone(cExam),cExam.getId());
+                        return null;
+                        //return vkrClient.getExamApi().updateExam(examClone(cExam),cExam.getId());
                     }
                     @Override
                     public void onSucess(ExamBean oo) {
@@ -1864,7 +1898,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<ExamBean>(main) {
                     @Override
                     public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().createExam(exam);
+                        return null;
+                        //return vkrClient.getExamApi().createExam(exam);
                         }
                     @Override
                     public void onSucess(ExamBean oo) {
@@ -1884,7 +1919,8 @@ public class ExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getExamApi().deleteExam(cExam.getId());
+                        return null;
+                        //return vkrClient.getExamApi().deleteExam(cExam.getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1965,7 +2001,8 @@ public class ExamAdminPanel extends BasePanel{
         new APICall<TaskBean>(main) {
             @Override
             public Call<TaskBean> apiFun() {
-                return main.client.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
+                return null;
+                //return vkrClient.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
                 }
             @Override
             public void onSucess(TaskBean oo) {

@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.*;
-import romanow.abc.bridge.ConsoleClient;
+import romanow.abc.bridge.EMVKRConsoleClient;
 import romanow.abc.core.*;
 import romanow.abc.core.API.RestAPIBase;
 import romanow.abc.core.constants.ConstValue;
@@ -51,8 +51,8 @@ import static romanow.abc.core.Utils.httpError;
  *
  * @author romanow
  */
-public class MainBaseFrame extends JFrame implements I_Important {
-    @Getter @Setter protected ConsoleClient client=null;
+public class EMVKRMainBaseFrame extends MainBaseFrame implements I_Important {
+    @Getter @Setter protected EMVKRConsoleClient client=null;
     protected String debugToken="";
     //-------------------------------------------------------------------------
     protected WorkSettingsBase workSettings=null;
@@ -118,10 +118,10 @@ public class MainBaseFrame extends JFrame implements I_Important {
         }
     private LogStream log;
     //------------------------------------------------------------------------------------------------------------------
-    public MainBaseFrame() {
+    public EMVKRMainBaseFrame() {
         this(true);
         }
-    public MainBaseFrame(boolean setLog) {
+    public EMVKRMainBaseFrame(boolean setLog) {
         initComponents();
         gblEncoding = System.getProperty("file.encoding");
         utf8 = gblEncoding.equals("UTF-8");
@@ -203,7 +203,7 @@ public class MainBaseFrame extends JFrame implements I_Important {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {}
                 menu.setVisible(false);
-                synchronized (MainBaseFrame.this){
+                synchronized (EMVKRMainBaseFrame.this){
                     messages.remove(0);
                     if (messages.size()!=0)
                         onePopup(parent,x0,y0);
@@ -330,7 +330,7 @@ public class MainBaseFrame extends JFrame implements I_Important {
             @Override
             public void onSuccess() {
                 System.out.println("Файл загружен: "+ff.fileName());
-                new APICall<JEmpty>(MainBaseFrame.this){
+                new APICall<JEmpty>(EMVKRMainBaseFrame.this){
                     @Override
                     public Call<JEmpty> apiFun() {
                         return service.removeArtifact(debugToken,art.getOid());
@@ -616,7 +616,7 @@ public class MainBaseFrame extends JFrame implements I_Important {
     public boolean tryToStart(){
         I_Important frame = AppData.ctx().tryToStart(this);
         if (frame!=null){
-            ((MainBaseFrame)frame).toFront();
+            ((EMVKRMainBaseFrame)frame).toFront();
             dispose();
             return false;
         }
@@ -761,20 +761,21 @@ public class MainBaseFrame extends JFrame implements I_Important {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRMainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRMainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRMainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRMainBaseFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainBaseFrame().setVisible(true);
+                new EMVKRMainBaseFrame().setVisible(true);
             }
         });
     }

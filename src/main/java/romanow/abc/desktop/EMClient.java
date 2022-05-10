@@ -1,21 +1,12 @@
 package romanow.abc.desktop;
 
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.API.RestAPIBase;
 import romanow.abc.core.API.RestAPIEM;
-import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
 import romanow.abc.core.constants.Values;
 import romanow.abc.core.entity.subjectarea.*;
 import romanow.abc.core.entity.users.User;
-
-import java.util.concurrent.TimeUnit;
-
-import static romanow.abc.core.constants.Values.*;
-import static romanow.abc.core.constants.ValuesBase.UserSuperAdminType;
 
 
 public class EMClient extends Client {
@@ -27,33 +18,33 @@ public class EMClient extends Client {
     public EMClient(boolean setLog){
         super(setLog);
         Values.init();
-        setLoginName("9130000000");
-        setPassword("pi31415926");
+        setLoginName("9139877277");
+        setPassword("schwanensee1969");
         }
     public void initPanels(){
-        panelDescList.add(new PanelDescriptor("Трассировка", LogPanel.class,new UserRole[]
-                {UserRole.ROLE_ADMIN}));
+        panelDescList.add(new PanelDescriptor("Трассировка", LogPanel.class,new int[]
+                {Values.UserAdminType}));
         //---------- <0 - readOnly Mode
-        panelDescList.add(new PanelDescriptor("Пользователи", UserPanelBase.class,new UserRole[]
-                {UserRole.ROLE_ADMIN}));
-        //panelDescList.add(new PanelDescriptor("Отчеты/Уведомления", ReportsPanelBase.class,new int[]
-        //        {UserRole.ROLE_ADMIN, UserAdminType}));
-        //panelDescList.add(new PanelDescriptor("Сервер",ServerPanel.class,new UserRole[]
-        //        {UserRole.ROLE_ADMIN}));
+        panelDescList.add(new PanelDescriptor("Пользователи", UserPanelBase.class,new int[]
+                {Values.UserAdminType}));
+        panelDescList.add(new PanelDescriptor("Отчеты/Уведомления", ReportsPanelBase.class,new int[]
+                {Values.UserAdminType}));
+        panelDescList.add(new PanelDescriptor("Сервер",ServerPanel.class,new int[]
+                {Values.UserAdminType}));
         //panelDescList.add(new PanelDescriptor("Помощь",HelpPanel.class,new int[]
         //        {UserRole.ROLE_ADMIN, UserAdminType}));
-        //panelDescList.add(new PanelDescriptor("Артефакты",ArtifactPanel.class,new UserRole[]
-        //        {UserRole.ROLE_ADMIN}));
-        //panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new UserRole[]
-        //        {UserRole.ROLE_ADMIN}));
-        panelDescList.add(new PanelDescriptor("Тьютор",ExamAdminPanel.class,new UserRole[]
-                {UserRole.ROLE_ADMIN,UserRole.ROLE_TEACHER}));
+        panelDescList.add(new PanelDescriptor("Артефакты",ArtifactPanel.class,new int[]
+                {Values.UserAdminType}));
+        panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new int[]
+                {Values.UserAdminType}));
+        panelDescList.add(new PanelDescriptor("Тьютор",EMExamAdminPanel.class,new int[]
+                {Values.UserAdminType,Values.UserEMTutor}));
         }
     //-------------------------------------------------------------------------------------------------------
     @Override
     public void onLoginSuccess(){
         try {
-            service2 = startSecondClient(getServerIP(),""+getServerPort());
+            service2 = (RestAPIEM) startSecondClient(getServerIP(),""+getServerPort(),RestAPIEM.class);
             getWorkSettings();
             } catch (UniException e) {
                 popup("Ошибка соединения: " +e.toString());
@@ -67,19 +58,6 @@ public class EMClient extends Client {
         service = service0;
         service2 = service20;
         localUser = localUser0;
-        }
-    public RestAPIEM startSecondClient(String ip, String port) throws UniException {
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(Values.HTTPTimeOut, TimeUnit.SECONDS)
-                .connectTimeout(Values.HTTPTimeOut, TimeUnit.SECONDS)
-                .build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+":"+port)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient)
-                .build();
-        RestAPIEM service = (RestAPIEM)retrofit.create(RestAPIEM.class);
-        return service;
         }
     //-------------------------------------------------------------------------------------------------------
     public static void main(String args[]) {
@@ -96,13 +74,13 @@ public class EMClient extends Client {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(EMStudentClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EMVKRClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>

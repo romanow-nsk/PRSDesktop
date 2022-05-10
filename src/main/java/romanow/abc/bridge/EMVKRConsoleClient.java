@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ConsoleClient {
+public class EMVKRConsoleClient {
     @Getter @Setter private String serverIP="";
     @Getter @Setter int serverPort=0;
     @Getter String token="";
@@ -132,7 +132,7 @@ public class ConsoleClient {
         String port="4502";
         String login="romanov@corp.nstu.ru";
         String pass="password";
-        final ConsoleClient client = new ConsoleClient();
+        final EMVKRConsoleClient client = new EMVKRConsoleClient();
         String res = client.login(ip,port,login,pass);
         if (res.length()!=0)
             System.out.println(res);
