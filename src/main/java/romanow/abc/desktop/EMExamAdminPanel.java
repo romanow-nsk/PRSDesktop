@@ -132,7 +132,7 @@ public class EMExamAdminPanel extends BasePanel{
             return;
         cRule = cDiscipline.getRules().get(RulesList.getSelectedIndex());
         RuleName.setText(cRule.getName());
-        RuleDuration1.setText(""+cRule.getExamDuration());
+        RuleDuration.setText(""+cRule.getExamDuration());
         RuleOwnRating.setText(""+cRule.getExamDuration());
         RuleExceciseForOne.setText(""+cRule.getOneExcerciceDefBall());
         RuleExcerciseSum.setText(""+cRule.getExcerciceRating());
@@ -275,9 +275,10 @@ public class EMExamAdminPanel extends BasePanel{
         if (cDiscipline.getExamens().size()==0)
             return;
         cExam = cDiscipline.getExamens().get(ExamList.getSelectedIndex());
+        ExamName.setText(""+cExam.getName());
         ExamGroupsList.removeAll();
         for(EntityLink id : cExam.getGroups()){
-            EMGroup group = groupsMap.get(id);
+            EMGroup group = groupsMap.get(id.getOid());
             if (group==null){
                 System.out.println("Не найдена группа id="+id);
                 continue;
@@ -305,6 +306,7 @@ public class EMExamAdminPanel extends BasePanel{
         if (cTakings.size()==0)
             return;
         cPeriod = cTakings.get(PeriodList.getSelectedIndex());
+        ExamTakingName.setText(cPeriod.getName());
         if (cPeriod.getStartTime().timeInMS()==0){
             PeriodData.setText("---");
             PeriodStartTime.setText("---");
@@ -494,10 +496,14 @@ public class EMExamAdminPanel extends BasePanel{
         PeriodState = new java.awt.Choice();
         RuleQuestionForOne = new javax.swing.JTextField();
         RuleQuestionSum = new javax.swing.JTextField();
-        RuleDuration1 = new javax.swing.JTextField();
+        RuleDuration = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
         RuleMinRating = new javax.swing.JTextField();
         jLabel22 = new javax.swing.JLabel();
+        ExamTakingName = new javax.swing.JTextField();
+        ExamName = new javax.swing.JTextField();
+        TakingStateNext = new javax.swing.JButton();
+        TakingStatePrev = new javax.swing.JButton();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -980,7 +986,7 @@ public class EMExamAdminPanel extends BasePanel{
 
         jLabel15.setText("Окончание");
         add(jLabel15);
-        jLabel15.setBounds(650, 225, 80, 16);
+        jLabel15.setBounds(650, 290, 80, 16);
 
         jLabel16.setText("Группы");
         add(jLabel16);
@@ -988,7 +994,7 @@ public class EMExamAdminPanel extends BasePanel{
 
         PeriodForAll.setText("Группа/ведомость");
         add(PeriodForAll);
-        PeriodForAll.setBounds(460, 300, 130, 20);
+        PeriodForAll.setBounds(460, 370, 130, 20);
 
         PeriodList.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -996,7 +1002,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodList);
-        PeriodList.setBounds(460, 200, 240, 20);
+        PeriodList.setBounds(460, 230, 240, 20);
 
         PeriodData.setEnabled(false);
         PeriodData.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1005,7 +1011,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodData);
-        PeriodData.setBounds(460, 240, 110, 25);
+        PeriodData.setBounds(460, 310, 110, 25);
 
         PeriodStartTime.setEnabled(false);
         PeriodStartTime.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1014,23 +1020,23 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodStartTime);
-        PeriodStartTime.setBounds(590, 240, 50, 25);
+        PeriodStartTime.setBounds(590, 310, 50, 25);
 
         jLabel18.setText("Сдача экзамена");
         add(jLabel18);
-        jLabel18.setBounds(460, 180, 140, 16);
+        jLabel18.setBounds(460, 210, 140, 16);
 
         jLabel19.setText("Статус");
         add(jLabel19);
-        jLabel19.setBounds(460, 275, 60, 16);
+        jLabel19.setBounds(460, 340, 60, 16);
 
         jLabel20.setText("Дата");
         add(jLabel20);
-        jLabel20.setBounds(460, 225, 70, 16);
+        jLabel20.setBounds(460, 290, 70, 16);
 
         PeriodOneGroup.setEnabled(false);
         add(PeriodOneGroup);
-        PeriodOneGroup.setBounds(600, 300, 100, 20);
+        PeriodOneGroup.setBounds(600, 370, 100, 20);
 
         ExamGroupAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         ExamGroupAdd.setBorderPainted(false);
@@ -1085,7 +1091,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodAdd);
-        PeriodAdd.setBounds(710, 190, 30, 30);
+        PeriodAdd.setBounds(710, 220, 30, 30);
 
         PeriodRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         PeriodRemove.setBorderPainted(false);
@@ -1096,11 +1102,11 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodRemove);
-        PeriodRemove.setBounds(750, 190, 30, 30);
+        PeriodRemove.setBounds(750, 220, 30, 30);
 
         jLabel21.setText("Начало");
         add(jLabel21);
-        jLabel21.setBounds(590, 225, 70, 16);
+        jLabel21.setBounds(590, 290, 70, 16);
 
         PeriodEndTime.setEnabled(false);
         PeriodEndTime.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1109,7 +1115,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodEndTime);
-        PeriodEndTime.setBounds(650, 240, 50, 25);
+        PeriodEndTime.setBounds(650, 310, 50, 25);
 
         TaskType.setText("Задача(1)/Вопрос(0)");
         TaskType.addItemListener(new java.awt.event.ItemListener() {
@@ -1126,7 +1132,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(PeriodState);
-        PeriodState.setBounds(520, 275, 180, 20);
+        PeriodState.setBounds(520, 340, 180, 20);
 
         RuleQuestionForOne.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -1144,13 +1150,13 @@ public class EMExamAdminPanel extends BasePanel{
         add(RuleQuestionSum);
         RuleQuestionSum.setBounds(210, 500, 40, 25);
 
-        RuleDuration1.addKeyListener(new java.awt.event.KeyAdapter() {
+        RuleDuration.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleDuration1KeyPressed(evt);
+                RuleDurationKeyPressed(evt);
             }
         });
-        add(RuleDuration1);
-        RuleDuration1.setBounds(390, 470, 50, 25);
+        add(RuleDuration);
+        RuleDuration.setBounds(390, 470, 50, 25);
 
         jLabel17.setText("Продолж. (мин)");
         add(jLabel17);
@@ -1167,6 +1173,44 @@ public class EMExamAdminPanel extends BasePanel{
         jLabel22.setText("Рейтинг допуска");
         add(jLabel22);
         jLabel22.setBounds(270, 500, 110, 20);
+
+        ExamTakingName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ExamTakingNameKeyPressed(evt);
+            }
+        });
+        add(ExamTakingName);
+        ExamTakingName.setBounds(460, 260, 240, 25);
+
+        ExamName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ExamNameKeyPressed(evt);
+            }
+        });
+        add(ExamName);
+        ExamName.setBounds(460, 180, 240, 25);
+
+        TakingStateNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/right.PNG"))); // NOI18N
+        TakingStateNext.setBorderPainted(false);
+        TakingStateNext.setContentAreaFilled(false);
+        TakingStateNext.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingStateNextActionPerformed(evt);
+            }
+        });
+        add(TakingStateNext);
+        TakingStateNext.setBounds(750, 340, 30, 30);
+
+        TakingStatePrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/left.PNG"))); // NOI18N
+        TakingStatePrev.setBorderPainted(false);
+        TakingStatePrev.setContentAreaFilled(false);
+        TakingStatePrev.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingStatePrevActionPerformed(evt);
+            }
+        });
+        add(TakingStatePrev);
+        TakingStatePrev.setBounds(710, 340, 30, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -2017,17 +2061,17 @@ public class EMExamAdminPanel extends BasePanel{
         }
     }//GEN-LAST:event_RuleQuestionSumKeyPressed
 
-    private void RuleDuration1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDuration1KeyPressed
+    private void RuleDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDurationKeyPressed
         if(evt.getKeyCode()!=10) return;
         if (cRule==null) return;
         try {
-            cRule.setExamDuration(Integer.parseInt(RuleDuration1.getText()));
+            cRule.setExamDuration(Integer.parseInt(RuleDuration.getText()));
             ruleUpdate(evt);
         } catch (Exception ee){
             popup("Ошибка формата целого");
             main.viewUpdate(evt,false);
         }
-    }//GEN-LAST:event_RuleDuration1KeyPressed
+    }//GEN-LAST:event_RuleDurationKeyPressed
 
     private void RuleMinRatingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleMinRatingKeyPressed
         if(evt.getKeyCode()!=10) return;
@@ -2044,6 +2088,46 @@ public class EMExamAdminPanel extends BasePanel{
     private void PeriodListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PeriodListItemStateChanged
         refreshSelectedExamPeriod();
     }//GEN-LAST:event_PeriodListItemStateChanged
+
+    private void examUpdate(){
+        if (cExam==null) return;
+        new APICall<JEmpty>(main) {
+            @Override
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken, new DBRequest(cExam,main.gson));
+            }
+            @Override
+            public void onSucess(JEmpty oo) {
+                refreshSelectedExam();
+            }
+            };       
+        }
+
+
+    private void ExamNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ExamNameKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cExam==null) return;
+        cExam.setName(ExamName.getText());
+        examUpdate();
+        main.viewUpdate(evt,true);
+    }//GEN-LAST:event_ExamNameKeyPressed
+
+    private void ExamTakingNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ExamTakingNameKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cPeriod==null) return;
+        cPeriod.setName(ExamTakingName.getText());
+        periodUpdate();
+        main.viewUpdate(evt,true);
+
+    }//GEN-LAST:event_ExamTakingNameKeyPressed
+
+    private void TakingStateNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingStateNextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TakingStateNextActionPerformed
+
+    private void TakingStatePrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingStatePrevActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TakingStatePrevActionPerformed
 
     public void taskUpdate(){
         if (cTask==null)
@@ -2093,7 +2177,9 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton ExamGroupRemove;
     private java.awt.Choice ExamGroupsList;
     private java.awt.Choice ExamList;
+    private javax.swing.JTextField ExamName;
     private javax.swing.JButton ExamRemove;
+    private javax.swing.JTextField ExamTakingName;
     private java.awt.Choice ExamsForGroupList;
     private javax.swing.JCheckBox FullTrace;
     private java.awt.Choice Group;
@@ -2114,7 +2200,7 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RuleAdd;
     private javax.swing.JButton RuleDelete;
-    private javax.swing.JTextField RuleDuration1;
+    private javax.swing.JTextField RuleDuration;
     private javax.swing.JTextField RuleExceciseForOne;
     private javax.swing.JTextField RuleExcerciseSum;
     private javax.swing.JTextField RuleMinRating;
@@ -2131,6 +2217,8 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton StudentAdd;
     private javax.swing.JButton StudentEdit;
     private javax.swing.JButton StudentRemove;
+    private javax.swing.JButton TakingStateNext;
+    private javax.swing.JButton TakingStatePrev;
     private java.awt.Choice Task;
     private javax.swing.JButton TaskAdd;
     private javax.swing.JButton TaskRemove;
