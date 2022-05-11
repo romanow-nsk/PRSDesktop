@@ -82,8 +82,8 @@ public class EMExamAdminPanel extends BasePanel{
         }
 
     private void refreshAll(){
-        refreshDisciplineList();
         refreshGroupsList();
+        refreshDisciplineList();
         }
 
     private void refreshDisciplineList(){
@@ -132,6 +132,7 @@ public class EMExamAdminPanel extends BasePanel{
             return;
         cRule = cDiscipline.getRules().get(RulesList.getSelectedIndex());
         RuleName.setText(cRule.getName());
+        RuleDuration1.setText(""+cRule.getExamDuration());
         RuleOwnRating.setText(""+cRule.getExamDuration());
         RuleExceciseForOne.setText(""+cRule.getOneExcerciceDefBall());
         RuleExcerciseSum.setText(""+cRule.getExcerciceRating());
@@ -187,7 +188,7 @@ public class EMExamAdminPanel extends BasePanel{
         cGroup=null;
         if (groups.size()==0)
             return;
-        long oid = groups.get(Group.getSelectedIndex()).getOid();
+        cGroup = groups.get(Group.getSelectedIndex());
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
@@ -199,7 +200,7 @@ public class EMExamAdminPanel extends BasePanel{
                     cGroup = (EMGroup)oo.get(main.gson);
                     Student.removeAll();
                     for(EMStudent student : cGroup.getStudents())
-                        Student.add(student.getTitle());
+                        Student.add(student.getUser().getTitle());
                     //refreshStudentFull();
                     }catch (Exception ee){
                         System.out.println(ee.toString());
@@ -214,7 +215,7 @@ public class EMExamAdminPanel extends BasePanel{
         cDiscipline=null;
         if (disciplines.size()==0)
             return;
-        final long oid = disciplines.get(Discipline.getSelectedIndex()).getOid();
+        cDiscipline = disciplines.get(Discipline.getSelectedIndex());
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
@@ -232,6 +233,8 @@ public class EMExamAdminPanel extends BasePanel{
                 cDiscipline.createMaps();
                 cDiscipline.getTakings().clear();
                 Theme.removeAll();
+                for(EMTheme theme : cDiscipline.getThemes())
+                    Theme.add(theme.getName());
                 refreshThemeFull();
                 refreshRules();
                 refreshDisciplineExams();
@@ -240,9 +243,17 @@ public class EMExamAdminPanel extends BasePanel{
                     ExamsForGroupList.add(group.getRef().getName());
                     }
                 groupsExamMap.clear();
+                ExamsForGroupList.removeAll();
                 for(EMExam exam :  cDiscipline.getExamens())
-                    for(EntityLink gg : exam.getGroups())
+                    for(EntityLink gg : exam.getGroups()){
                         groupsExamMap.put(gg.getOid(),gg.getOid());
+                        EMGroup group = groupsMap.get(gg.getOid());
+                        if (group==null){
+                            popup("Не найдена группа id="+gg.getOid());
+                            }
+                        else
+                            ExamsForGroupList.add(group.getName());
+                        }
                 }
             };
         }
@@ -325,7 +336,7 @@ public class EMExamAdminPanel extends BasePanel{
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
-                return main.service.getEntity(main.debugToken, "EMTheme",Values.GetAllModeActual,2);
+                return main.service.getEntity(main.debugToken, "EMTheme",cTheme.getOid(),2);
                 }
             @Override
             public void onSucess(DBRequest oo) {
@@ -1542,9 +1553,10 @@ public class EMExamAdminPanel extends BasePanel{
                             Account account = new Account();
                             User user = new User();
                             account.setLogin(values[1]);
+                            user.setPost(values[1]);
                             String ss[] = UtilsEM.parseFIO(values[0]);
-                            user.setFirstName(ss[0]);
-                            user.setLastName(ss[1]);
+                            user.setLastName(ss[0]);
+                            user.setFirstName(ss[1]);
                             user.setMiddleName(ss[2]);
                             account.setPassword("1234");
                             user.setTypeId(Values.UserEMStudent);
@@ -1647,7 +1659,7 @@ public class EMExamAdminPanel extends BasePanel{
             return;
         if (cRule.getThemes().size()==0)
             return;
-        long oid = cRule.getThemes().getById(RuleThemesList.getSelectedIndex()).getOid();
+        long oid = cRule.getThemes().get(RuleThemesList.getSelectedIndex()).getOid();
         EMTheme theme = cDiscipline.getThemes().getById(oid);
         new OK(200, 200, "Удалить тему: " + shortString(theme.getName(), 20), new I_Button() {
             @Override
