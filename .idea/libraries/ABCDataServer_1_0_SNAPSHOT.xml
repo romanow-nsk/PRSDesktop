@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ABCDataServer-1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../ABC/ABCDataServer/target/ABCDataServer-1.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
