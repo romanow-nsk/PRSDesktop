@@ -53,6 +53,7 @@ public class EMExamAdminPanel extends BasePanel{
     private ArrayList<EMTheme> ruleThemes = new ArrayList<>();          // Темы регламента
     private HashMap<Long,EMTheme> ruleThemesMap = new HashMap<>();
     private HashMap<Long,EMGroup> groupsMap = new HashMap<>();          // Мар всех групп
+    private ConstValue cTakingState = null;
     //---------------------------------------------------------------------------------------
     private int themeIdx = -1;
     private int taskIdx = -1;
@@ -342,14 +343,16 @@ public class EMExamAdminPanel extends BasePanel{
         int state = cTaking.getState();
         TakingState.select(0);
         TakingGroup.setText(!cTaking.isOneGroup() ? "" : groupsMap.get(cTaking.getGroup().getOid()).getName());
+        cTakingState = null;
         for(int i=0; i<takingStateList.size();i++){
             ConstValue cc = takingStateList.get(i);
-            if (cc.value()==state){}
+            if (cc.value()==state){
                 TakingState.select(i+1);
+                cTakingState = cc;
                 break;
                 }
             }
-
+        }
 
     private void refreshSelectedTheme(boolean withPos){
         if (withPos)
@@ -537,6 +540,20 @@ public class EMExamAdminPanel extends BasePanel{
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         TakingStartTime = new javax.swing.JTextField();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel6 = new javax.swing.JLabel();
+        StudentTicketList = new java.awt.Choice();
+        Состояние = new javax.swing.JLabel();
+        RatingState = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        RatingSemester = new javax.swing.JTextField();
+        Вопросы1 = new javax.swing.JLabel();
+        RatingQuestion = new javax.swing.JTextField();
+        Задачи1 = new javax.swing.JLabel();
+        RatingExcercise = new javax.swing.JTextField();
+        RatingAnswerList = new java.awt.Choice();
+        jLabel27 = new javax.swing.JLabel();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -768,7 +785,7 @@ public class EMExamAdminPanel extends BasePanel{
 
         jLabel5.setText("Студент");
         add(jLabel5);
-        jLabel5.setBounds(490, 60, 70, 16);
+        jLabel5.setBounds(460, 410, 60, 16);
 
         Group.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -874,7 +891,7 @@ public class EMExamAdminPanel extends BasePanel{
         add(GroupsImport);
         GroupsImport.setBounds(860, 40, 40, 30);
         add(jSeparator1);
-        jSeparator1.setBounds(460, 120, 480, 10);
+        jSeparator1.setBounds(450, 400, 480, 10);
         add(ExamsForGroupList);
         ExamsForGroupList.setBounds(310, 380, 130, 20);
 
@@ -1025,14 +1042,19 @@ public class EMExamAdminPanel extends BasePanel{
         add(jLabel16);
         jLabel16.setBounds(740, 130, 80, 16);
 
-        TakingForGroup.setText("Группа/ведомость");
+        TakingForGroup.setText("По ведомости");
         TakingForGroup.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 TakingForGroupItemStateChanged(evt);
             }
         });
+        TakingForGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingForGroupActionPerformed(evt);
+            }
+        });
         add(TakingForGroup);
-        TakingForGroup.setBounds(460, 370, 130, 20);
+        TakingForGroup.setBounds(460, 340, 120, 20);
 
         TakingList.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1059,9 +1081,9 @@ public class EMExamAdminPanel extends BasePanel{
         add(jLabel18);
         jLabel18.setBounds(460, 210, 140, 16);
 
-        jLabel19.setText("Статус");
+        jLabel19.setText("Состояние");
         add(jLabel19);
-        jLabel19.setBounds(460, 340, 60, 16);
+        jLabel19.setBounds(470, 370, 90, 16);
 
         jLabel20.setText("Дата");
         add(jLabel20);
@@ -1160,7 +1182,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(TakingState);
-        TakingState.setBounds(520, 340, 180, 20);
+        TakingState.setBounds(580, 370, 170, 20);
 
         RuleQuestionForOne.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -1227,7 +1249,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(TakingStateNext);
-        TakingStateNext.setBounds(750, 340, 30, 30);
+        TakingStateNext.setBounds(800, 365, 30, 30);
 
         TakingStatePrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/left.PNG"))); // NOI18N
         TakingStatePrev.setBorderPainted(false);
@@ -1238,11 +1260,11 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(TakingStatePrev);
-        TakingStatePrev.setBounds(710, 340, 30, 30);
+        TakingStatePrev.setBounds(760, 365, 30, 30);
 
         TakingGroup.setEnabled(false);
         add(TakingGroup);
-        TakingGroup.setBounds(600, 370, 100, 25);
+        TakingGroup.setBounds(580, 340, 110, 25);
 
         jLabel23.setText("Начало");
         add(jLabel23);
@@ -1255,6 +1277,54 @@ public class EMExamAdminPanel extends BasePanel{
         TakingStartTime.setEnabled(false);
         add(TakingStartTime);
         TakingStartTime.setBounds(580, 310, 50, 25);
+        add(jSeparator2);
+        jSeparator2.setBounds(460, 120, 480, 10);
+
+        jLabel6.setText("Студент");
+        add(jLabel6);
+        jLabel6.setBounds(490, 60, 70, 16);
+        add(StudentTicketList);
+        StudentTicketList.setBounds(520, 410, 310, 20);
+
+        Состояние.setText("Состояние");
+        add(Состояние);
+        Состояние.setBounds(720, 440, 70, 16);
+
+        RatingState.setEnabled(false);
+        add(RatingState);
+        RatingState.setBounds(720, 460, 150, 25);
+
+        jLabel25.setText("Ответы");
+        add(jLabel25);
+        jLabel25.setBounds(460, 500, 70, 16);
+
+        jLabel26.setText("Семестр");
+        add(jLabel26);
+        jLabel26.setBounds(520, 440, 70, 16);
+        add(RatingSemester);
+        RatingSemester.setBounds(520, 460, 50, 25);
+
+        Вопросы1.setText("Вопросы");
+        add(Вопросы1);
+        Вопросы1.setBounds(580, 440, 70, 16);
+
+        RatingQuestion.setEnabled(false);
+        add(RatingQuestion);
+        RatingQuestion.setBounds(580, 460, 50, 25);
+
+        Задачи1.setText("Задачи");
+        add(Задачи1);
+        Задачи1.setBounds(640, 440, 70, 16);
+
+        RatingExcercise.setEnabled(false);
+        add(RatingExcercise);
+        RatingExcercise.setBounds(640, 460, 50, 25);
+        add(RatingAnswerList);
+        RatingAnswerList.setBounds(520, 500, 350, 20);
+
+        jLabel27.setText("Рейтинг");
+        add(jLabel27);
+        jLabel27.setBounds(460, 440, 70, 16);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -2118,8 +2188,13 @@ public class EMExamAdminPanel extends BasePanel{
             return;
         if (cTaking ==null)
             return;
-        cTaking.setState(takingStateList.get(idx-1).value());
-        takingUpdate();
+        new OK(200, 200, "Смена состояния: " + (cTakingState == null ? "" : cTakingState.title()) + "->" + takingStateList.get(idx - 1).title(), new I_Button() {
+            @Override
+            public void onPush() {
+                cTaking.setState(takingStateList.get(idx-1).value());
+                takingUpdate();
+            }
+        });
     }//GEN-LAST:event_TakingStateItemStateChanged
 
     private void RuleQuestionForOneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQuestionForOneKeyPressed
@@ -2242,6 +2317,10 @@ public class EMExamAdminPanel extends BasePanel{
         takingUpdate();
     }//GEN-LAST:event_TakingForGroupItemStateChanged
 
+    private void TakingForGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingForGroupActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TakingForGroupActionPerformed
+
     public void taskUpdate(){
         if (cTask==null)
             return;
@@ -2300,6 +2379,11 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton GroupEdit;
     private javax.swing.JButton GroupRemove;
     private javax.swing.JButton GroupsImport;
+    private java.awt.Choice RatingAnswerList;
+    private javax.swing.JTextField RatingExcercise;
+    private javax.swing.JTextField RatingQuestion;
+    private javax.swing.JTextField RatingSemester;
+    private javax.swing.JTextField RatingState;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RuleAdd;
@@ -2321,6 +2405,7 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton StudentAdd;
     private javax.swing.JButton StudentEdit;
     private javax.swing.JButton StudentRemove;
+    private java.awt.Choice StudentTicketList;
     private javax.swing.JButton TakingAdd;
     private javax.swing.JTextField TakingData;
     private javax.swing.JTextField TakingDuration;
@@ -2361,12 +2446,20 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel Вопросы1;
+    private javax.swing.JLabel Задачи1;
+    private javax.swing.JLabel Состояние;
     // End of variables declaration//GEN-END:variables
 }
