@@ -7,11 +7,9 @@ package romanow.abc.desktop;
 
 import retrofit2.Call;
 import romanow.abc.bridge.APICallSync;
-import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
-import romanow.abc.core.API.RestAPIEM;
 import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
 import romanow.abc.core.constants.ConstValue;
@@ -27,8 +25,6 @@ import romanow.abc.core.entity.users.Account;
 import romanow.abc.core.entity.users.User;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
-import romanow.abc.desktop.exam.ExamPeriodStateFactory;
-import romanow.abc.exam.model.*;
 import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
 
@@ -52,11 +48,11 @@ public class EMExamAdminPanel extends BasePanel{
     private ArrayList<EMGroup> groups = new ArrayList<>();              // Список групп полный
     private ArrayList<EMExamTaking> cTakings = new ArrayList<>();       // Список приема для экзамена
     private ArrayList<ConstValue> takingStateList = new ArrayList<>();
+    private ArrayList<EMTask> sortedTasks =  new ArrayList<>();         // Отсортированы - вопрос/задача
     //----------------------------------------------------------------------------------------
     private ArrayList<EMTheme> ruleThemes = new ArrayList<>();          // Темы регламента
     private HashMap<Long,EMTheme> ruleThemesMap = new HashMap<>();
     private HashMap<Long,EMGroup> groupsMap = new HashMap<>();          // Мар всех групп
-    private HashMap<Long,Long> groupsExamMap = new HashMap<>();         // Мар групп с экзаменом
     //----------------------------------------------------------------------------------------
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
@@ -235,25 +231,16 @@ public class EMExamAdminPanel extends BasePanel{
                 Theme.removeAll();
                 for(EMTheme theme : cDiscipline.getThemes())
                     Theme.add(theme.getName());
-                refreshThemeFull();
+                refreshSelectedTheme();
                 refreshRules();
                 refreshDisciplineExams();
                 ExamsForGroupList.removeAll();
                 for(EntityLink<EMGroup> group : cDiscipline.getGroups()){
                     ExamsForGroupList.add(group.getRef().getName());
                     }
-                groupsExamMap.clear();
                 ExamsForGroupList.removeAll();
-                for(EMExam exam :  cDiscipline.getExamens())
-                    for(EntityLink gg : exam.getGroups()){
-                        groupsExamMap.put(gg.getOid(),gg.getOid());
-                        EMGroup group = groupsMap.get(gg.getOid());
-                        if (group==null){
-                            popup("Не найдена группа id="+gg.getOid());
-                            }
-                        else
-                            ExamsForGroupList.add(group.getName());
-                        }
+                for(EntityLink<EMGroup> group :  cDiscipline.getGroups())
+                    ExamsForGroupList.add(group.getRef().getName());
                 }
             };
         }
@@ -330,7 +317,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
 
 
-    private void refreshThemeFull(){
+    private void refreshSelectedTheme(){
         Task.removeAll();
         if (cDiscipline.getThemes().size()==0)
             return;
@@ -344,20 +331,25 @@ public class EMExamAdminPanel extends BasePanel{
             public void onSucess(DBRequest oo) {
                 try {
                     cTheme = (EMTheme) oo.get(main.gson);
-                    cTheme.getTasks().sort(new Comparator<EMTask>() {
-                        @Override
-                        public int compare(EMTask o1, EMTask o2) {              // Сортировать по id (в порядке поступления)
-                            return o1.getOwnRating() - o2.getOid() > 0 ? 1 : -1;
-                            }
-                        });
+                    //cTheme.getTasks().sort(new Comparator<EMTask>() {
+                    //    @Override
+                    //    public int compare(EMTask o1, EMTask o2) {              // Сортировать по id (в порядке поступления)
+                    //        return o1.getOwnRating() - o2.getOid() > 0 ? 1 : -1;
+                    //        }
+                    //    });
+                    sortedTasks.clear();
                     int iq = 1, it = 1;
                     for (EMTask task : cTheme.getTasks())
-                        if (task.getType() == Values.TaskQuestion)
+                        if (task.getType() == Values.TaskQuestion){
                             Task.add("Вопрос " + iq++ + " " + task.getName());
+                            sortedTasks.add(task);
+                            }
                     for (EMTask task : cTheme.getTasks())
-                        if (task.getType() == Values.TaskExercise)
+                        if (task.getType() == Values.TaskExercise){
                             Task.add("Задача " + it++ + " " + task.getName());
-                    refreshTaskFull();
+                            sortedTasks.add(task);
+                            }
+                    refreshSelectedTask();
                     } catch (Exception ee){
                         System.out.println(ee.toString());
                         popup("Не прочитана тем: "+cTheme.getName());
@@ -367,14 +359,14 @@ public class EMExamAdminPanel extends BasePanel{
                 };
             }
 
-    private void refreshTaskFullForce(){
+    private void refreshSelectedTaskForce(){
         TaskText.setText("");
         if (cTheme.getTasks().size()==0)
             return;
         refresh=true;
         TaskSaveText.setEnabled(false);
         cTaskNum = Task.getSelectedIndex();
-        cTask = cTheme.getTasks().get(cTaskNum);
+        cTask = sortedTasks.get(cTaskNum);
         boolean isTask = cTask.getType()== Values.TaskExercise;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
@@ -389,9 +381,9 @@ public class EMExamAdminPanel extends BasePanel{
         refresh=false;
         }
 
-    private void refreshTaskFull(){
+    private void refreshSelectedTask(){
         if (!taskTextChanged){
-            refreshTaskFullForce();
+            refreshSelectedTaskForce();
             return;
             }
         taskTextChanged=false;
@@ -402,7 +394,7 @@ public class EMExamAdminPanel extends BasePanel{
                 if (yes)
                     taskUpdate();
                 else
-                    refreshTaskFullForce();
+                    refreshSelectedTaskForce();
                 }
             });
         }
@@ -483,7 +475,6 @@ public class EMExamAdminPanel extends BasePanel{
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        PeriodOneGroup = new java.awt.Choice();
         ExamGroupAdd = new javax.swing.JButton();
         ExamGroupRemove = new javax.swing.JButton();
         ExamAdd = new javax.swing.JButton();
@@ -504,6 +495,7 @@ public class EMExamAdminPanel extends BasePanel{
         ExamName = new javax.swing.JTextField();
         TakingStateNext = new javax.swing.JButton();
         TakingStatePrev = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -1034,10 +1026,6 @@ public class EMExamAdminPanel extends BasePanel{
         add(jLabel20);
         jLabel20.setBounds(460, 290, 70, 16);
 
-        PeriodOneGroup.setEnabled(false);
-        add(PeriodOneGroup);
-        PeriodOneGroup.setBounds(600, 370, 100, 20);
-
         ExamGroupAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         ExamGroupAdd.setBorderPainted(false);
         ExamGroupAdd.setContentAreaFilled(false);
@@ -1117,7 +1105,7 @@ public class EMExamAdminPanel extends BasePanel{
         add(PeriodEndTime);
         PeriodEndTime.setBounds(650, 310, 50, 25);
 
-        TaskType.setText("Задача(1)/Вопрос(0)");
+        TaskType.setText("Задача(1) / Вопрос(0)");
         TaskType.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 TaskTypeItemStateChanged(evt);
@@ -1211,6 +1199,10 @@ public class EMExamAdminPanel extends BasePanel{
         });
         add(TakingStatePrev);
         TakingStatePrev.setBounds(710, 340, 30, 30);
+
+        jTextField1.setEnabled(false);
+        add(jTextField1);
+        jTextField1.setBounds(600, 370, 100, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1252,7 +1244,7 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
-                        refreshThemeFull();
+                        refreshSelectedTheme();
                     }
                 };
             }
@@ -1277,7 +1269,7 @@ public class EMExamAdminPanel extends BasePanel{
                     @Override
                     public void onSucess(JLong oo) {
                         System.out.println("taskId="+oo.getValue());
-                        refreshThemeFull();
+                        refreshSelectedTheme();
                     }
                 };
             }
@@ -1372,11 +1364,11 @@ public class EMExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_DisciplineItemStateChanged
 
     private void ThemeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ThemeItemStateChanged
-        refreshThemeFull();
+        refreshSelectedTheme();
     }//GEN-LAST:event_ThemeItemStateChanged
 
     private void TaskItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TaskItemStateChanged
-        refreshTaskFull();
+        refreshSelectedTask();
     }//GEN-LAST:event_TaskItemStateChanged
 
     private void ArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactViewActionPerformed
@@ -1740,7 +1732,7 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JLong oo) {
-                        refreshRules();
+                        refreshSelectedDiscipline();
                         }
                     };
             }
@@ -1809,7 +1801,7 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
-                        refreshRules();
+                        refreshSelectedDiscipline();
                         }
                     };
                 }
@@ -1847,10 +1839,17 @@ public class EMExamAdminPanel extends BasePanel{
             });
     }//GEN-LAST:event_RuleThemeAddAllActionPerformed
 
+    private boolean isGroupInExam(){
+        for(EntityLink<EMGroup> group : cDiscipline.getGroups())
+            if (group.getOid()==cGroup.getOid())
+                return true;
+        return false;
+        }
+
     private void ExamGroupAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupAddActionPerformed
         if (cGroup==null || cExam==null)
             return;
-        if (groupsExamMap.get(cGroup.getOid())!=null){
+        if (isGroupInExam()){
             popup("Группа "+cGroup.getName()+" уже в экзамене");
             return;
             }
@@ -1865,8 +1864,9 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JEmpty oo) {
+                        cDiscipline.getGroups().add(cGroup.getOid());
+                        disciplineUpdate();
                         popup("Группа "+cGroup.getName()+" добавлена");
-                        refreshSelectedExam();
                         }
                     };
                 }
@@ -1889,14 +1889,28 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JEmpty oo) {
+                        cDiscipline.getGroups().removeById(group.getOid());
+                        disciplineUpdate();
                         popup("Группа "+group.getName()+" удалена");
-                        refreshSelectedExam();
-                    }
-                };
-            }
-        });
+                        }
+                    };
+                }
+            });
 
     }//GEN-LAST:event_ExamGroupRemoveActionPerformed
+
+    private void disciplineUpdate(){
+        new APICall<JEmpty>(main) {
+            @Override
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken,new DBRequest(cDiscipline,main.gson));
+                }
+            @Override
+            public void onSucess(JEmpty oo) {
+                refreshSelectedDiscipline();
+                }
+            };
+        }
 
     private void ExamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamAddActionPerformed
         if (cRule==null)
@@ -1934,7 +1948,12 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
-                        refreshSelectedDiscipline();
+                        for(EntityLink<EMGroup> group : cExam.getGroups()){
+                            cDiscipline.getGroups().removeById(group.getOid());
+                            }
+                        cDiscipline.getExamens().removeById(cExam.getOid());
+                        disciplineUpdate();
+                        popup("Экзамен удален");
                     }
                 };
             }
@@ -2095,11 +2114,11 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public Call<JEmpty> apiFun() {
                 return main.service.updateEntity(main.debugToken, new DBRequest(cExam,main.gson));
-            }
+                }
             @Override
             public void onSucess(JEmpty oo) {
                 refreshSelectedExam();
-            }
+                }
             };       
         }
 
@@ -2140,7 +2159,7 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(JEmpty oo) {
                 popup("Вопрос/задача изменены");
-                refreshThemeFull();
+                refreshSelectedTheme();
                 }
             };
         }
@@ -2192,7 +2211,6 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JTextField PeriodEndTime;
     private javax.swing.JCheckBox PeriodForAll;
     private java.awt.Choice PeriodList;
-    private java.awt.Choice PeriodOneGroup;
     private javax.swing.JButton PeriodRemove;
     private javax.swing.JTextField PeriodStartTime;
     private java.awt.Choice PeriodState;
@@ -2251,5 +2269,6 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
