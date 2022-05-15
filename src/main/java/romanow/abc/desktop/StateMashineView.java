@@ -29,6 +29,7 @@ public class StateMashineView {
     public void refresh(final I_State stateObject){
         for(JButton bb : bList)
             panel.remove(bb);
+        bList.clear();
         if (stateObject==null)
             return;
         int state = stateObject.getState();
@@ -39,16 +40,21 @@ public class StateMashineView {
             try {
                 Class clazz= Class.forName("romanow.abc.desktop.statemashine."+factory.name+transition.transName);
                 final I_ClientTransition transitionObject = (I_ClientTransition) clazz.newInstance();
-                if (!transitionObject.testTransition(panel,stateObject))
-                    continue;
                 JButton bb = new JButton();
                 bb.setText(transition.title);
                 bb.setBounds(panelX0, panelY0+n*bHight+5,bWidth,bHight);
                 n++;
                 panel.add(bb);
+                bList.add(bb);
                 bb.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        String ss = transitionObject.testTransition(panel,stateObject);
+                        if (ss.length()!=0){
+                            panel.popup(ss);
+                            System.out.println(ss);
+                            return;
+                            }
                         new APICall<JEmpty>(panel.main) {
                             @Override
                             public Call<JEmpty> apiFun() {
