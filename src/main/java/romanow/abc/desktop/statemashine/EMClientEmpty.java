@@ -1,16 +1,15 @@
 package romanow.abc.desktop.statemashine;
 
-import romanow.abc.core.entity.subjectarea.I_State;
-import romanow.abc.desktop.EMClient;
+import romanow.abc.core.entity.StateEntity;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMClientEmpty implements I_ClientTransition{
     @Override
-    public String testTransition(EMExamAdminPanel panel, I_State env) {
+    public String testTransition(EMExamAdminPanel panel, StateEntity env) {
         return "";
     }
     @Override
-    public void onTransition(EMExamAdminPanel panel,I_State env) {
+    public void onTransition(EMExamAdminPanel panel,StateEntity env) {
         panel.refreshSelectedDiscipline();
     }
     }

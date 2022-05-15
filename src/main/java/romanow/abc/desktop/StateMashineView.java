@@ -1,8 +1,9 @@
 package romanow.abc.desktop;
 
 import retrofit2.Call;
+import romanow.abc.core.DBRequest;
+import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.baseentityes.JEmpty;
-import romanow.abc.core.entity.subjectarea.I_State;
 import romanow.abc.core.entity.subjectarea.statemashine.Transition;
 import romanow.abc.core.entity.subjectarea.statemashine.TransitionsFactory;
 import romanow.abc.desktop.statemashine.I_ClientTransition;
@@ -26,7 +27,7 @@ public class StateMashineView {
         factory = factory0;
         panel = client0;
     }
-    public void refresh(final I_State stateObject){
+    public void refresh(final StateEntity stateObject){
         for(JButton bb : bList)
             panel.remove(bb);
         bList.clear();
@@ -55,10 +56,11 @@ public class StateMashineView {
                             System.out.println(ss);
                             return;
                             }
+                        stateObject.setState(transition.nextState);         // Подготовить переход
                         new APICall<JEmpty>(panel.main) {
                             @Override
                             public Call<JEmpty> apiFun() {
-                                return ((EMClient)panel.main).service2.execTransition(panel.main.debugToken,stateObject.getOid(), factory.name,transition.transName);
+                                return ((EMClient)panel.main).service2.execTransition(panel.main.debugToken,new DBRequest(stateObject,panel.main.gson));
                                 }
                             @Override
                             public void onSucess(JEmpty oo) {
