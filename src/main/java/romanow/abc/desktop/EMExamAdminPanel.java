@@ -1077,6 +1077,12 @@ public class EMExamAdminPanel extends BasePanel{
         });
         add(Exams);
         Exams.setBounds(460, 150, 190, 20);
+
+        ExamGroups.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ExamGroupsItemStateChanged(evt);
+            }
+        });
         add(ExamGroups);
         ExamGroups.setBounds(740, 150, 100, 20);
 
@@ -2277,7 +2283,7 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onPush() {
                 EMExamTaking taking = new EMExamTaking();
-                taking.setState(Values.TakingEdited);
+                taking.setState(Values.TakingEdit);
                 taking.setName("Новый прием экзамена");
                 taking.getEMDiscipline().setOid(cDiscipline.getOid());
                 taking.getExam().setOid(cExam.getOid());
@@ -2463,7 +2469,8 @@ public class EMExamAdminPanel extends BasePanel{
             new APICall<EMExam>(main) {
                 @Override
                 public Call<EMExam> apiFun() {
-                    return ((EMClient)main).service2.getTicketsForExam(main.debugToken, cExam.getOid());
+                    long groupId = cExam.getGroups().get(ExamGroups.getSelectedIndex()).getOid();
+                    return ((EMClient)main).service2.getTicketsForExam(main.debugToken, cExam.getOid(),groupId);
                 }
                 @Override
                 public void onSucess(EMExam oo) {
@@ -2609,6 +2616,13 @@ public class EMExamAdminPanel extends BasePanel{
     private void TicketExamOrTakingModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TicketExamOrTakingModeItemStateChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_TicketExamOrTakingModeItemStateChanged
+
+    private void ExamGroupsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ExamGroupsItemStateChanged
+        if (cExam==null)
+            return;
+        if (!TicketExamOrTakingMode.isSelected())
+            refreshTikets();
+    }//GEN-LAST:event_ExamGroupsItemStateChanged
 
     public void taskUpdate(){
         if (cTask==null)
