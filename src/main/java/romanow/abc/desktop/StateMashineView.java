@@ -26,11 +26,46 @@ public class StateMashineView {
         this.panelY0 = panelY0;
         factory = factory0;
         panel = client0;
-    }
-    public void refresh(final StateEntity stateObject){
+        }
+    public void clear(){
         for(JButton bb : bList)
             panel.remove(bb);
         bList.clear();
+        }
+    public void forceStateChange(final StateEntity stateObject,int nextState){
+        Transition transition = factory.getByState(stateObject.getState(),nextState);
+        if (transition==null){
+            System.out.println("Недопустимый переход "+stateObject.getState()+"->"+nextState);
+            panel.popup("Недопустимый переход");
+            return;
+            }
+        try {
+            Class clazz= Class.forName("romanow.abc.desktop.statemashine."+factory.name+transition.transName);
+            final I_ClientTransition transitionObject = (I_ClientTransition) clazz.newInstance();
+            String ss = transitionObject.testTransition(panel,stateObject);
+            if (ss.length()!=0){
+                panel.popup(ss);
+                System.out.println(ss);
+                return;
+                }
+            transitionObject.onTransitionBefore(panel,stateObject);
+            stateObject.setState(transition.nextState);         // Подготовить переход
+            new APICall<JEmpty>(panel.main) {
+                @Override
+                public Call<JEmpty> apiFun() {
+                    return ((EMClient)panel.main).service2.execTransition(panel.main.debugToken,new DBRequest(stateObject,panel.main.gson));
+                    }
+                @Override
+                public void onSucess(JEmpty oo) {
+                            transitionObject.onTransitionAfter(panel,stateObject);
+                        }
+                    };
+            } catch (Exception ee){
+                System.out.println("Ошибка обработчика перехода "+factory.name+transition.transName+": "+ee.toString());
+                }
+        }
+    public void refresh(final StateEntity stateObject){
+        clear();
         if (stateObject==null)
             return;
         int state = stateObject.getState();
@@ -56,6 +91,7 @@ public class StateMashineView {
                             System.out.println(ss);
                             return;
                             }
+                        transitionObject.onTransitionBefore(panel,stateObject);
                         stateObject.setState(transition.nextState);         // Подготовить переход
                         new APICall<JEmpty>(panel.main) {
                             @Override
@@ -64,7 +100,7 @@ public class StateMashineView {
                                 }
                             @Override
                             public void onSucess(JEmpty oo) {
-                                transitionObject.onTransition(panel,stateObject);
+                                transitionObject.onTransitionAfter(panel,stateObject);
                                 }
                             };
                         }
@@ -73,6 +109,7 @@ public class StateMashineView {
                 System.out.println("Ошибка обработчика перехода "+factory.name+transition.transName+": "+ee.toString());
             }
         }
+    panel.repaint();
     }
 }
 

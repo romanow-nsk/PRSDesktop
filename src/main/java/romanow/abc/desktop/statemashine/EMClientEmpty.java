@@ -9,7 +9,7 @@ public class EMClientEmpty implements I_ClientTransition{
         return "";
     }
     @Override
-    public void onTransition(EMExamAdminPanel panel,StateEntity env) {
-        panel.refreshSelectedDiscipline();
-    }
+    public void onTransitionAfter(EMExamAdminPanel panel, StateEntity env) {}
+    @Override
+    public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {}
     }
