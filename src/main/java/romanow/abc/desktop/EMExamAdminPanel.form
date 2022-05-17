@@ -370,11 +370,11 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x414;&#x43e;&#x43f;&#x443;&#x441;&#x43a;/&#x411;&#x438;&#x43b;&#x435;&#x442;/&#x41e;&#x442;&#x432;&#x435;&#x442;&#x44b;"/>
+        <Property name="text" type="java.lang.String" value="&#x421;&#x442;&#x443;&#x434;&#x435;&#x43d;&#x442;: &#x420;&#x435;&#x439;&#x442;&#x438;&#x43d;&#x433;/&#x411;&#x438;&#x43b;&#x435;&#x442;/&#x41e;&#x442;&#x432;&#x435;&#x442;&#x44b;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="460" y="355" width="150" height="20"/>
+          <AbsoluteConstraints x="460" y="355" width="210" height="20"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -544,13 +544,6 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="java.awt.Choice" name="ExamsForGroupList">
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="310" y="380" width="130" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel7">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#x417;&#x430;&#x434;&#x430;&#x447;&#x430;: &#x437;&#x430; &#x43e;&#x434;&#x43d;&#x443; - &#x441;&#x443;&#x43c;&#x43c;&#x430; "/>
@@ -558,16 +551,6 @@
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="20" y="530" width="140" height="20"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel8">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x42d;&#x43a;&#x437;&#x430;&#x43c;&#x435;&#x43d; &#x434;&#x43b;&#x44f; &#x433;&#x440;&#x443;&#x43f;&#x43f;"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="180" y="380" width="120" height="20"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -765,7 +748,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel14">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x42d;&#x43a;&#x437;&#x430;&#x43c;&#x435;&#x43d;&#x44b; (&#x43f;&#x43e; &#x440;&#x435;&#x433;&#x43b;&#x430;&#x43c;&#x435;&#x43d;&#x442;&#x430;&#x43c;)"/>
+        <Property name="text" type="java.lang.String" value="&#x413;&#x440;&#x443;&#x43f;&#x43f;&#x44b; &#x43f;&#x43e; &#x434;&#x438;&#x441;&#x446;&#x438;&#x43f;&#x43b;&#x438;&#x43d;&#x435; (&#x440;&#x435;&#x439;&#x442;&#x438;&#x43d;&#x433;&#x438;)"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -773,23 +756,13 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="java.awt.Choice" name="Exams">
+    <Component class="java.awt.Choice" name="GroupRatings">
       <Events>
-        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="ExamsItemStateChanged"/>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="GroupRatingsItemStateChanged"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="460" y="150" width="190" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="java.awt.Choice" name="ExamGroups">
-      <Events>
-        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="ExamGroupsItemStateChanged"/>
-      </Events>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="740" y="150" width="100" height="-1"/>
+          <AbsoluteConstraints x="460" y="150" width="230" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -803,16 +776,6 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel16">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x413;&#x440;&#x443;&#x43f;&#x43f;&#x44b;"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="740" y="130" width="80" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
     <Component class="javax.swing.JCheckBox" name="TakingForGroup">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#x41e;&#x434;&#x43d;&#x430; &#x433;&#x440;&#x443;&#x43f;&#x43f;&#x430;"/>
@@ -823,7 +786,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="740" y="210" width="110" height="-1"/>
+          <AbsoluteConstraints x="820" y="180" width="110" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -890,7 +853,7 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JButton" name="ExamGroupAdd">
+    <Component class="javax.swing.JButton" name="GroupRatingAdd">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/drawable/add.png"/>
@@ -899,62 +862,28 @@
         <Property name="contentAreaFilled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ExamGroupAddActionPerformed"/>
-      </Events>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="850" y="140" width="30" height="30"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JButton" name="ExamGroupRemove">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/drawable/remove.png"/>
-        </Property>
-        <Property name="borderPainted" type="boolean" value="false"/>
-        <Property name="contentAreaFilled" type="boolean" value="false"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ExamGroupRemoveActionPerformed"/>
-      </Events>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="890" y="140" width="30" height="30"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JButton" name="ExamAdd">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/drawable/add.png"/>
-        </Property>
-        <Property name="borderPainted" type="boolean" value="false"/>
-        <Property name="contentAreaFilled" type="boolean" value="false"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ExamAddActionPerformed"/>
-      </Events>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="660" y="140" width="30" height="30"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JButton" name="ExamRemove">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/drawable/remove.png"/>
-        </Property>
-        <Property name="borderPainted" type="boolean" value="false"/>
-        <Property name="contentAreaFilled" type="boolean" value="false"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ExamRemoveActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="GroupRatingAddActionPerformed"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="700" y="140" width="30" height="30"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Component class="javax.swing.JButton" name="GroupRatingRemove">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/drawable/remove.png"/>
+        </Property>
+        <Property name="borderPainted" type="boolean" value="false"/>
+        <Property name="contentAreaFilled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="GroupRatingRemoveActionPerformed"/>
+      </Events>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+          <AbsoluteConstraints x="740" y="140" width="30" height="30"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -971,7 +900,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="660" y="180" width="30" height="30"/>
+          <AbsoluteConstraints x="700" y="175" width="30" height="30"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -988,7 +917,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="700" y="180" width="30" height="30"/>
+          <AbsoluteConstraints x="740" y="175" width="30" height="30"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1095,13 +1024,13 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JTextField" name="ExamName">
+    <Component class="javax.swing.JTextField" name="GroupRatingName">
       <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="ExamNameKeyPressed"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="GroupRatingNameKeyPressed"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="460" y="175" width="190" height="25"/>
+          <AbsoluteConstraints x="460" y="175" width="230" height="25"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1111,7 +1040,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="850" y="200" width="70" height="25"/>
+          <AbsoluteConstraints x="820" y="205" width="70" height="25"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1152,9 +1081,9 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="java.awt.Choice" name="TicketStudentList">
+    <Component class="java.awt.Choice" name="RatingStudentList">
       <Events>
-        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="TicketStudentListItemStateChanged"/>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="RatingStudentListItemStateChanged"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -1202,7 +1131,7 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JTextField" name="TicketQuestionRating">
+    <Component class="javax.swing.JTextField" name="RatingQuestionSum">
       <Properties>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
@@ -1222,7 +1151,7 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JTextField" name="TicketExcerciseRating">
+    <Component class="javax.swing.JTextField" name="RatingExcerciseSum">
       <Properties>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
@@ -1238,7 +1167,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="520" y="450" width="280" height="-1"/>
+          <AbsoluteConstraints x="520" y="450" width="250" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1320,7 +1249,7 @@
     <Component class="javax.swing.JSeparator" name="jSeparator3">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="580" y="365" width="350" height="10"/>
+          <AbsoluteConstraints x="650" y="365" width="280" height="10"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1344,9 +1273,9 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JTextField" name="TicketSemesterRating">
+    <Component class="javax.swing.JTextField" name="RatingSemesterSum">
       <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="TicketSemesterRatingKeyPressed"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="RatingSemesterSumKeyPressed"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -1374,19 +1303,20 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="TicketExamOrTakingMode">
+    <Component class="javax.swing.JCheckBox" name="RatingOrTakingMode">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="12" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&#x41f;&#x440;&#x438;&#x435;&#x43c;(1) / &#x42d;&#x43a;&#x437;&#x430;&#x43c;&#x435;&#x43d;(0)"/>
+        <Property name="text" type="java.lang.String" value="&#x41f;&#x440;&#x438;&#x435;&#x43c; (1) / &#x420;&#x435;&#x439;&#x442;&#x438;&#x43d;&#x433; (0)"/>
       </Properties>
       <Events>
-        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="TicketExamOrTakingModeItemStateChanged"/>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="RatingOrTakingModeItemStateChanged"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RatingOrTakingModeActionPerformed"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="750" y="375" width="170" height="-1"/>
+          <AbsoluteConstraints x="750" y="375" width="190" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1409,7 +1339,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="610" y="490" width="140" height="25"/>
+          <AbsoluteConstraints x="610" y="490" width="160" height="25"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1426,12 +1356,12 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JTextField" name="TicketState">
+    <Component class="javax.swing.JTextField" name="RatingStudentState">
       <Properties>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="TicketStateMouseClicked"/>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="RatingStudentStateMouseClicked"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
