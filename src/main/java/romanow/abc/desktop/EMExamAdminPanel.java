@@ -55,7 +55,6 @@ public class EMExamAdminPanel extends BasePanel{
     private EMGroupRating cGroupRating = null;
     private EMExamTaking cExamTaking = null;
     @Getter private EMStudRating cStudRating = null;
-    @Getter private EMStudRating cStudRatingFull = null;
     @Getter private ArrayList<EMGroup> groups = new ArrayList<>();              // Список групп полный
     @Getter private ArrayList<EMExamTaking> cTakings = new ArrayList<>();       // Список приема для экзамена
     private HashMap<Integer,ConstValue> takingStateMap;
@@ -446,14 +445,10 @@ public class EMExamAdminPanel extends BasePanel{
         boolean isTask = cTask.getType()== Values.TaskExercise;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
-        TaskText.setText(UtilsEM.formatSize(cTask.getTaskText(),60));
+        TaskText.setText(UtilsEM.formatSize(cTask.getTaskText(),65));
         boolean bb = cTask.getArtifact().getOid()!=0;
         TaskArtifactView.setEnabled(bb);
         TaskArtifactDownLoad.setEnabled(bb);
-        if (bb){
-            Artifact artifact = cTask.getArtifact().getRef();
-            TaskText.append("\n"+artifact.getOriginalName());
-            }
         refresh=false;
         }
 
@@ -570,10 +565,8 @@ public class EMExamAdminPanel extends BasePanel{
         Состояние = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
-        Вопросы1 = new javax.swing.JLabel();
         RatingQuestionSum = new javax.swing.JTextField();
-        Задачи1 = new javax.swing.JLabel();
-        RatingExcerciseSum = new javax.swing.JTextField();
+        RatingSum = new javax.swing.JTextField();
         Answers = new java.awt.Choice();
         AnswerMessages = new java.awt.Choice();
         jLabel28 = new javax.swing.JLabel();
@@ -597,6 +590,7 @@ public class EMExamAdminPanel extends BasePanel{
         jSeparator5 = new javax.swing.JSeparator();
         AnswerMessageAdd = new javax.swing.JButton();
         AnswerBall = new javax.swing.JTextField();
+        RatingExcerciseSum1 = new javax.swing.JTextField();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -1267,31 +1261,23 @@ public class EMExamAdminPanel extends BasePanel{
 
         Состояние.setText("Состояние обучения");
         add(Состояние);
-        Состояние.setBounds(630, 400, 160, 16);
+        Состояние.setBounds(650, 400, 130, 16);
 
         jLabel25.setText("Сообщения");
         add(jLabel25);
         jLabel25.setBounds(450, 520, 70, 16);
 
-        jLabel26.setText("Семестр");
+        jLabel26.setText("Семестр  Вопросы/Задачи/Итог");
         add(jLabel26);
-        jLabel26.setBounds(460, 400, 70, 16);
-
-        Вопросы1.setText("Вопросы");
-        add(Вопросы1);
-        Вопросы1.setBounds(520, 400, 70, 16);
+        jLabel26.setBounds(460, 400, 180, 16);
 
         RatingQuestionSum.setEnabled(false);
         add(RatingQuestionSum);
-        RatingQuestionSum.setBounds(520, 420, 40, 25);
+        RatingQuestionSum.setBounds(520, 420, 35, 25);
 
-        Задачи1.setText("Задачи");
-        add(Задачи1);
-        Задачи1.setBounds(580, 400, 70, 16);
-
-        RatingExcerciseSum.setEnabled(false);
-        add(RatingExcerciseSum);
-        RatingExcerciseSum.setBounds(580, 420, 40, 25);
+        RatingSum.setEnabled(false);
+        add(RatingSum);
+        RatingSum.setBounds(600, 420, 35, 25);
 
         Answers.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1364,7 +1350,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(RatingSemesterSum);
-        RatingSemesterSum.setBounds(460, 420, 50, 25);
+        RatingSemesterSum.setBounds(460, 420, 40, 25);
 
         AnswerBallSelector.setEnabled(false);
         add(AnswerBallSelector);
@@ -1382,11 +1368,11 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(RatingOrTakingMode);
-        RatingOrTakingMode.setBounds(460, 350, 280, 20);
+        RatingOrTakingMode.setBounds(460, 355, 280, 20);
 
         jLabel27.setText("Студент");
         add(jLabel27);
-        jLabel27.setBounds(460, 375, 60, 16);
+        jLabel27.setBounds(460, 380, 60, 16);
 
         AnswerState.setEnabled(false);
         AnswerState.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1413,7 +1399,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(RatingStudentState);
-        RatingStudentState.setBounds(630, 420, 140, 25);
+        RatingStudentState.setBounds(640, 420, 130, 25);
 
         TakingAddAll.setText("Назначить всех");
         TakingAddAll.addActionListener(new java.awt.event.ActionListener() {
@@ -1444,6 +1430,10 @@ public class EMExamAdminPanel extends BasePanel{
         AnswerBall.setEnabled(false);
         add(AnswerBall);
         AnswerBall.setBounds(670, 490, 40, 25);
+
+        RatingExcerciseSum1.setEnabled(false);
+        add(RatingExcerciseSum1);
+        RatingExcerciseSum1.setBounds(560, 420, 35, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -2391,13 +2381,15 @@ public class EMExamAdminPanel extends BasePanel{
         if (studRatings.size()==0)
             return;
         cStudRating = studRatings.get(RatingStudentList.getSelectedIndex());
+        refreshStudRatingFull(true);
         RatingSemesterSum.setEnabled(cStudRating.getState()==Values.StudRatingNotAllowed);
-        RatingExcerciseSum.setText(""+ cStudRating.getExcerciceRating());
+        RatingSum.setText(""+ cStudRating.getExcerciceRating());
         RatingSemesterSum.setText(""+ cStudRating.getSemesterRating());
         RatingQuestionSum.setText(""+ cStudRating.getQuestionRating());
+        RatingExcerciseSum1.setText(""+cStudRating.getExcerciceRating());
+        RatingSum.setText(""+cStudRating.getSumRating());
         RatingStudentState.setText(ticketStateMap.get(cStudRating.getState()).title());
         studRatingStateMashine.refresh(cStudRating);
-        refreshStudRatingFull(false);
         }
 
     public void refreshSelectedAnswer(){
@@ -2467,18 +2459,18 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(DBRequest oo) {
                 try {
-                    cStudRatingFull = (EMStudRating) oo.get(main.gson);
+                    cStudRating = (EMStudRating) oo.get(main.gson);
                     answers.clear();
                     Answers.removeAll();
                     int qIdx=1;
                     int eIdx=1;
-                    for(EMAnswer answer : cStudRatingFull.getAnswers()){
+                    for(EMAnswer answer : cStudRating.getAnswers()){
                         if (answer.getTask().getRef().getType()==Values.TaskQuestion){
                             Answers.add("Вопрос "+qIdx++);
                             answers.add(answer);
                             }
                         }
-                    for(EMAnswer answer : cStudRatingFull.getAnswers()){
+                    for(EMAnswer answer : cStudRating.getAnswers()){
                         if (answer.getTask().getRef().getType()==Values.TaskExercise){
                             Answers.add("Задача "+eIdx++);
                             answers.add(answer);
@@ -2838,12 +2830,13 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton GroupRemove;
     private java.awt.Choice Groups;
     private javax.swing.JButton GroupsImport;
-    private javax.swing.JTextField RatingExcerciseSum;
+    private javax.swing.JTextField RatingExcerciseSum1;
     private javax.swing.JCheckBox RatingOrTakingMode;
     private javax.swing.JTextField RatingQuestionSum;
     private javax.swing.JTextField RatingSemesterSum;
     private java.awt.Choice RatingStudentList;
     private javax.swing.JTextField RatingStudentState;
+    private javax.swing.JTextField RatingSum;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RuleAdd;
@@ -2920,8 +2913,6 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JLabel Вопросы1;
-    private javax.swing.JLabel Задачи1;
     private javax.swing.JLabel Состояние;
     private javax.swing.JLabel Состояние1;
     // End of variables declaration//GEN-END:variables

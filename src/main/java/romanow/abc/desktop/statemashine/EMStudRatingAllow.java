@@ -14,7 +14,7 @@ public class EMStudRatingAllow implements I_ClientTransition{
         }
     @Override
     public void onTransitionAfter(EMExamAdminPanel panel, StateEntity env) {
-        panel.refreshSelectedDiscipline(true);
+        panel.refreshStudRatingFull(true);
         }
     @Override
     public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {

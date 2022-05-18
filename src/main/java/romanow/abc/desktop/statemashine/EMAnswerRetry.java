@@ -4,7 +4,7 @@ import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.EMAnswer;
 import romanow.abc.desktop.EMExamAdminPanel;
 
-public class EMAnswerRetry implements I_ClientTransition{
+public class EMAnswerRetry extends EMClientEmpty {
     @Override
     public String testTransition(EMExamAdminPanel panel, StateEntity env) {
         return "";

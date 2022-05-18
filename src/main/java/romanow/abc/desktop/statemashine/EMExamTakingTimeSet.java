@@ -15,4 +15,9 @@ public class EMExamTakingTimeSet extends EMClientEmpty {
     public void onTransitionAfter(EMExamAdminPanel panel, StateEntity env) {
         panel.refreshSelectedDiscipline();
     }
+
+    @Override
+    public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {
+
     }
+}
