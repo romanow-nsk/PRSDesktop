@@ -10,6 +10,6 @@ public class EMAnswerStart extends EMClientEmpty {
         }
     @Override
     public void onTransitionAfter(EMExamAdminPanel panel, StateEntity env) {
-        panel.refreshSelectedDiscipline();
+        panel.refreshStudRatingFull(true);
     }
     }

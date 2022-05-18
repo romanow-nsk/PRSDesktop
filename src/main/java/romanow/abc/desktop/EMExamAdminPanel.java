@@ -83,6 +83,7 @@ public class EMExamAdminPanel extends BasePanel{
     private int groupIdx = -1;
     private int studentIdx = -1;
     private int answerIdx = -1;
+    private int ratStudIdx = -1;
     private boolean isRefresh=false;            // Для событий checkBox
     //----------------------------------------------------------------------------------------
     private int cTaskNum=0;
@@ -106,8 +107,8 @@ public class EMExamAdminPanel extends BasePanel{
         ticketStateList = Values.constMap().getGroupList("StudRating");
         answerStateList = Values.constMap().getGroupList("Answer");
         takingStateMashine = new StateMashineView(this,610,275,Values.TakingFactory);
-        studRatingStateMashine = new StateMashineView(this,780,415,Values.StudRatingFactory);
-        answerStateMashine = new StateMashineView(this,780,480,Values.AnswerFactory);
+        studRatingStateMashine = new StateMashineView(this,780,365,Values.StudRatingFactory);
+        answerStateMashine = new StateMashineView(this,780,440,Values.AnswerFactory);
         refreshAll();
         }
 
@@ -120,6 +121,7 @@ public class EMExamAdminPanel extends BasePanel{
         groupIdx = Groups.getSelectedIndex();
         studentIdx = Students.getSelectedIndex();
         answerIdx = Answers.getSelectedIndex();
+        ratStudIdx = RatingStudentList.getSelectedIndex();
         }
 
     public void refreshAll(){
@@ -263,6 +265,7 @@ public class EMExamAdminPanel extends BasePanel{
     public void refreshSelectedDiscipline(boolean withPos){
         if (withPos)
             savePos();
+        answerClear();
         Themes.removeAll();
         Tasks.removeAll();
         cDiscipline=null;
@@ -582,7 +585,7 @@ public class EMExamAdminPanel extends BasePanel{
         jSeparator4 = new javax.swing.JSeparator();
         Состояние1 = new javax.swing.JLabel();
         RatingSemesterSum = new javax.swing.JTextField();
-        AnswerBall = new java.awt.Choice();
+        AnswerBallSelector = new java.awt.Choice();
         jLabel29 = new javax.swing.JLabel();
         RatingOrTakingMode = new javax.swing.JCheckBox();
         jLabel27 = new javax.swing.JLabel();
@@ -593,6 +596,7 @@ public class EMExamAdminPanel extends BasePanel{
         AnswerThemeTask = new java.awt.TextArea();
         jSeparator5 = new javax.swing.JSeparator();
         AnswerMessageAdd = new javax.swing.JButton();
+        AnswerBall = new javax.swing.JTextField();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -1307,7 +1311,7 @@ public class EMExamAdminPanel extends BasePanel{
 
         jLabel28.setText("Балл");
         add(jLabel28);
-        jLabel28.setBounds(460, 490, 60, 16);
+        jLabel28.setBounds(660, 470, 60, 16);
         add(AnswerMessageText);
         AnswerMessageText.setBounds(520, 550, 350, 110);
 
@@ -1352,7 +1356,7 @@ public class EMExamAdminPanel extends BasePanel{
 
         Состояние1.setText("Состояние ответа");
         add(Состояние1);
-        Состояние1.setBounds(610, 470, 140, 16);
+        Состояние1.setBounds(520, 470, 140, 16);
 
         RatingSemesterSum.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -1362,9 +1366,9 @@ public class EMExamAdminPanel extends BasePanel{
         add(RatingSemesterSum);
         RatingSemesterSum.setBounds(460, 420, 50, 25);
 
-        AnswerBall.setEnabled(false);
-        add(AnswerBall);
-        AnswerBall.setBounds(520, 490, 80, 20);
+        AnswerBallSelector.setEnabled(false);
+        add(AnswerBallSelector);
+        AnswerBallSelector.setBounds(720, 490, 50, 20);
 
         jLabel29.setText("Ответы");
         add(jLabel29);
@@ -1391,7 +1395,7 @@ public class EMExamAdminPanel extends BasePanel{
             }
         });
         add(AnswerState);
-        AnswerState.setBounds(610, 490, 160, 25);
+        AnswerState.setBounds(520, 490, 140, 25);
 
         TakingState.setEnabled(false);
         TakingState.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1436,6 +1440,10 @@ public class EMExamAdminPanel extends BasePanel{
         });
         add(AnswerMessageAdd);
         AnswerMessageAdd.setBounds(880, 520, 30, 30);
+
+        AnswerBall.setEnabled(false);
+        add(AnswerBall);
+        AnswerBall.setBounds(670, 490, 40, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1605,7 +1613,7 @@ public class EMExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_TasksItemStateChanged
 
     private void TaskArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactViewActionPerformed
-
+            main.showImageArtifact(cTask.getArtifact().getRef());
     }//GEN-LAST:event_TaskArtifactViewActionPerformed
 
     private void TaskArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactUploadActionPerformed
@@ -1615,6 +1623,7 @@ public class EMExamAdminPanel extends BasePanel{
                 if (cTask.getArtifact().getOid()==0){
                     cTask.getArtifact().setOidRef((Artifact) ent);
                     taskUpdate();
+                    return;
                     }
                 new APICall<JEmpty>(main) {
                     @Override
@@ -1632,7 +1641,7 @@ public class EMExamAdminPanel extends BasePanel{
             });
         }//GEN-LAST:event_TaskArtifactUploadActionPerformed
     private void TaskArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactDownLoadActionPerformed
-        // TODO add your handling code here:
+        main.loadFile(cTask.getArtifact().getRef());
     }//GEN-LAST:event_TaskArtifactDownLoadActionPerformed
 
     private void TaskSaveTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskSaveTextActionPerformed
@@ -2324,6 +2333,38 @@ public class EMExamAdminPanel extends BasePanel{
 
         }
 
+    public void calcRatingBall(){
+        if (cStudRating==null)
+            return;
+        int sumE=0,sumQ=0;
+        for(EMAnswer answer : answers)
+            if (answer.getTask().getRef().getType()==Values.TaskQuestion)
+                sumQ += answer.getRating();
+            else
+                sumE += answer.getRating();
+            cStudRating.setExcerciceRating(sumE);
+            cStudRating.setQuestionRating(sumQ);
+            studRatingUpdate();
+            }
+
+    public void studRatingUpdate(){
+        if (cStudRating==null)
+            return;
+        new APICall<JEmpty>(main) {
+            @Override
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken,new DBRequest(cStudRating,main.gson));
+            }
+            @Override
+            public void onSucess(JEmpty oo) {
+                popup("Рейтинг изменен");
+                savePos();
+                refreshSelectedStudRating();
+            }
+        };
+    }
+
+
     public void createRatingStudentList(){
         RatingStudentList.removeAll();
         for(EMStudRating rating : studRatings)
@@ -2331,8 +2372,21 @@ public class EMExamAdminPanel extends BasePanel{
         refreshSelectedStudRating();
         }
 
+    public void answerClear(){
+        AnswerBallSelector.removeAll();
+        AnswerMessageText.setText("");
+        AnswerThemeTask.setText("");
+        AnswerState.setText("");
+        AnswerArtifactView.setEnabled(false);
+        AnswerMessageAdd.setEnabled(false);
+        AnswerArtifactDownLoad.setEnabled(false);
+        AnswerArtifactUpload.setEnabled(false);
+        AnswerMessages.removeAll();
+        answerStateMashine.clear();
+        }
 
     public void refreshSelectedStudRating(){
+        answerClear();
         cStudRating=null;
         if (studRatings.size()==0)
             return;
@@ -2343,12 +2397,14 @@ public class EMExamAdminPanel extends BasePanel{
         RatingQuestionSum.setText(""+ cStudRating.getQuestionRating());
         RatingStudentState.setText(ticketStateMap.get(cStudRating.getState()).title());
         studRatingStateMashine.refresh(cStudRating);
-        refreshAnswers(false);
+        refreshStudRatingFull(false);
         }
 
     public void refreshSelectedAnswer(){
         cAnswer=null;
         AnswerThemeTask.setText("");
+        AnswerMessageText.setText("");
+        AnswerBallSelector.setEnabled(false);
         if (answers.size()==0)
             return;
         cAnswer = answers.get(Answers.getSelectedIndex());
@@ -2365,16 +2421,31 @@ public class EMExamAdminPanel extends BasePanel{
             n++;
             }
         answerStateMashine.refresh(cAnswer);
+        AnswerBall.setText(""+cAnswer.getRating());
         AnswerMessageAdd.setEnabled(cAnswer.getState()==Values.AnswerInProcess);
+        AnswerBallSelector.setEnabled(cAnswer.getState()==Values.AnswerCheck);
+        AnswerBallSelector.removeAll();
+        if(cAnswer.getState()==Values.AnswerCheck){
+            EMGroupRating rating = cDiscipline.getRatings().getById(cStudRating.getEMGroupRating().getOid());
+            EMExamRule rule = cDiscipline.getRules().getById(rating.getRule().getOid());
+            boolean question = cAnswer.getTask().getRef().getType()==Values.TaskQuestion;
+            int maxBall = question ? rule.getOneQuestionDefBall() : rule.getOneExcerciceDefBall();
+            for(int i=maxBall;i>=0;i--)
+                    AnswerBallSelector.add(""+i);
+            if (question)
+                AnswerBallSelector.add(""+(-rule.getOneQuestionDefBall()));
+            }
         refreshSelectedMessage();
         }
+
+    public Choice getAnswerBall(){ return AnswerBallSelector; }
 
     public void refreshSelectedMessage(){
         cAnswerMessage=null;
         AnswerArtifactView.setEnabled(false);
         AnswerArtifactDownLoad.setEnabled(false);
         AnswerArtifactUpload.setEnabled(false);
-        if (cAnswer==null)
+        if (cAnswer==null || cAnswer.getMessages().size()==0)
             return;
         cAnswerMessage = cAnswer.getMessages().get(AnswerMessages.getSelectedIndex()).getRef();
         AnswerMessageText.setText(UtilsEM.formatSize(cAnswerMessage.getText(),70));
@@ -2383,7 +2454,7 @@ public class EMExamAdminPanel extends BasePanel{
         AnswerArtifactView.setEnabled( cAnswerMessage.getArtifact().getOid()!=0);
         }
 
-    public void refreshAnswers(boolean withPos){
+    public void refreshStudRatingFull(boolean withPos){
         if (cStudRating==null)
             return;
         if (withPos)
@@ -2399,8 +2470,8 @@ public class EMExamAdminPanel extends BasePanel{
                     cStudRatingFull = (EMStudRating) oo.get(main.gson);
                     answers.clear();
                     Answers.removeAll();
-                    int qIdx=0;
-                    int eIdx=0;
+                    int qIdx=1;
+                    int eIdx=1;
                     for(EMAnswer answer : cStudRatingFull.getAnswers()){
                         if (answer.getTask().getRef().getType()==Values.TaskQuestion){
                             Answers.add("Вопрос "+qIdx++);
@@ -2492,7 +2563,7 @@ public class EMExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_TakingForGroupActionPerformed
 
     private void AnswerArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactViewActionPerformed
-        // TODO add your handling code here:
+        main.showImageArtifact(cAnswerMessage.getArtifact().getRef());
     }//GEN-LAST:event_AnswerArtifactViewActionPerformed
 
     private void AnswerArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactUploadActionPerformed
@@ -2504,7 +2575,8 @@ public class EMExamAdminPanel extends BasePanel{
                 if (cAnswerMessage.getArtifact().getOid()==0){
                     cAnswerMessage.getArtifact().setOidRef((Artifact) ent);
                     messageUpdate();
-                }
+                    return;
+                    }
                 new APICall<JEmpty>(main) {
                     @Override
                     public Call<JEmpty> apiFun() {
@@ -2521,7 +2593,7 @@ public class EMExamAdminPanel extends BasePanel{
     }//GEN-LAST:event_AnswerArtifactUploadActionPerformed
 
     private void AnswerArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactDownLoadActionPerformed
-        // TODO add your handling code here:
+        main.loadFile(cAnswerMessage.getArtifact().getRef());
     }//GEN-LAST:event_AnswerArtifactDownLoadActionPerformed
 
     private void RatingSemesterSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RatingSemesterSumKeyPressed
@@ -2597,7 +2669,7 @@ public class EMExamAdminPanel extends BasePanel{
             public void onSucess(JEmpty oo) {
                 popup("Ответ изменен");
                 savePos();
-                refreshAnswers(true);
+                refreshStudRatingFull(true);
             }
         };
     }
@@ -2715,7 +2787,7 @@ public class EMExamAdminPanel extends BasePanel{
             public void onSucess(JEmpty oo) {
                 popup("Сообщение изменено");
                 savePos();
-                refreshAnswers(true);
+                refreshStudRatingFull(true);
                 }
         };
     }
@@ -2742,7 +2814,8 @@ public class EMExamAdminPanel extends BasePanel{
     private javax.swing.JButton AnswerArtifactDownLoad;
     private javax.swing.JButton AnswerArtifactUpload;
     private javax.swing.JButton AnswerArtifactView;
-    private java.awt.Choice AnswerBall;
+    private javax.swing.JTextField AnswerBall;
+    private java.awt.Choice AnswerBallSelector;
     private javax.swing.JButton AnswerMessageAdd;
     private java.awt.TextArea AnswerMessageText;
     private java.awt.Choice AnswerMessages;

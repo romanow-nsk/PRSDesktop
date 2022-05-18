@@ -1177,7 +1177,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="460" y="490" width="60" height="-1"/>
+          <AbsoluteConstraints x="660" y="470" width="60" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1262,7 +1262,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="610" y="470" width="140" height="-1"/>
+          <AbsoluteConstraints x="520" y="470" width="140" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1276,13 +1276,13 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="java.awt.Choice" name="AnswerBall">
+    <Component class="java.awt.Choice" name="AnswerBallSelector">
       <Properties>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="520" y="490" width="80" height="-1"/>
+          <AbsoluteConstraints x="720" y="490" width="50" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1331,7 +1331,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="610" y="490" width="160" height="25"/>
+          <AbsoluteConstraints x="520" y="490" width="140" height="25"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -1405,6 +1405,16 @@
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="880" y="520" width="30" height="30"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Component class="javax.swing.JTextField" name="AnswerBall">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+          <AbsoluteConstraints x="670" y="490" width="40" height="25"/>
         </Constraint>
       </Constraints>
     </Component>
