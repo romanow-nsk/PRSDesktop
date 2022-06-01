@@ -21,25 +21,19 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import romanow.abc.exam.model.ExamBean;
-import romanow.abc.exam.model.FullExamPeriodBean;
-import romanow.abc.exam.model.FullExamRuleBean;
+import romanow.abc.exam.model.FullGroupBean;
 /**
  * FullExamBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class FullExamBean {
   @SerializedName("exam")
   private ExamBean exam = null;
 
-  @SerializedName("examRule")
-  private FullExamRuleBean examRule = null;
-
-  @SerializedName("periods")
-  private List<FullExamPeriodBean> periods = null;
+  @SerializedName("group")
+  private FullGroupBean group = null;
 
   public FullExamBean exam(ExamBean exam) {
     this.exam = exam;
@@ -59,48 +53,22 @@ public class FullExamBean {
     this.exam = exam;
   }
 
-  public FullExamBean examRule(FullExamRuleBean examRule) {
-    this.examRule = examRule;
+  public FullExamBean group(FullGroupBean group) {
+    this.group = group;
     return this;
   }
 
    /**
-   * Get examRule
-   * @return examRule
+   * Get group
+   * @return group
   **/
   @Schema(description = "")
-  public FullExamRuleBean getExamRule() {
-    return examRule;
+  public FullGroupBean getGroup() {
+    return group;
   }
 
-  public void setExamRule(FullExamRuleBean examRule) {
-    this.examRule = examRule;
-  }
-
-  public FullExamBean periods(List<FullExamPeriodBean> periods) {
-    this.periods = periods;
-    return this;
-  }
-
-  public FullExamBean addPeriodsItem(FullExamPeriodBean periodsItem) {
-    if (this.periods == null) {
-      this.periods = new ArrayList<FullExamPeriodBean>();
-    }
-    this.periods.add(periodsItem);
-    return this;
-  }
-
-   /**
-   * Get periods
-   * @return periods
-  **/
-  @Schema(description = "")
-  public List<FullExamPeriodBean> getPeriods() {
-    return periods;
-  }
-
-  public void setPeriods(List<FullExamPeriodBean> periods) {
-    this.periods = periods;
+  public void setGroup(FullGroupBean group) {
+    this.group = group;
   }
 
 
@@ -114,13 +82,12 @@ public class FullExamBean {
     }
     FullExamBean fullExamBean = (FullExamBean) o;
     return Objects.equals(this.exam, fullExamBean.exam) &&
-        Objects.equals(this.examRule, fullExamBean.examRule) &&
-        Objects.equals(this.periods, fullExamBean.periods);
+        Objects.equals(this.group, fullExamBean.group);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(exam, examRule, periods);
+    return Objects.hash(exam, group);
   }
 
 
@@ -130,8 +97,7 @@ public class FullExamBean {
     sb.append("class FullExamBean {\n");
     
     sb.append("    exam: ").append(toIndentedString(exam)).append("\n");
-    sb.append("    examRule: ").append(toIndentedString(examRule)).append("\n");
-    sb.append("    periods: ").append(toIndentedString(periods)).append("\n");
+    sb.append("    group: ").append(toIndentedString(group)).append("\n");
     sb.append("}");
     return sb.toString();
   }

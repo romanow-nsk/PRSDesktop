@@ -53,30 +53,40 @@ public interface TasksApi {
     
 
   /**
-   * Get one task
+   * Get full task
    * 
    * @param taskId  (required)
    * @param level  (optional, default to 0)
    * @return Call&lt;FullTaskBean&gt;
    */
-  @GET("task/{taskId}")
-  Call<FullTaskBean> findOne(
+  @GET("task/{taskId}/full")
+  Call<FullTaskBean> findFull(
             @retrofit2.http.Path("taskId") Long taskId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
+  /**
+   * Get one task
+   * 
+   * @param taskId  (required)
+   * @return Call&lt;TaskBean&gt;
+   */
+  @GET("task/{taskId}")
+  Call<TaskBean> findOne(
+            @retrofit2.http.Path("taskId") Long taskId            
   );
 
   /**
    * Update a task
    * 
    * @param body  (required)
-   * @param taskId  (required)
    * @return Call&lt;TaskBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("task/{taskId}")
+  @PUT("task")
   Call<TaskBean> updateTask(
-                    @retrofit2.http.Body TaskBean body    ,         @retrofit2.http.Path("taskId") Long taskId            
+                    @retrofit2.http.Body TaskBean body    
   );
 
 }

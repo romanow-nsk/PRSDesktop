@@ -50,10 +50,9 @@ public class EMVKRExamAdminPanel extends BasePanel{
     private List<ExamRuleBean> allExamRules = new ArrayList<>();        // Полный список регламентов
     private List<ExamRuleBean> cExamRules = new ArrayList<>();          // Список регламентов для дисциплины
     private HashMap<Long,ExamRuleBean> cExamRulesMap = new HashMap<>(); // Мар регламентов для дисциплины
-    private List<RatingSystemBean> ratings = new ArrayList<>();         // Список рейтингов ????
     private boolean refresh=false;                                      // Признак обновления для событий  CheckBox
-    private List<ExamPeriodBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
-    private ExamPeriodBean cPeriod=null;                                // Текущая сдача
+    private List<ExamBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
+    private ExamBean cPeriod=null;                                // Текущая сдача
     private boolean taskTextChanged=false;
     private EMVKRMainBaseFrame main;
     private ExamPeriodStateFactory stateFactory = new ExamPeriodStateFactory();
@@ -83,23 +82,23 @@ public class EMVKRExamAdminPanel extends BasePanel{
         }
 
     private void refreshRatingsList(){
-        new APICall<List<RatingSystemBean>>(main) {
-            @Override
-            public Call<List<RatingSystemBean>> apiFun() {
-                return main.client.getRatingSystemApi().getAll1();
-                }
-            @Override
-            public void onSucess(List<RatingSystemBean> oo) {
-                ratings = oo;
-                }
-            };
+        //new APICall<List<RatingSystemBean>>(main) {
+        //    @Override
+        //    public Call<List<RatingSystemBean>> apiFun() {
+        //        return main.client.getRatingSystemApi().getAll1();
+        //        }
+        //    @Override
+        //    public void onSucess(List<RatingSystemBean> oo) {
+        //        ratings = oo;
+        //        }
+        //    };
         }
 
     private void refreshAllRules(){
         new APICall<List<ExamRuleBean>>(main) {
             @Override
             public Call<List<ExamRuleBean>> apiFun() {
-                return main.client.getExamRuleApi().getAll4();
+                return main.client.getExamRuleApi().getAll3();
                 }
             @Override
             public void onSucess(List<ExamRuleBean> oo) {
@@ -116,7 +115,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new APICall<List<DisciplineBean>>(main) {
             @Override
             public Call<List<DisciplineBean>> apiFun() {
-                return main.client.getDisciplineApi().getAll5();
+                return main.client.getDisciplineApi().getAll4();
                 }
             @Override
             public void onSucess(List<DisciplineBean> oo) {
@@ -161,8 +160,8 @@ public class EMVKRExamAdminPanel extends BasePanel{
         cRule = cExamRules.get(RulesList.getSelectedIndex());
         RuleName.setText(cRule.getName());
         RuleDuration.setText(""+cRule.getDuration());
-        RuleExcerCount.setText(""+cRule.getExerciseCount());
-        RuleQurestionCount.setText(""+cRule.getQuestionCount());
+        //RuleExcerCount.setText(""+cRule.getExerciseCount());
+        //RuleQurestionCount.setText(""+cRule.getQuestionCount());
         ruleThemes.clear();
         RuleThemesList.removeAll();
         ruleThemesMap.clear();
@@ -184,7 +183,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new APICall<List<GroupBean>>(main) {
             @Override
             public Call<List<GroupBean>> apiFun() {
-                return main.client.getGroupApi().getAll2();
+                return main.client.getGroupApi().getAll1();
             }
             @Override
             public void onSucess(List<GroupBean> oo) {
@@ -201,7 +200,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new APICall<List<ExamBean>>(main){
             @Override
             public Call<List<ExamBean>> apiFun() {
-                return main.client.getExamApi().getAll3();
+                return main.client.getExamApi().getAll2();
                 }
             @Override
             public void onSucess(List<ExamBean> oo) {
@@ -222,7 +221,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new APICall<FullGroupBean>(main) {
             @Override
             public Call<FullGroupBean> apiFun() {
-                return main.client.getGroupApi().getOne2(oid,1);
+                return main.client.getGroupApi().getFull2(oid,1);
                 }
             @Override
             public void onSucess(FullGroupBean oo) {
@@ -244,7 +243,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new APICall<FullDisciplineBean>(main) {
             @Override
             public Call<FullDisciplineBean> apiFun() {
-                return main.client.getDisciplineApi().getFull3(oid,2);
+                return main.client.getDisciplineApi().getFull5(oid,2);
                 }
             @Override
             public void onSucess(FullDisciplineBean oo) {
@@ -260,7 +259,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 new APICall<List<GroupBean>>(main){
                     @Override
                     public Call<List<GroupBean>> apiFun() {
-                        return  main.client.getDisciplineApi().findGroups(oid);
+                        return  null; //main.client.getDisciplineApi().findGroups(oid);
                     }
                     @Override
                     public void onSucess(List<GroupBean> oo) {
@@ -284,6 +283,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         examRulesMap.clear();
         if (cDiscipline==null)
             return;
+        /*
         for(ExamBean exam : allExams){
             if(cDiscipline.getDiscipline().getId().longValue()==exam.getDisciplineId().longValue()){
                 disciplineExams.add(exam);
@@ -298,6 +298,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 examRulesMap.put(exam.getExamRuleId(),examRule);
                 }
             }
+         */
         refreshSelectedExam();
         }
 
@@ -308,6 +309,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             return;
         cExam = disciplineExams.get(ExamList.getSelectedIndex());
         ExamGroupsList.removeAll();
+        /*
         for(Long id : cExam.getGroupIds()){
             GroupBean group = groupsMap.get(id);
             if (group==null){
@@ -316,20 +318,21 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 }
             ExamGroupsList.add(group.getName());
             }
+         */
         refreshExamPeriods();
         }
 
     private void  refreshExamPeriods(){
-        new APICall<List<ExamPeriodBean>>(main) {
+        new APICall<List<ExamBean>>(main) {
             @Override
-            public Call<List<ExamPeriodBean>> apiFun() {
-                return main.client.getExamApi().getPeriods(cExam.getId());
+            public Call<List<ExamBean>> apiFun() {
+                return null; //main.client.getExamApi().getPeriods(cExam.getId());
                 }
             @Override
-            public void onSucess(List<ExamPeriodBean> oo) {
+            public void onSucess(List<ExamBean> oo) {
                 periods = oo;
                 PeriodList.removeAll();
-                for(ExamPeriodBean examPeriod : periods){
+                for(ExamBean examPeriod : periods){
                     PeriodList.add(new OwnDateTime(examPeriod.getStart()).dateTimeToString());
                     }
                 refreshSelectedExamPeriod();
@@ -343,13 +346,13 @@ public class EMVKRExamAdminPanel extends BasePanel{
         if (periods.size()==0)
             return;
         cPeriod = periods.get(PeriodList.getSelectedIndex());
-        new APICall<ExamPeriodBean>(main) {
+        new APICall<ExamBean>(main) {
             @Override
-            public Call<ExamPeriodBean> apiFun() {
-                return main.client.getExamApi().getPeriod(cPeriod.getId());
+            public Call<ExamBean> apiFun() {
+                return main.client.getExamApi().getOne2(cPeriod.getId());
                 }
             @Override
-            public void onSucess(ExamPeriodBean oo) {
+            public void onSucess(ExamBean oo) {
                 cPeriod = oo;
                 periods.set(PeriodList.getSelectedIndex(),cPeriod);
                 if (cPeriod.getStart().longValue()==0){
@@ -1253,7 +1256,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 new APICall<Void>(main) {
                     @Override
                     public Call<Void> apiFun() {
-                        return main.client.getDisciplineApi().delete2(cDiscipline.getDiscipline().getId());
+                        return main.client.getDisciplineApi().delete3(cDiscipline.getDiscipline().getId());
                         }
                     @Override
                     public void onSucess(Void oo) {
@@ -1353,7 +1356,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 new APICall<DisciplineBean>(main) {
                     @Override
                     public Call<DisciplineBean> apiFun() {
-                        return main.client.getDisciplineApi().update2(cDiscipline.getDiscipline(),cDiscipline.getDiscipline().getId());
+                        return main.client.getDisciplineApi().update4(cDiscipline.getDiscipline());
                         //return main.client.getDisciplineApi().update1(cDiscipline,cDiscipline.getId());
                         }
                     @Override
@@ -1446,7 +1449,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 new APICall<GroupBean>(main) {
                     @Override
                     public Call<GroupBean> apiFun() {
-                        return main.client.getGroupApi().create2(bean);
+                        return main.client.getGroupApi().create1(bean);
                     }
                     @Override
                     public void onSucess(GroupBean oo) {
@@ -1514,7 +1517,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                     final GroupBean group2 = new APICallSync<GroupBean>() {
                         @Override
                         public Call<GroupBean> apiFun() {
-                            return main.client.getGroupApi().create2(group);
+                            return main.client.getGroupApi().create1(group);
                             }
                         }.call();
                     excel.procSheet(sheets[idx], new I_ExcelBack() {
@@ -1579,12 +1582,12 @@ public class EMVKRExamAdminPanel extends BasePanel{
     private void ruleUpdate(KeyEvent evt){
         if (cRule==null)
             return;
-        cRule.setRatingSystemId(ratings.get(0).getId());        // TODO ---------------- какие
+        //cRule.setRatingSystemId(ratings.get(0).getId());        // TODO ---------------- какие
         try {
             new APICall2<ExamRuleBean>() {
                 @Override
                 public Call<ExamRuleBean> apiFun() {
-                    return main.client.getExamRuleApi().update1(cRule,cRule.getId());
+                    return main.client.getExamRuleApi().update3(cRule);
                     }
                 }.call(main);
             refreshSelectedRule();
@@ -1599,30 +1602,28 @@ public class EMVKRExamAdminPanel extends BasePanel{
         }
 
     private void periodStartTimeUpdate(long timeInMS){
-        UpdateExamPeriodBean out  = new UpdateExamPeriodBean();
-        out.setStart(timeInMS);
-        new APICall<ExamPeriodBean>(main) {
+        cPeriod.setStart(timeInMS);
+        new APICall<ExamBean>(main) {
             @Override
-            public Call<ExamPeriodBean> apiFun() {
-                return main.client.getExamApi().updatePeriod(out,cPeriod.getId());
+            public Call<ExamBean> apiFun() {
+                return main.client.getExamApi().updateExam(cPeriod);
                 }
             @Override
-            public void onSucess(ExamPeriodBean oo) {
+            public void onSucess(ExamBean oo) {
                 popup("Время сдачи изменено");
                 refreshSelectedExamPeriod();
                 }
             };
         }
-    private void periodStateUpdate(ExamPeriodBean.StateEnum state){
-        final UpdateExamPeriodBean out  = new UpdateExamPeriodBean();
-        out.setState(UpdateExamPeriodBean.StateEnum.fromValue(state.getValue()));  // TODO ------------ Элементарно, Ватсон
-        new APICall<ExamPeriodBean>(main) {
+    private void periodStateUpdate(ExamBean.StateEnum state){
+        cPeriod.state(ExamBean.StateEnum.fromValue(state.getValue()));
+        new APICall<ExamBean>(main) {
             @Override
-            public Call<ExamPeriodBean> apiFun() {
-                return main.client.getExamApi().updatePeriod(out,cPeriod.getId());
+            public Call<ExamBean> apiFun() {
+                return main.client.getExamApi().updateExam(cPeriod);
                 }
             @Override
-            public void onSucess(ExamPeriodBean oo) {
+            public void onSucess(ExamBean oo) {
                 popup("Состояние сдачи изменено");
                 refreshSelectedExamPeriod();
                 }
@@ -1648,14 +1649,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
             });
     }//GEN-LAST:event_RuleThemeRemoveActionPerformed
 
-    private static CreateExamBean examClone(ExamBean src){
-        CreateExamBean out = new CreateExamBean();
-        out.setStartTime(new OwnDateTime().timeInMS());
-        out.setExamRuleId(src.getExamRuleId());
-        out.setDisciplineId(src.getDisciplineId());
-        out.setGroupIds(src.getGroupIds());
-        return out;
-    }
 
     private void RuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleAddActionPerformed
         if (cDiscipline==null)
@@ -1666,13 +1659,8 @@ public class EMVKRExamAdminPanel extends BasePanel{
             public void onEnter(String value) {
                 ExamRuleBean ruleBean = new ExamRuleBean();
                 ruleBean.setName(value);
-                ruleBean.setQuestionCount(10);
-                ruleBean.setExerciseCount(1);
                 ruleBean.setDuration(180);
                 ruleBean.setDisciplineId(cDiscipline.getDiscipline().getId());
-                ruleBean.setMinimalRating(0);
-                ruleBean.setRatingSystemId(0L);
-                ruleBean.setRatingSystemId(ratings.get(0).getId());
                 ArrayList<Long> xx = new ArrayList<>();
                 xx.add(cTheme.getTheme().getId());
                 ruleBean.setThemeIds(xx);
@@ -1714,7 +1702,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         if(evt.getKeyCode()!=10) return;
         if (cRule==null) return;
         try {
-            cRule.setExerciseCount(Integer.parseInt(RuleExcerCount.getText()));
+            //cRule.setExerciseCount(Integer.parseInt(RuleExcerCount.getText()));
             ruleUpdate(evt);
         } catch (Exception ee){
             popup("Ошибка формата целого");
@@ -1768,7 +1756,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         if(evt.getKeyCode()!=10) return;
         if (cRule==null) return;
         try {
-            cRule.setQuestionCount(Integer.parseInt(RuleQurestionCount.getText()));
+            //cRule.setQuestionCount(Integer.parseInt(RuleQurestionCount.getText()));
             ruleUpdate(evt);
         } catch (Exception ee){
             popup("Ошибка формата целого");
@@ -1805,11 +1793,11 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new OK(200, 200, "Добавить группу " + cGroup.getGroup().getName(), new I_Button() {
             @Override
             public void onPush() {
-                cExam.getGroupIds().add(cGroup.getGroup().getId());
+                //cExam.getGroupIds().add(cGroup.getGroup().getId());
                 new APICall<ExamBean>(main) {
                     @Override
                     public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().updateExam(examClone(cExam),cExam.getId());
+                        return main.client.getExamApi().updateExam(cExam);
                     }
                     @Override
                     public void onSucess(ExamBean oo) {
@@ -1824,6 +1812,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
     private void ExamGroupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupRemoveActionPerformed
         if (cGroup==null || cExam==null)
             return;
+        /*
         long groupId = cExam.getGroupIds().get(ExamGroupsList.getSelectedIndex()).longValue();
         final GroupBean group = groupsMap.get(groupId);
         new OK(200, 200, "Удалить группу " + group.getName(), new I_Button() {
@@ -1833,7 +1822,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 new APICall<ExamBean>(main) {
                     @Override
                     public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().updateExam(examClone(cExam),cExam.getId());
+                        return main.client.getExamApi().updateExam(cExam);
                     }
                     @Override
                     public void onSucess(ExamBean oo) {
@@ -1843,6 +1832,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 };
             }
         });
+         */
 
     }//GEN-LAST:event_ExamGroupRemoveActionPerformed
 
@@ -1856,13 +1846,12 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new OK(200, 200, "Экзамен для регламента: " + cRule.getName(), new I_Button() {
             @Override
             public void onPush() {
-                final CreateExamBean exam = new CreateExamBean();
-                exam.setExamRuleId(cRule.getId());
+                final ExamBean exam = new ExamBean();
+                //exam.setExamRuleId(cRule.getId());
                 exam.setDisciplineId(cDiscipline.getDiscipline().getId());
-                exam.setStartTime(new OwnDateTime().timeInMS());
+                exam.setStart(new OwnDateTime().timeInMS());
                 ArrayList<Long> xx = new ArrayList<>();
                 xx.add(groups.get(0).getId());
-                exam.setGroupIds(xx);                       // TODO - убрать !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 new APICall<ExamBean>(main) {
                     @Override
                     public Call<ExamBean> apiFun() {
@@ -1967,7 +1956,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new APICall<TaskBean>(main) {
             @Override
             public Call<TaskBean> apiFun() {
-                return main.client.getTaskApi().updateTask(cTask.getTask(),cTask.getTask().getId());
+                return main.client.getTaskApi().updateTask(cTask.getTask());
                 }
             @Override
             public void onSucess(TaskBean oo) {

@@ -20,21 +20,6 @@ import java.util.Map;
 
 public interface GroupsApi {
   /**
-   * Add disciplines to a group
-   * 
-   * @param body  (required)
-   * @param groupId  (required)
-   * @return Call&lt;Void&gt;
-   */
-  @Headers({
-    "Content-Type:application/json"
-  })
-  @POST("groups/{groupId}/disciplines")
-  Call<Void> addDiscipline(
-                    @retrofit2.http.Body List<Long> body    ,         @retrofit2.http.Path("groupId") Long groupId            
-  );
-
-  /**
    * Create a group
    * 
    * @param body  (required)
@@ -44,7 +29,7 @@ public interface GroupsApi {
     "Content-Type:application/json"
   })
   @POST("groups")
-  Call<GroupBean> create2(
+  Call<GroupBean> create1(
                     @retrofit2.http.Body GroupBean body    
   );
 
@@ -63,15 +48,14 @@ public interface GroupsApi {
    * Edit group
    * 
    * @param body  (required)
-   * @param groupId  (required)
    * @return Call&lt;GroupBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("groups/{groupId}")
+  @PUT("groups")
   Call<GroupBean> edit(
-                    @retrofit2.http.Body GroupBean body    ,         @retrofit2.http.Path("groupId") Long groupId            
+                    @retrofit2.http.Body GroupBean body    
   );
 
   /**
@@ -80,19 +64,30 @@ public interface GroupsApi {
    * @return Call&lt;List&lt;GroupBean&gt;&gt;
    */
   @GET("groups")
-  Call<List<GroupBean>> getAll2();
+  Call<List<GroupBean>> getAll1();
     
 
   /**
-   * Get one group
+   * Get full group
    * 
    * @param groupId  (required)
    * @param level  (optional, default to 0)
    * @return Call&lt;FullGroupBean&gt;
    */
-  @GET("groups/{groupId}")
-  Call<FullGroupBean> getOne2(
+  @GET("groups/{groupId}/full")
+  Call<FullGroupBean> getFull2(
             @retrofit2.http.Path("groupId") Long groupId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
+  /**
+   * Get one group
+   * 
+   * @param groupId  (required)
+   * @return Call&lt;GroupBean&gt;
+   */
+  @GET("groups/{groupId}")
+  Call<GroupBean> getOne1(
+            @retrofit2.http.Path("groupId") Long groupId            
   );
 
   /**
@@ -104,21 +99,6 @@ public interface GroupsApi {
   @GET("groups/{groupId}/students")
   Call<List<StudentBean>> getStudents(
             @retrofit2.http.Path("groupId") Long groupId            
-  );
-
-  /**
-   * Remove disciplines from a group
-   * 
-   * @param body  (required)
-   * @param groupId  (required)
-   * @return Call&lt;Void&gt;
-   */
-  @Headers({
-    "Content-Type:application/json"
-  })
-  @DELETE("groups/{groupId}/disciplines")
-  Call<Void> removeDiscipline(
-                    @retrofit2.http.Body List<Long> body    ,         @retrofit2.http.Path("groupId") Long groupId            
   );
 
 }

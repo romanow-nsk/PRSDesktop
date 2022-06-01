@@ -9,12 +9,11 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+import romanow.abc.exam.model.AnswerBean;
 import romanow.abc.exam.model.FullAnswerBean;
 import romanow.abc.exam.model.MessageBean;
-import romanow.abc.exam.model.NewMessageBean;
 import romanow.abc.exam.model.PageMessageBean;
 import romanow.abc.exam.model.Pageable;
-import romanow.abc.exam.model.UpdateAnswerBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +28,8 @@ public interface AnswerApi {
    * @param level  (optional, default to 0)
    * @return Call&lt;FullAnswerBean&gt;
    */
-  @GET("answer/{answerId}/full")
-  Call<FullAnswerBean> getFull4(
+  @GET("answers/{answerId}/full")
+  Call<FullAnswerBean> getFull6(
             @retrofit2.http.Path("answerId") Long answerId            ,     @retrofit2.http.Query("level") Integer level                
   );
 
@@ -41,8 +40,8 @@ public interface AnswerApi {
    * @param pageable  (required)
    * @return Call&lt;PageMessageBean&gt;
    */
-  @GET("answer/{answerId}/message")
-  Call<PageMessageBean> getMessages1(
+  @GET("answers/{answerId}/message")
+  Call<PageMessageBean> getMessages(
             @retrofit2.http.Path("answerId") Long answerId            ,     @retrofit2.http.Query("pageable") Pageable pageable                
   );
 
@@ -56,24 +55,23 @@ public interface AnswerApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @POST("answer/{answerId}/message")
-  Call<MessageBean> newMessage1(
-                    @retrofit2.http.Body NewMessageBean body    ,         @retrofit2.http.Path("answerId") Long answerId            
+  @POST("answers/{answerId}/message")
+  Call<MessageBean> newMessage(
+                    @retrofit2.http.Body MessageBean body    ,         @retrofit2.http.Path("answerId") Long answerId            
   );
 
   /**
-   * Put a mark to an answer
+   * 
    * 
    * @param body  (required)
-   * @param answerId  (required)
-   * @return Call&lt;Void&gt;
+   * @return Call&lt;AnswerBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("answer/{answerId}")
-  Call<Void> rate(
-                    @retrofit2.http.Body UpdateAnswerBean body    ,         @retrofit2.http.Path("answerId") Long answerId            
+  @PUT("answers/state")
+  Call<AnswerBean> updateState2(
+                    @retrofit2.http.Body AnswerBean body    
   );
 
 }

@@ -9,17 +9,10 @@ import retrofit2.http.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
-import romanow.abc.exam.model.CreateExamBean;
+import romanow.abc.exam.model.AnswerBean;
 import romanow.abc.exam.model.ExamBean;
-import romanow.abc.exam.model.ExamPeriodBean;
 import romanow.abc.exam.model.FullExamBean;
-import romanow.abc.exam.model.FullExamPeriodBean;
-import romanow.abc.exam.model.MessageBean;
-import romanow.abc.exam.model.NewMessageBean;
-import romanow.abc.exam.model.PageMessageBean;
-import romanow.abc.exam.model.Pageable;
-import romanow.abc.exam.model.TicketBean;
-import romanow.abc.exam.model.UpdateExamPeriodBean;
+import romanow.abc.exam.model.StudentRatingBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +31,7 @@ public interface ExamApi {
   })
   @POST("exams")
   Call<ExamBean> createExam(
-                    @retrofit2.http.Body CreateExamBean body    
+                    @retrofit2.http.Body ExamBean body    
   );
 
   /**
@@ -53,13 +46,24 @@ public interface ExamApi {
   );
 
   /**
-   * Get all teacher&#x27;s exams
+   * Get all exams
    * 
    * @return Call&lt;List&lt;ExamBean&gt;&gt;
    */
   @GET("exams")
-  Call<List<ExamBean>> getAll3();
+  Call<List<ExamBean>> getAll2();
     
+
+  /**
+   * Get answers by a exam
+   * 
+   * @param examId  (required)
+   * @return Call&lt;List&lt;AnswerBean&gt;&gt;
+   */
+  @GET("exams/{examId}/answers")
+  Call<List<AnswerBean>> getAnswers1(
+            @retrofit2.http.Path("examId") Long examId            
+  );
 
   /**
    * Get full exam by id
@@ -69,43 +73,8 @@ public interface ExamApi {
    * @return Call&lt;FullExamBean&gt;
    */
   @GET("exams/{examId}/full")
-  Call<FullExamBean> getFull1(
+  Call<FullExamBean> getFull3(
             @retrofit2.http.Path("examId") Long examId            ,     @retrofit2.http.Query("level") Integer level                
-  );
-
-  /**
-   * Get full exam period by id
-   * 
-   * @param periodId  (required)
-   * @param level  (optional, default to 0)
-   * @return Call&lt;FullExamPeriodBean&gt;
-   */
-  @GET("periods/{periodId}/full")
-  Call<FullExamPeriodBean> getFullPeriod(
-            @retrofit2.http.Path("periodId") Long periodId            ,     @retrofit2.http.Query("level") Integer level                
-  );
-
-  /**
-   * Get last period by exam
-   * 
-   * @param examId  (required)
-   * @return Call&lt;ExamPeriodBean&gt;
-   */
-  @GET("exams/{examId}/last-period")
-  Call<ExamPeriodBean> getLastPeriod(
-            @retrofit2.http.Path("examId") Long examId            
-  );
-
-  /**
-   * Get messages by an exam period
-   * 
-   * @param periodId  (required)
-   * @param pageable  (required)
-   * @return Call&lt;PageMessageBean&gt;
-   */
-  @GET("periods/{periodId}/messages")
-  Call<PageMessageBean> getMessages(
-            @retrofit2.http.Path("periodId") Long periodId            ,     @retrofit2.http.Query("pageable") Pageable pageable                
   );
 
   /**
@@ -115,97 +84,47 @@ public interface ExamApi {
    * @return Call&lt;ExamBean&gt;
    */
   @GET("exams/{examId}")
-  Call<ExamBean> getOne3(
+  Call<ExamBean> getOne2(
             @retrofit2.http.Path("examId") Long examId            
   );
 
   /**
-   * Get exam period
-   * 
-   * @param periodId  (required)
-   * @return Call&lt;ExamPeriodBean&gt;
-   */
-  @GET("periods/{periodId}")
-  Call<ExamPeriodBean> getPeriod(
-            @retrofit2.http.Path("periodId") Long periodId            
-  );
-
-  /**
-   * Get exam periods by exam
+   * Get student ratings by a exam
    * 
    * @param examId  (required)
-   * @return Call&lt;List&lt;ExamPeriodBean&gt;&gt;
+   * @return Call&lt;List&lt;StudentRatingBean&gt;&gt;
    */
-  @GET("exams/{examId}/periods")
-  Call<List<ExamPeriodBean>> getPeriods(
+  @GET("exams/{examId}/student-ratings")
+  Call<List<StudentRatingBean>> getStudentRatings(
             @retrofit2.http.Path("examId") Long examId            
-  );
-
-  /**
-   * Get tickets by a period
-   * 
-   * @param periodId  (required)
-   * @return Call&lt;List&lt;TicketBean&gt;&gt;
-   */
-  @GET("periods/{periodId}/ticket")
-  Call<List<TicketBean>> getTickets1(
-            @retrofit2.http.Path("periodId") Long periodId            
-  );
-
-  /**
-   * Get tickets of people who didn&#x27;t pass an exam
-   * 
-   * @param examId  (required)
-   * @return Call&lt;List&lt;TicketBean&gt;&gt;
-   */
-  @GET("exams/{examId}/un-passed")
-  Call<List<TicketBean>> getUnPassed(
-            @retrofit2.http.Path("examId") Long examId            
-  );
-
-  /**
-   * Send a message to an exam period
-   * 
-   * @param body  (required)
-   * @param periodId  (required)
-   * @return Call&lt;MessageBean&gt;
-   */
-  @Headers({
-    "Content-Type:application/json"
-  })
-  @POST("periods/{periodId}/messages")
-  Call<MessageBean> newMessage(
-                    @retrofit2.http.Body NewMessageBean body    ,         @retrofit2.http.Path("periodId") Long periodId            
   );
 
   /**
    * Update an exam
    * 
    * @param body  (required)
-   * @param examId  (required)
    * @return Call&lt;ExamBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("exams/{examId}")
+  @PUT("exams")
   Call<ExamBean> updateExam(
-                    @retrofit2.http.Body CreateExamBean body    ,         @retrofit2.http.Path("examId") Long examId            
+                    @retrofit2.http.Body ExamBean body    
   );
 
   /**
-   * Update exam period (start time or state NOT together)
+   * Update exam state
    * 
    * @param body  (required)
-   * @param periodId  (required)
-   * @return Call&lt;ExamPeriodBean&gt;
+   * @return Call&lt;ExamBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("periods/{periodId}")
-  Call<ExamPeriodBean> updatePeriod(
-                    @retrofit2.http.Body UpdateExamPeriodBean body    ,         @retrofit2.http.Path("periodId") Long periodId            
+  @PUT("exams/state")
+  Call<ExamBean> updateState1(
+                    @retrofit2.http.Body ExamBean body    
   );
 
 }

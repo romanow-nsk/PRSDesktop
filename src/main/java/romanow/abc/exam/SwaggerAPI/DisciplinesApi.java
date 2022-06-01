@@ -12,7 +12,6 @@ import okhttp3.ResponseBody;
 import romanow.abc.exam.model.DisciplineBean;
 import romanow.abc.exam.model.ExamRuleBean;
 import romanow.abc.exam.model.FullDisciplineBean;
-import romanow.abc.exam.model.GroupBean;
 import romanow.abc.exam.model.ThemeBean;
 
 import java.util.ArrayList;
@@ -38,34 +37,23 @@ public interface DisciplinesApi {
   /**
    * Delete a discipline
    * 
-   * @param disciplineId  (required)
+   * @param id  (required)
    * @return Call&lt;Void&gt;
    */
-  @DELETE("discipline/{disciplineId}")
-  Call<Void> delete2(
-            @retrofit2.http.Path("disciplineId") Long disciplineId            
+  @DELETE("discipline/{id}")
+  Call<Void> delete3(
+            @retrofit2.http.Path("id") Long id            
   );
 
   /**
    * Get exam rules by discipline
    * 
-   * @param disciplineId  (required)
+   * @param id  (required)
    * @return Call&lt;List&lt;ExamRuleBean&gt;&gt;
    */
-  @GET("discipline/{disciplineId}/exam-rule")
+  @GET("discipline/{id}/exam-rule")
   Call<List<ExamRuleBean>> findExamRules(
-            @retrofit2.http.Path("disciplineId") Long disciplineId            
-  );
-
-  /**
-   * Get groups by discipline
-   * 
-   * @param disciplineId  (required)
-   * @return Call&lt;List&lt;GroupBean&gt;&gt;
-   */
-  @GET("discipline/{disciplineId}/group")
-  Call<List<GroupBean>> findGroups(
-            @retrofit2.http.Path("disciplineId") Long disciplineId            
+            @retrofit2.http.Path("id") Long id            
   );
 
   /**
@@ -74,7 +62,7 @@ public interface DisciplinesApi {
    * @return Call&lt;List&lt;DisciplineBean&gt;&gt;
    */
   @GET("discipline")
-  Call<List<DisciplineBean>> getAll5();
+  Call<List<DisciplineBean>> getAll4();
     
 
   /**
@@ -85,7 +73,7 @@ public interface DisciplinesApi {
    * @return Call&lt;FullDisciplineBean&gt;
    */
   @GET("discipline/{disciplineId}/full")
-  Call<FullDisciplineBean> getFull3(
+  Call<FullDisciplineBean> getFull5(
             @retrofit2.http.Path("disciplineId") Long disciplineId            ,     @retrofit2.http.Query("level") Integer level                
   );
 
@@ -96,7 +84,7 @@ public interface DisciplinesApi {
    * @return Call&lt;DisciplineBean&gt;
    */
   @GET("discipline/{disciplineId}")
-  Call<DisciplineBean> getOne5(
+  Call<DisciplineBean> getOne4(
             @retrofit2.http.Path("disciplineId") Long disciplineId            
   );
 
@@ -115,15 +103,14 @@ public interface DisciplinesApi {
    * Update a discipline
    * 
    * @param body  (required)
-   * @param disciplineId  (required)
    * @return Call&lt;DisciplineBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("discipline/{disciplineId}")
-  Call<DisciplineBean> update2(
-                    @retrofit2.http.Body DisciplineBean body    ,         @retrofit2.http.Path("disciplineId") Long disciplineId            
+  @PUT("discipline")
+  Call<DisciplineBean> update4(
+                    @retrofit2.http.Body DisciplineBean body    
   );
 
 }

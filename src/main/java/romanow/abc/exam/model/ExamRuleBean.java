@@ -27,7 +27,7 @@ import java.util.List;
  * ExamRuleBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class ExamRuleBean {
   @SerializedName("id")
   private Long id = null;
@@ -35,26 +35,35 @@ public class ExamRuleBean {
   @SerializedName("name")
   private String name = null;
 
-  @SerializedName("themeIds")
-  private List<Long> themeIds = null;
+  @SerializedName("duration")
+  private Integer duration = null;
+
+  @SerializedName("minimalSemesterRating")
+  private Integer minimalSemesterRating = null;
+
+  @SerializedName("minimalExamRating")
+  private Integer minimalExamRating = null;
+
+  @SerializedName("maximumExamRating")
+  private Integer maximumExamRating = null;
+
+  @SerializedName("singleQuestionDefaultRating")
+  private Integer singleQuestionDefaultRating = null;
+
+  @SerializedName("singleExerciseDefaultRating")
+  private Integer singleExerciseDefaultRating = null;
+
+  @SerializedName("questionsRatingSum")
+  private Integer questionsRatingSum = null;
+
+  @SerializedName("exercisesRatingSum")
+  private Integer exercisesRatingSum = null;
 
   @SerializedName("disciplineId")
   private Long disciplineId = null;
 
-  @SerializedName("questionCount")
-  private Integer questionCount = null;
-
-  @SerializedName("exerciseCount")
-  private Integer exerciseCount = null;
-
-  @SerializedName("duration")
-  private Integer duration = null;
-
-  @SerializedName("minimalRating")
-  private Integer minimalRating = null;
-
-  @SerializedName("ratingSystemId")
-  private Long ratingSystemId = null;
+  @SerializedName("themeIds")
+  private List<Long> themeIds = null;
 
   public ExamRuleBean id(Long id) {
     this.id = id;
@@ -92,6 +101,168 @@ public class ExamRuleBean {
     this.name = name;
   }
 
+  public ExamRuleBean duration(Integer duration) {
+    this.duration = duration;
+    return this;
+  }
+
+   /**
+   * Get duration
+   * @return duration
+  **/
+  @Schema(description = "")
+  public Integer getDuration() {
+    return duration;
+  }
+
+  public void setDuration(Integer duration) {
+    this.duration = duration;
+  }
+
+  public ExamRuleBean minimalSemesterRating(Integer minimalSemesterRating) {
+    this.minimalSemesterRating = minimalSemesterRating;
+    return this;
+  }
+
+   /**
+   * Get minimalSemesterRating
+   * @return minimalSemesterRating
+  **/
+  @Schema(description = "")
+  public Integer getMinimalSemesterRating() {
+    return minimalSemesterRating;
+  }
+
+  public void setMinimalSemesterRating(Integer minimalSemesterRating) {
+    this.minimalSemesterRating = minimalSemesterRating;
+  }
+
+  public ExamRuleBean minimalExamRating(Integer minimalExamRating) {
+    this.minimalExamRating = minimalExamRating;
+    return this;
+  }
+
+   /**
+   * Get minimalExamRating
+   * @return minimalExamRating
+  **/
+  @Schema(description = "")
+  public Integer getMinimalExamRating() {
+    return minimalExamRating;
+  }
+
+  public void setMinimalExamRating(Integer minimalExamRating) {
+    this.minimalExamRating = minimalExamRating;
+  }
+
+  public ExamRuleBean maximumExamRating(Integer maximumExamRating) {
+    this.maximumExamRating = maximumExamRating;
+    return this;
+  }
+
+   /**
+   * Get maximumExamRating
+   * @return maximumExamRating
+  **/
+  @Schema(description = "")
+  public Integer getMaximumExamRating() {
+    return maximumExamRating;
+  }
+
+  public void setMaximumExamRating(Integer maximumExamRating) {
+    this.maximumExamRating = maximumExamRating;
+  }
+
+  public ExamRuleBean singleQuestionDefaultRating(Integer singleQuestionDefaultRating) {
+    this.singleQuestionDefaultRating = singleQuestionDefaultRating;
+    return this;
+  }
+
+   /**
+   * Get singleQuestionDefaultRating
+   * @return singleQuestionDefaultRating
+  **/
+  @Schema(description = "")
+  public Integer getSingleQuestionDefaultRating() {
+    return singleQuestionDefaultRating;
+  }
+
+  public void setSingleQuestionDefaultRating(Integer singleQuestionDefaultRating) {
+    this.singleQuestionDefaultRating = singleQuestionDefaultRating;
+  }
+
+  public ExamRuleBean singleExerciseDefaultRating(Integer singleExerciseDefaultRating) {
+    this.singleExerciseDefaultRating = singleExerciseDefaultRating;
+    return this;
+  }
+
+   /**
+   * Get singleExerciseDefaultRating
+   * @return singleExerciseDefaultRating
+  **/
+  @Schema(description = "")
+  public Integer getSingleExerciseDefaultRating() {
+    return singleExerciseDefaultRating;
+  }
+
+  public void setSingleExerciseDefaultRating(Integer singleExerciseDefaultRating) {
+    this.singleExerciseDefaultRating = singleExerciseDefaultRating;
+  }
+
+  public ExamRuleBean questionsRatingSum(Integer questionsRatingSum) {
+    this.questionsRatingSum = questionsRatingSum;
+    return this;
+  }
+
+   /**
+   * Get questionsRatingSum
+   * @return questionsRatingSum
+  **/
+  @Schema(description = "")
+  public Integer getQuestionsRatingSum() {
+    return questionsRatingSum;
+  }
+
+  public void setQuestionsRatingSum(Integer questionsRatingSum) {
+    this.questionsRatingSum = questionsRatingSum;
+  }
+
+  public ExamRuleBean exercisesRatingSum(Integer exercisesRatingSum) {
+    this.exercisesRatingSum = exercisesRatingSum;
+    return this;
+  }
+
+   /**
+   * Get exercisesRatingSum
+   * @return exercisesRatingSum
+  **/
+  @Schema(description = "")
+  public Integer getExercisesRatingSum() {
+    return exercisesRatingSum;
+  }
+
+  public void setExercisesRatingSum(Integer exercisesRatingSum) {
+    this.exercisesRatingSum = exercisesRatingSum;
+  }
+
+  public ExamRuleBean disciplineId(Long disciplineId) {
+    this.disciplineId = disciplineId;
+    return this;
+  }
+
+   /**
+   * Get disciplineId
+   * @return disciplineId
+  **/
+  @Schema(description = "")
+  public Long getDisciplineId() {
+    return disciplineId;
+  }
+
+  public void setDisciplineId(Long disciplineId) {
+    this.disciplineId = disciplineId;
+  }
+
   public ExamRuleBean themeIds(List<Long> themeIds) {
     this.themeIds = themeIds;
     return this;
@@ -118,114 +289,6 @@ public class ExamRuleBean {
     this.themeIds = themeIds;
   }
 
-  public ExamRuleBean disciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
-    return this;
-  }
-
-   /**
-   * Get disciplineId
-   * @return disciplineId
-  **/
-  @Schema(description = "")
-  public Long getDisciplineId() {
-    return disciplineId;
-  }
-
-  public void setDisciplineId(Long disciplineId) {
-    this.disciplineId = disciplineId;
-  }
-
-  public ExamRuleBean questionCount(Integer questionCount) {
-    this.questionCount = questionCount;
-    return this;
-  }
-
-   /**
-   * Get questionCount
-   * @return questionCount
-  **/
-  @Schema(description = "")
-  public Integer getQuestionCount() {
-    return questionCount;
-  }
-
-  public void setQuestionCount(Integer questionCount) {
-    this.questionCount = questionCount;
-  }
-
-  public ExamRuleBean exerciseCount(Integer exerciseCount) {
-    this.exerciseCount = exerciseCount;
-    return this;
-  }
-
-   /**
-   * Get exerciseCount
-   * @return exerciseCount
-  **/
-  @Schema(description = "")
-  public Integer getExerciseCount() {
-    return exerciseCount;
-  }
-
-  public void setExerciseCount(Integer exerciseCount) {
-    this.exerciseCount = exerciseCount;
-  }
-
-  public ExamRuleBean duration(Integer duration) {
-    this.duration = duration;
-    return this;
-  }
-
-   /**
-   * Get duration
-   * @return duration
-  **/
-  @Schema(description = "")
-  public Integer getDuration() {
-    return duration;
-  }
-
-  public void setDuration(Integer duration) {
-    this.duration = duration;
-  }
-
-  public ExamRuleBean minimalRating(Integer minimalRating) {
-    this.minimalRating = minimalRating;
-    return this;
-  }
-
-   /**
-   * Get minimalRating
-   * @return minimalRating
-  **/
-  @Schema(description = "")
-  public Integer getMinimalRating() {
-    return minimalRating;
-  }
-
-  public void setMinimalRating(Integer minimalRating) {
-    this.minimalRating = minimalRating;
-  }
-
-  public ExamRuleBean ratingSystemId(Long ratingSystemId) {
-    this.ratingSystemId = ratingSystemId;
-    return this;
-  }
-
-   /**
-   * Get ratingSystemId
-   * @return ratingSystemId
-  **/
-  @Schema(description = "")
-  public Long getRatingSystemId() {
-    return ratingSystemId;
-  }
-
-  public void setRatingSystemId(Long ratingSystemId) {
-    this.ratingSystemId = ratingSystemId;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -238,18 +301,21 @@ public class ExamRuleBean {
     ExamRuleBean examRuleBean = (ExamRuleBean) o;
     return Objects.equals(this.id, examRuleBean.id) &&
         Objects.equals(this.name, examRuleBean.name) &&
-        Objects.equals(this.themeIds, examRuleBean.themeIds) &&
-        Objects.equals(this.disciplineId, examRuleBean.disciplineId) &&
-        Objects.equals(this.questionCount, examRuleBean.questionCount) &&
-        Objects.equals(this.exerciseCount, examRuleBean.exerciseCount) &&
         Objects.equals(this.duration, examRuleBean.duration) &&
-        Objects.equals(this.minimalRating, examRuleBean.minimalRating) &&
-        Objects.equals(this.ratingSystemId, examRuleBean.ratingSystemId);
+        Objects.equals(this.minimalSemesterRating, examRuleBean.minimalSemesterRating) &&
+        Objects.equals(this.minimalExamRating, examRuleBean.minimalExamRating) &&
+        Objects.equals(this.maximumExamRating, examRuleBean.maximumExamRating) &&
+        Objects.equals(this.singleQuestionDefaultRating, examRuleBean.singleQuestionDefaultRating) &&
+        Objects.equals(this.singleExerciseDefaultRating, examRuleBean.singleExerciseDefaultRating) &&
+        Objects.equals(this.questionsRatingSum, examRuleBean.questionsRatingSum) &&
+        Objects.equals(this.exercisesRatingSum, examRuleBean.exercisesRatingSum) &&
+        Objects.equals(this.disciplineId, examRuleBean.disciplineId) &&
+        Objects.equals(this.themeIds, examRuleBean.themeIds);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, themeIds, disciplineId, questionCount, exerciseCount, duration, minimalRating, ratingSystemId);
+    return Objects.hash(id, name, duration, minimalSemesterRating, minimalExamRating, maximumExamRating, singleQuestionDefaultRating, singleExerciseDefaultRating, questionsRatingSum, exercisesRatingSum, disciplineId, themeIds);
   }
 
 
@@ -260,13 +326,16 @@ public class ExamRuleBean {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    themeIds: ").append(toIndentedString(themeIds)).append("\n");
-    sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
-    sb.append("    questionCount: ").append(toIndentedString(questionCount)).append("\n");
-    sb.append("    exerciseCount: ").append(toIndentedString(exerciseCount)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
-    sb.append("    minimalRating: ").append(toIndentedString(minimalRating)).append("\n");
-    sb.append("    ratingSystemId: ").append(toIndentedString(ratingSystemId)).append("\n");
+    sb.append("    minimalSemesterRating: ").append(toIndentedString(minimalSemesterRating)).append("\n");
+    sb.append("    minimalExamRating: ").append(toIndentedString(minimalExamRating)).append("\n");
+    sb.append("    maximumExamRating: ").append(toIndentedString(maximumExamRating)).append("\n");
+    sb.append("    singleQuestionDefaultRating: ").append(toIndentedString(singleQuestionDefaultRating)).append("\n");
+    sb.append("    singleExerciseDefaultRating: ").append(toIndentedString(singleExerciseDefaultRating)).append("\n");
+    sb.append("    questionsRatingSum: ").append(toIndentedString(questionsRatingSum)).append("\n");
+    sb.append("    exercisesRatingSum: ").append(toIndentedString(exercisesRatingSum)).append("\n");
+    sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
+    sb.append("    themeIds: ").append(toIndentedString(themeIds)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -25,7 +25,7 @@ import java.io.IOException;
  * AnswerBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class AnswerBean {
   @SerializedName("id")
   private Long id = null;
@@ -36,25 +36,27 @@ public class AnswerBean {
   @SerializedName("rating")
   private Integer rating = null;
 
-  @SerializedName("ticketId")
-  private Long ticketId = null;
+  @SerializedName("studentRatingId")
+  private Long studentRatingId = null;
 
   @SerializedName("number")
   private Integer number = null;
 
   /**
-   * Gets or Sets status
+   * Gets or Sets state
    */
-  @JsonAdapter(StatusEnum.Adapter.class)
-  public enum StatusEnum {
+  @JsonAdapter(StateEnum.Adapter.class)
+  public enum StateEnum {
+    NO_ANSWER("NO_ANSWER"),
+    IN_PROGRESS("IN_PROGRESS"),
+    SENT("SENT"),
     CHECKING("CHECKING"),
-    REVISION("REVISION"),
-    REJECTED("REJECTED"),
-    APPROVED("APPROVED");
+    RATED("RATED"),
+    NO_RATING("NO_RATING");
 
     private String value;
 
-    StatusEnum(String value) {
+    StateEnum(String value) {
       this.value = value;
     }
     public String getValue() {
@@ -65,28 +67,28 @@ public class AnswerBean {
     public String toString() {
       return String.valueOf(value);
     }
-    public static StatusEnum fromValue(String input) {
-      for (StatusEnum b : StatusEnum.values()) {
+    public static StateEnum fromValue(String input) {
+      for (StateEnum b : StateEnum.values()) {
         if (b.value.equals(input)) {
           return b;
         }
       }
       return null;
     }
-    public static class Adapter extends TypeAdapter<StatusEnum> {
+    public static class Adapter extends TypeAdapter<StateEnum> {
       @Override
-      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+      public void write(final JsonWriter jsonWriter, final StateEnum enumeration) throws IOException {
         jsonWriter.value(String.valueOf(enumeration.getValue()));
       }
 
       @Override
-      public StatusEnum read(final JsonReader jsonReader) throws IOException {
+      public StateEnum read(final JsonReader jsonReader) throws IOException {
         Object value = jsonReader.nextString();
-        return StatusEnum.fromValue((String)(value));
+        return StateEnum.fromValue((String)(value));
       }
     }
-  }  @SerializedName("status")
-  private StatusEnum status = null;
+  }  @SerializedName("state")
+  private StateEnum state = null;
 
   public AnswerBean id(Long id) {
     this.id = id;
@@ -142,22 +144,22 @@ public class AnswerBean {
     this.rating = rating;
   }
 
-  public AnswerBean ticketId(Long ticketId) {
-    this.ticketId = ticketId;
+  public AnswerBean studentRatingId(Long studentRatingId) {
+    this.studentRatingId = studentRatingId;
     return this;
   }
 
    /**
-   * Get ticketId
-   * @return ticketId
+   * Get studentRatingId
+   * @return studentRatingId
   **/
   @Schema(description = "")
-  public Long getTicketId() {
-    return ticketId;
+  public Long getStudentRatingId() {
+    return studentRatingId;
   }
 
-  public void setTicketId(Long ticketId) {
-    this.ticketId = ticketId;
+  public void setStudentRatingId(Long studentRatingId) {
+    this.studentRatingId = studentRatingId;
   }
 
   public AnswerBean number(Integer number) {
@@ -178,22 +180,22 @@ public class AnswerBean {
     this.number = number;
   }
 
-  public AnswerBean status(StatusEnum status) {
-    this.status = status;
+  public AnswerBean state(StateEnum state) {
+    this.state = state;
     return this;
   }
 
    /**
-   * Get status
-   * @return status
+   * Get state
+   * @return state
   **/
   @Schema(description = "")
-  public StatusEnum getStatus() {
-    return status;
+  public StateEnum getState() {
+    return state;
   }
 
-  public void setStatus(StatusEnum status) {
-    this.status = status;
+  public void setState(StateEnum state) {
+    this.state = state;
   }
 
 
@@ -209,14 +211,14 @@ public class AnswerBean {
     return Objects.equals(this.id, answerBean.id) &&
         Objects.equals(this.taskId, answerBean.taskId) &&
         Objects.equals(this.rating, answerBean.rating) &&
-        Objects.equals(this.ticketId, answerBean.ticketId) &&
+        Objects.equals(this.studentRatingId, answerBean.studentRatingId) &&
         Objects.equals(this.number, answerBean.number) &&
-        Objects.equals(this.status, answerBean.status);
+        Objects.equals(this.state, answerBean.state);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, taskId, rating, ticketId, number, status);
+    return Objects.hash(id, taskId, rating, studentRatingId, number, state);
   }
 
 
@@ -228,9 +230,9 @@ public class AnswerBean {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    taskId: ").append(toIndentedString(taskId)).append("\n");
     sb.append("    rating: ").append(toIndentedString(rating)).append("\n");
-    sb.append("    ticketId: ").append(toIndentedString(ticketId)).append("\n");
+    sb.append("    studentRatingId: ").append(toIndentedString(studentRatingId)).append("\n");
     sb.append("    number: ").append(toIndentedString(number)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -10,7 +10,6 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 import romanow.abc.exam.model.CreateTeacherBean;
-import romanow.abc.exam.model.DisciplineBean;
 import romanow.abc.exam.model.TeacherBean;
 
 import java.util.ArrayList;
@@ -46,14 +45,5 @@ public interface TeacherApi {
   Call<TeacherBean> createTeacher(
                     @retrofit2.http.Body CreateTeacherBean body    
   );
-
-  /**
-   * Get teacher&#x27;s disciplines
-   * 
-   * @return Call&lt;List&lt;DisciplineBean&gt;&gt;
-   */
-  @GET("teacher/discipline")
-  Call<List<DisciplineBean>> getDisciplines();
-    
 
 }

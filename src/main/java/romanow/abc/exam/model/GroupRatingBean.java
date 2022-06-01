@@ -21,12 +21,14 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 /**
- * ThemeBean
+ * GroupRatingBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
-public class ThemeBean {
+public class GroupRatingBean {
   @SerializedName("id")
   private Long id = null;
 
@@ -36,7 +38,16 @@ public class ThemeBean {
   @SerializedName("disciplineId")
   private Long disciplineId = null;
 
-  public ThemeBean id(Long id) {
+  @SerializedName("groupId")
+  private Long groupId = null;
+
+  @SerializedName("examRuleId")
+  private Long examRuleId = null;
+
+  @SerializedName("teacherIds")
+  private List<Long> teacherIds = null;
+
+  public GroupRatingBean id(Long id) {
     this.id = id;
     return this;
   }
@@ -54,7 +65,7 @@ public class ThemeBean {
     this.id = id;
   }
 
-  public ThemeBean name(String name) {
+  public GroupRatingBean name(String name) {
     this.name = name;
     return this;
   }
@@ -72,7 +83,7 @@ public class ThemeBean {
     this.name = name;
   }
 
-  public ThemeBean disciplineId(Long disciplineId) {
+  public GroupRatingBean disciplineId(Long disciplineId) {
     this.disciplineId = disciplineId;
     return this;
   }
@@ -90,6 +101,68 @@ public class ThemeBean {
     this.disciplineId = disciplineId;
   }
 
+  public GroupRatingBean groupId(Long groupId) {
+    this.groupId = groupId;
+    return this;
+  }
+
+   /**
+   * Get groupId
+   * @return groupId
+  **/
+  @Schema(description = "")
+  public Long getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(Long groupId) {
+    this.groupId = groupId;
+  }
+
+  public GroupRatingBean examRuleId(Long examRuleId) {
+    this.examRuleId = examRuleId;
+    return this;
+  }
+
+   /**
+   * Get examRuleId
+   * @return examRuleId
+  **/
+  @Schema(description = "")
+  public Long getExamRuleId() {
+    return examRuleId;
+  }
+
+  public void setExamRuleId(Long examRuleId) {
+    this.examRuleId = examRuleId;
+  }
+
+  public GroupRatingBean teacherIds(List<Long> teacherIds) {
+    this.teacherIds = teacherIds;
+    return this;
+  }
+
+  public GroupRatingBean addTeacherIdsItem(Long teacherIdsItem) {
+    if (this.teacherIds == null) {
+      this.teacherIds = new ArrayList<Long>();
+    }
+    this.teacherIds.add(teacherIdsItem);
+    return this;
+  }
+
+   /**
+   * Get teacherIds
+   * @return teacherIds
+  **/
+  @Schema(description = "")
+  public List<Long> getTeacherIds() {
+    return teacherIds;
+  }
+
+  public void setTeacherIds(List<Long> teacherIds) {
+    this.teacherIds = teacherIds;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -99,26 +172,32 @@ public class ThemeBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ThemeBean themeBean = (ThemeBean) o;
-    return Objects.equals(this.id, themeBean.id) &&
-        Objects.equals(this.name, themeBean.name) &&
-        Objects.equals(this.disciplineId, themeBean.disciplineId);
+    GroupRatingBean groupRatingBean = (GroupRatingBean) o;
+    return Objects.equals(this.id, groupRatingBean.id) &&
+        Objects.equals(this.name, groupRatingBean.name) &&
+        Objects.equals(this.disciplineId, groupRatingBean.disciplineId) &&
+        Objects.equals(this.groupId, groupRatingBean.groupId) &&
+        Objects.equals(this.examRuleId, groupRatingBean.examRuleId) &&
+        Objects.equals(this.teacherIds, groupRatingBean.teacherIds);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, disciplineId);
+    return Objects.hash(id, name, disciplineId, groupId, examRuleId, teacherIds);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ThemeBean {\n");
+    sb.append("class GroupRatingBean {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
+    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+    sb.append("    examRuleId: ").append(toIndentedString(examRuleId)).append("\n");
+    sb.append("    teacherIds: ").append(toIndentedString(teacherIds)).append("\n");
     sb.append("}");
     return sb.toString();
   }

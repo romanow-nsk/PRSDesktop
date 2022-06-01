@@ -10,7 +10,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 import romanow.abc.exam.model.StudentBean;
-import romanow.abc.exam.model.StudentTicketBean;
+import romanow.abc.exam.model.StudentExamInfoBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public interface StudentApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @POST("student/bulk")
+  @POST("students/bulk")
   Call<List<StudentBean>> addStudents(
                     @retrofit2.http.Body List<StudentBean> body    
   );
@@ -41,7 +41,7 @@ public interface StudentApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @POST("student")
+  @POST("students")
   Call<StudentBean> createStudent(
                     @retrofit2.http.Body StudentBean body    
   );
@@ -51,7 +51,7 @@ public interface StudentApi {
    * 
    * @return Call&lt;StudentBean&gt;
    */
-  @GET("student/me")
+  @GET("students/me")
   Call<StudentBean> getSelf();
     
 
@@ -61,7 +61,7 @@ public interface StudentApi {
    * @param studentId  (required)
    * @return Call&lt;StudentBean&gt;
    */
-  @GET("student/{studentId}")
+  @GET("students/{studentId}")
   Call<StudentBean> getStudent(
             @retrofit2.http.Path("studentId") Long studentId            
   );
@@ -69,10 +69,10 @@ public interface StudentApi {
   /**
    * Get student&#x27;s tickets
    * 
-   * @return Call&lt;List&lt;StudentTicketBean&gt;&gt;
+   * @return Call&lt;List&lt;StudentExamInfoBean&gt;&gt;
    */
-  @GET("student/tickets")
-  Call<List<StudentTicketBean>> getTickets();
+  @GET("students/exam-infos")
+  Call<List<StudentExamInfoBean>> getTickets();
     
 
 }

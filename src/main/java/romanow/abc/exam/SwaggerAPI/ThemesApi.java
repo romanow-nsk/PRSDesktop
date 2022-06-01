@@ -71,24 +71,34 @@ public interface ThemesApi {
    * @param level  (optional, default to 0)
    * @return Call&lt;FullThemeBean&gt;
    */
-  @GET("theme/{themeId}")
-  Call<FullThemeBean> getOne(
+  @GET("theme/{themeId}/full")
+  Call<FullThemeBean> getFull(
             @retrofit2.http.Path("themeId") Long themeId            ,     @retrofit2.http.Query("level") Integer level                
+  );
+
+  /**
+   * Get one theme
+   * 
+   * @param themeId  (required)
+   * @return Call&lt;ThemeBean&gt;
+   */
+  @GET("theme/{themeId}")
+  Call<ThemeBean> getOne(
+            @retrofit2.http.Path("themeId") Long themeId            
   );
 
   /**
    * Update a theme
    * 
    * @param body  (required)
-   * @param themeId  (required)
    * @return Call&lt;ThemeBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("theme/{themeId}")
+  @PUT("theme")
   Call<ThemeBean> update(
-                    @retrofit2.http.Body ThemeBean body    ,         @retrofit2.http.Path("themeId") Long themeId            
+                    @retrofit2.http.Body ThemeBean body    
   );
 
 }

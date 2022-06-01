@@ -1,6 +1,5 @@
 package romanow.abc.bridge.constants;
 import lombok.RequiredArgsConstructor;
-import romanow.abc.exam.model.ExamPeriodBean;
 
 @RequiredArgsConstructor
 public enum ExamPeriodState {

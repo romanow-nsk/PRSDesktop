@@ -26,7 +26,7 @@ import romanow.abc.exam.model.AccountBean;
  * StudentBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class StudentBean {
   @SerializedName("id")
   private Long id = null;
@@ -36,6 +36,51 @@ public class StudentBean {
 
   @SerializedName("groupId")
   private Long groupId = null;
+
+  /**
+   * Gets or Sets status
+   */
+  @JsonAdapter(StatusEnum.Adapter.class)
+  public enum StatusEnum {
+    ACTIVE("ACTIVE"),
+    EXPELLED("EXPELLED"),
+    ACADEMIC_LEAVE("ACADEMIC_LEAVE");
+
+    private String value;
+
+    StatusEnum(String value) {
+      this.value = value;
+    }
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    public static StatusEnum fromValue(String input) {
+      for (StatusEnum b : StatusEnum.values()) {
+        if (b.value.equals(input)) {
+          return b;
+        }
+      }
+      return null;
+    }
+    public static class Adapter extends TypeAdapter<StatusEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
+      }
+
+      @Override
+      public StatusEnum read(final JsonReader jsonReader) throws IOException {
+        Object value = jsonReader.nextString();
+        return StatusEnum.fromValue((String)(value));
+      }
+    }
+  }  @SerializedName("status")
+  private StatusEnum status = null;
 
   public StudentBean id(Long id) {
     this.id = id;
@@ -91,6 +136,24 @@ public class StudentBean {
     this.groupId = groupId;
   }
 
+  public StudentBean status(StatusEnum status) {
+    this.status = status;
+    return this;
+  }
+
+   /**
+   * Get status
+   * @return status
+  **/
+  @Schema(description = "")
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -103,12 +166,13 @@ public class StudentBean {
     StudentBean studentBean = (StudentBean) o;
     return Objects.equals(this.id, studentBean.id) &&
         Objects.equals(this.account, studentBean.account) &&
-        Objects.equals(this.groupId, studentBean.groupId);
+        Objects.equals(this.groupId, studentBean.groupId) &&
+        Objects.equals(this.status, studentBean.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, account, groupId);
+    return Objects.hash(id, account, groupId, status);
   }
 
 
@@ -120,6 +184,7 @@ public class StudentBean {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    account: ").append(toIndentedString(account)).append("\n");
     sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("}");
     return sb.toString();
   }

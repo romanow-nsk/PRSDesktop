@@ -37,7 +37,7 @@ public interface AccountApi {
    * @return Call&lt;List&lt;AccountBean&gt;&gt;
    */
   @GET("account")
-  Call<List<AccountBean>> findAll1();
+  Call<List<AccountBean>> findAll3();
     
 
   /**
@@ -47,7 +47,7 @@ public interface AccountApi {
    * @return Call&lt;AccountBean&gt;
    */
   @GET("account/{accountId}")
-  Call<AccountBean> findOne1(
+  Call<AccountBean> findOne2(
             @retrofit2.http.Path("accountId") Long accountId            
   );
 
@@ -61,18 +61,17 @@ public interface AccountApi {
     
 
   /**
-   * Update sender&#x27;s account
+   * Update other&#x27;s account
    * 
    * @param body  (required)
-   * @param accountId  (required)
    * @return Call&lt;AccountBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("account/{accountId}")
+  @PUT("account")
   Call<AccountBean> updateAccount(
-                    @retrofit2.http.Body AccountBean body    ,         @retrofit2.http.Path("accountId") Long accountId            
+                    @retrofit2.http.Body AccountBean body    
   );
 
   /**
@@ -84,7 +83,7 @@ public interface AccountApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("account")
+  @PUT("account/me")
   Call<AccountBean> updateMyAccount(
                     @retrofit2.http.Body AccountBean body    
   );

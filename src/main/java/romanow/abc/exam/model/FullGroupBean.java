@@ -23,14 +23,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import romanow.abc.exam.model.DisciplineBean;
+import romanow.abc.exam.model.FullGroupRatingBean;
 import romanow.abc.exam.model.GroupBean;
 import romanow.abc.exam.model.StudentBean;
 /**
  * FullGroupBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class FullGroupBean {
   @SerializedName("group")
   private GroupBean group = null;
@@ -38,8 +38,8 @@ public class FullGroupBean {
   @SerializedName("students")
   private List<StudentBean> students = null;
 
-  @SerializedName("disciplines")
-  private List<DisciplineBean> disciplines = null;
+  @SerializedName("groupRatings")
+  private List<FullGroupRatingBean> groupRatings = null;
 
   public FullGroupBean group(GroupBean group) {
     this.group = group;
@@ -85,30 +85,30 @@ public class FullGroupBean {
     this.students = students;
   }
 
-  public FullGroupBean disciplines(List<DisciplineBean> disciplines) {
-    this.disciplines = disciplines;
+  public FullGroupBean groupRatings(List<FullGroupRatingBean> groupRatings) {
+    this.groupRatings = groupRatings;
     return this;
   }
 
-  public FullGroupBean addDisciplinesItem(DisciplineBean disciplinesItem) {
-    if (this.disciplines == null) {
-      this.disciplines = new ArrayList<DisciplineBean>();
+  public FullGroupBean addGroupRatingsItem(FullGroupRatingBean groupRatingsItem) {
+    if (this.groupRatings == null) {
+      this.groupRatings = new ArrayList<FullGroupRatingBean>();
     }
-    this.disciplines.add(disciplinesItem);
+    this.groupRatings.add(groupRatingsItem);
     return this;
   }
 
    /**
-   * Get disciplines
-   * @return disciplines
+   * Get groupRatings
+   * @return groupRatings
   **/
   @Schema(description = "")
-  public List<DisciplineBean> getDisciplines() {
-    return disciplines;
+  public List<FullGroupRatingBean> getGroupRatings() {
+    return groupRatings;
   }
 
-  public void setDisciplines(List<DisciplineBean> disciplines) {
-    this.disciplines = disciplines;
+  public void setGroupRatings(List<FullGroupRatingBean> groupRatings) {
+    this.groupRatings = groupRatings;
   }
 
 
@@ -123,12 +123,12 @@ public class FullGroupBean {
     FullGroupBean fullGroupBean = (FullGroupBean) o;
     return Objects.equals(this.group, fullGroupBean.group) &&
         Objects.equals(this.students, fullGroupBean.students) &&
-        Objects.equals(this.disciplines, fullGroupBean.disciplines);
+        Objects.equals(this.groupRatings, fullGroupBean.groupRatings);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(group, students, disciplines);
+    return Objects.hash(group, students, groupRatings);
   }
 
 
@@ -139,7 +139,7 @@ public class FullGroupBean {
     
     sb.append("    group: ").append(toIndentedString(group)).append("\n");
     sb.append("    students: ").append(toIndentedString(students)).append("\n");
-    sb.append("    disciplines: ").append(toIndentedString(disciplines)).append("\n");
+    sb.append("    groupRatings: ").append(toIndentedString(groupRatings)).append("\n");
     sb.append("}");
     return sb.toString();
   }

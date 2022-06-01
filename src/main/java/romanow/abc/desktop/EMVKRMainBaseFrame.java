@@ -77,8 +77,8 @@ public class EMVKRMainBaseFrame extends MainBaseFrame implements I_Important {
             //@POST("artefact/upload")
             //Call<ArtefactBean> uploadFile(@Part MultipartBody.Part part);
             //----------------------------------------------------------
-            MultipartBody.Part body2 = createMultipsrtBody(fname);
-            //RequestBody body2 = createRequestBody(fname);
+            //MultipartBody.Part body2 = createMultipsrtBody(fname);
+            RequestBody body2 = createRequestBody(fname);
             Call<ArtefactBean> call3 = client.getArtefactApi().uploadFile(body2);
             call3.enqueue(new Callback<ArtefactBean>() {
                 @Override

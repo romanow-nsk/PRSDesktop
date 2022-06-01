@@ -21,25 +21,83 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 /**
  * ExamBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class ExamBean {
   @SerializedName("id")
   private Long id = null;
 
-  @SerializedName("examRuleId")
-  private Long examRuleId = null;
+  @SerializedName("name")
+  private String name = null;
 
   @SerializedName("disciplineId")
   private Long disciplineId = null;
 
-  @SerializedName("groupIds")
-  private List<Long> groupIds = null;
+  @SerializedName("groupId")
+  private Long groupId = null;
+
+  @SerializedName("oneGroup")
+  private Boolean oneGroup = null;
+
+  @SerializedName("start")
+  private Long start = null;
+
+  @SerializedName("end")
+  private Long end = null;
+
+  /**
+   * Gets or Sets state
+   */
+  @JsonAdapter(StateEnum.Adapter.class)
+  public enum StateEnum {
+    REDACTION("REDACTION"),
+    READY("READY"),
+    TIME_SET("TIME_SET"),
+    PROGRESS("PROGRESS"),
+    FINISHED("FINISHED"),
+    CLOSED("CLOSED");
+
+    private String value;
+
+    StateEnum(String value) {
+      this.value = value;
+    }
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+    public static StateEnum fromValue(String input) {
+      for (StateEnum b : StateEnum.values()) {
+        if (b.value.equals(input)) {
+          return b;
+        }
+      }
+      return null;
+    }
+    public static class Adapter extends TypeAdapter<StateEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StateEnum enumeration) throws IOException {
+        jsonWriter.value(String.valueOf(enumeration.getValue()));
+      }
+
+      @Override
+      public StateEnum read(final JsonReader jsonReader) throws IOException {
+        Object value = jsonReader.nextString();
+        return StateEnum.fromValue((String)(value));
+      }
+    }
+  }  @SerializedName("state")
+  private StateEnum state = null;
+
+  @SerializedName("teacherId")
+  private Long teacherId = null;
 
   public ExamBean id(Long id) {
     this.id = id;
@@ -59,22 +117,22 @@ public class ExamBean {
     this.id = id;
   }
 
-  public ExamBean examRuleId(Long examRuleId) {
-    this.examRuleId = examRuleId;
+  public ExamBean name(String name) {
+    this.name = name;
     return this;
   }
 
    /**
-   * Get examRuleId
-   * @return examRuleId
+   * Get name
+   * @return name
   **/
   @Schema(description = "")
-  public Long getExamRuleId() {
-    return examRuleId;
+  public String getName() {
+    return name;
   }
 
-  public void setExamRuleId(Long examRuleId) {
-    this.examRuleId = examRuleId;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public ExamBean disciplineId(Long disciplineId) {
@@ -95,30 +153,112 @@ public class ExamBean {
     this.disciplineId = disciplineId;
   }
 
-  public ExamBean groupIds(List<Long> groupIds) {
-    this.groupIds = groupIds;
-    return this;
-  }
-
-  public ExamBean addGroupIdsItem(Long groupIdsItem) {
-    if (this.groupIds == null) {
-      this.groupIds = new ArrayList<Long>();
-    }
-    this.groupIds.add(groupIdsItem);
+  public ExamBean groupId(Long groupId) {
+    this.groupId = groupId;
     return this;
   }
 
    /**
-   * Get groupIds
-   * @return groupIds
+   * Get groupId
+   * @return groupId
   **/
   @Schema(description = "")
-  public List<Long> getGroupIds() {
-    return groupIds;
+  public Long getGroupId() {
+    return groupId;
   }
 
-  public void setGroupIds(List<Long> groupIds) {
-    this.groupIds = groupIds;
+  public void setGroupId(Long groupId) {
+    this.groupId = groupId;
+  }
+
+  public ExamBean oneGroup(Boolean oneGroup) {
+    this.oneGroup = oneGroup;
+    return this;
+  }
+
+   /**
+   * Get oneGroup
+   * @return oneGroup
+  **/
+  @Schema(description = "")
+  public Boolean isOneGroup() {
+    return oneGroup;
+  }
+
+  public void setOneGroup(Boolean oneGroup) {
+    this.oneGroup = oneGroup;
+  }
+
+  public ExamBean start(Long start) {
+    this.start = start;
+    return this;
+  }
+
+   /**
+   * Get start
+   * @return start
+  **/
+  @Schema(description = "")
+  public Long getStart() {
+    return start;
+  }
+
+  public void setStart(Long start) {
+    this.start = start;
+  }
+
+  public ExamBean end(Long end) {
+    this.end = end;
+    return this;
+  }
+
+   /**
+   * Get end
+   * @return end
+  **/
+  @Schema(description = "")
+  public Long getEnd() {
+    return end;
+  }
+
+  public void setEnd(Long end) {
+    this.end = end;
+  }
+
+  public ExamBean state(StateEnum state) {
+    this.state = state;
+    return this;
+  }
+
+   /**
+   * Get state
+   * @return state
+  **/
+  @Schema(description = "")
+  public StateEnum getState() {
+    return state;
+  }
+
+  public void setState(StateEnum state) {
+    this.state = state;
+  }
+
+  public ExamBean teacherId(Long teacherId) {
+    this.teacherId = teacherId;
+    return this;
+  }
+
+   /**
+   * Get teacherId
+   * @return teacherId
+  **/
+  @Schema(description = "")
+  public Long getTeacherId() {
+    return teacherId;
+  }
+
+  public void setTeacherId(Long teacherId) {
+    this.teacherId = teacherId;
   }
 
 
@@ -132,14 +272,19 @@ public class ExamBean {
     }
     ExamBean examBean = (ExamBean) o;
     return Objects.equals(this.id, examBean.id) &&
-        Objects.equals(this.examRuleId, examBean.examRuleId) &&
+        Objects.equals(this.name, examBean.name) &&
         Objects.equals(this.disciplineId, examBean.disciplineId) &&
-        Objects.equals(this.groupIds, examBean.groupIds);
+        Objects.equals(this.groupId, examBean.groupId) &&
+        Objects.equals(this.oneGroup, examBean.oneGroup) &&
+        Objects.equals(this.start, examBean.start) &&
+        Objects.equals(this.end, examBean.end) &&
+        Objects.equals(this.state, examBean.state) &&
+        Objects.equals(this.teacherId, examBean.teacherId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, examRuleId, disciplineId, groupIds);
+    return Objects.hash(id, name, disciplineId, groupId, oneGroup, start, end, state, teacherId);
   }
 
 
@@ -149,9 +294,14 @@ public class ExamBean {
     sb.append("class ExamBean {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    examRuleId: ").append(toIndentedString(examRuleId)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    disciplineId: ").append(toIndentedString(disciplineId)).append("\n");
-    sb.append("    groupIds: ").append(toIndentedString(groupIds)).append("\n");
+    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+    sb.append("    oneGroup: ").append(toIndentedString(oneGroup)).append("\n");
+    sb.append("    start: ").append(toIndentedString(start)).append("\n");
+    sb.append("    end: ").append(toIndentedString(end)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    teacherId: ").append(toIndentedString(teacherId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

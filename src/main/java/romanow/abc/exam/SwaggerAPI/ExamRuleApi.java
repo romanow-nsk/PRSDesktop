@@ -38,7 +38,7 @@ public interface ExamRuleApi {
    * @return Call&lt;List&lt;ExamRuleBean&gt;&gt;
    */
   @GET("exam-rule")
-  Call<List<ExamRuleBean>> getAll4();
+  Call<List<ExamRuleBean>> getAll3();
     
 
   /**
@@ -49,7 +49,7 @@ public interface ExamRuleApi {
    * @return Call&lt;FullExamRuleBean&gt;
    */
   @GET("exam-rule/{id}/full")
-  Call<FullExamRuleBean> getFull2(
+  Call<FullExamRuleBean> getFull4(
             @retrofit2.http.Path("id") Long id            ,     @retrofit2.http.Query("level") Integer level                
   );
 
@@ -60,7 +60,7 @@ public interface ExamRuleApi {
    * @return Call&lt;ExamRuleBean&gt;
    */
   @GET("exam-rule/{id}")
-  Call<ExamRuleBean> getOne4(
+  Call<ExamRuleBean> getOne3(
             @retrofit2.http.Path("id") Long id            
   );
 
@@ -68,15 +68,14 @@ public interface ExamRuleApi {
    * Update an exam rule
    * 
    * @param body  (required)
-   * @param id  (required)
    * @return Call&lt;ExamRuleBean&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
-  @PUT("exam-rule/{id}")
-  Call<ExamRuleBean> update1(
-                    @retrofit2.http.Body ExamRuleBean body    ,         @retrofit2.http.Path("id") Long id            
+  @PUT("exam-rule")
+  Call<ExamRuleBean> update3(
+                    @retrofit2.http.Body ExamRuleBean body    
   );
 
 }

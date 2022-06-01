@@ -30,7 +30,7 @@ import romanow.abc.exam.model.FullTaskBean;
  * FullAnswerBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class FullAnswerBean {
   @SerializedName("answer")
   private AnswerBean answer = null;

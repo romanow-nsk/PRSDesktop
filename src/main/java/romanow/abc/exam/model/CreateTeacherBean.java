@@ -21,20 +21,15 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import romanow.abc.exam.model.AccountBean;
 /**
  * CreateTeacherBean
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-05-08T18:16:36.953+07:00[Asia/Novosibirsk]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
 public class CreateTeacherBean {
   @SerializedName("account")
   private AccountBean account = null;
-
-  @SerializedName("disciplineIds")
-  private List<Long> disciplineIds = null;
 
   public CreateTeacherBean account(AccountBean account) {
     this.account = account;
@@ -54,32 +49,6 @@ public class CreateTeacherBean {
     this.account = account;
   }
 
-  public CreateTeacherBean disciplineIds(List<Long> disciplineIds) {
-    this.disciplineIds = disciplineIds;
-    return this;
-  }
-
-  public CreateTeacherBean addDisciplineIdsItem(Long disciplineIdsItem) {
-    if (this.disciplineIds == null) {
-      this.disciplineIds = new ArrayList<Long>();
-    }
-    this.disciplineIds.add(disciplineIdsItem);
-    return this;
-  }
-
-   /**
-   * Get disciplineIds
-   * @return disciplineIds
-  **/
-  @Schema(description = "")
-  public List<Long> getDisciplineIds() {
-    return disciplineIds;
-  }
-
-  public void setDisciplineIds(List<Long> disciplineIds) {
-    this.disciplineIds = disciplineIds;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -90,13 +59,12 @@ public class CreateTeacherBean {
       return false;
     }
     CreateTeacherBean createTeacherBean = (CreateTeacherBean) o;
-    return Objects.equals(this.account, createTeacherBean.account) &&
-        Objects.equals(this.disciplineIds, createTeacherBean.disciplineIds);
+    return Objects.equals(this.account, createTeacherBean.account);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(account, disciplineIds);
+    return Objects.hash(account);
   }
 
 
@@ -106,7 +74,6 @@ public class CreateTeacherBean {
     sb.append("class CreateTeacherBean {\n");
     
     sb.append("    account: ").append(toIndentedString(account)).append("\n");
-    sb.append("    disciplineIds: ").append(toIndentedString(disciplineIds)).append("\n");
     sb.append("}");
     return sb.toString();
   }

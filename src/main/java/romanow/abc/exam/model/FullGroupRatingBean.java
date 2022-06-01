@@ -23,66 +23,52 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import romanow.abc.exam.model.FullDisciplineBean;
 import romanow.abc.exam.model.FullGroupBean;
 import romanow.abc.exam.model.FullStudentRatingBean;
-import romanow.abc.exam.model.StudentBean;
+import romanow.abc.exam.model.GroupRatingBean;
 /**
- * FullStudentBean
+ * FullGroupRatingBean
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-06-01T14:56:15.142+07:00[Asia/Novosibirsk]")
-public class FullStudentBean {
-  @SerializedName("student")
-  private StudentBean student = null;
-
-  @SerializedName("group")
-  private FullGroupBean group = null;
+public class FullGroupRatingBean {
+  @SerializedName("groupRating")
+  private GroupRatingBean groupRating = null;
 
   @SerializedName("studentRatings")
   private List<FullStudentRatingBean> studentRatings = null;
 
-  public FullStudentBean student(StudentBean student) {
-    this.student = student;
+  @SerializedName("discipline")
+  private FullDisciplineBean discipline = null;
+
+  @SerializedName("group")
+  private FullGroupBean group = null;
+
+  public FullGroupRatingBean groupRating(GroupRatingBean groupRating) {
+    this.groupRating = groupRating;
     return this;
   }
 
    /**
-   * Get student
-   * @return student
+   * Get groupRating
+   * @return groupRating
   **/
   @Schema(description = "")
-  public StudentBean getStudent() {
-    return student;
+  public GroupRatingBean getGroupRating() {
+    return groupRating;
   }
 
-  public void setStudent(StudentBean student) {
-    this.student = student;
+  public void setGroupRating(GroupRatingBean groupRating) {
+    this.groupRating = groupRating;
   }
 
-  public FullStudentBean group(FullGroupBean group) {
-    this.group = group;
-    return this;
-  }
-
-   /**
-   * Get group
-   * @return group
-  **/
-  @Schema(description = "")
-  public FullGroupBean getGroup() {
-    return group;
-  }
-
-  public void setGroup(FullGroupBean group) {
-    this.group = group;
-  }
-
-  public FullStudentBean studentRatings(List<FullStudentRatingBean> studentRatings) {
+  public FullGroupRatingBean studentRatings(List<FullStudentRatingBean> studentRatings) {
     this.studentRatings = studentRatings;
     return this;
   }
 
-  public FullStudentBean addStudentRatingsItem(FullStudentRatingBean studentRatingsItem) {
+  public FullGroupRatingBean addStudentRatingsItem(FullStudentRatingBean studentRatingsItem) {
     if (this.studentRatings == null) {
       this.studentRatings = new ArrayList<FullStudentRatingBean>();
     }
@@ -103,6 +89,42 @@ public class FullStudentBean {
     this.studentRatings = studentRatings;
   }
 
+  public FullGroupRatingBean discipline(FullDisciplineBean discipline) {
+    this.discipline = discipline;
+    return this;
+  }
+
+   /**
+   * Get discipline
+   * @return discipline
+  **/
+  @Schema(description = "")
+  public FullDisciplineBean getDiscipline() {
+    return discipline;
+  }
+
+  public void setDiscipline(FullDisciplineBean discipline) {
+    this.discipline = discipline;
+  }
+
+  public FullGroupRatingBean group(FullGroupBean group) {
+    this.group = group;
+    return this;
+  }
+
+   /**
+   * Get group
+   * @return group
+  **/
+  @Schema(description = "")
+  public FullGroupBean getGroup() {
+    return group;
+  }
+
+  public void setGroup(FullGroupBean group) {
+    this.group = group;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -112,26 +134,28 @@ public class FullStudentBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FullStudentBean fullStudentBean = (FullStudentBean) o;
-    return Objects.equals(this.student, fullStudentBean.student) &&
-        Objects.equals(this.group, fullStudentBean.group) &&
-        Objects.equals(this.studentRatings, fullStudentBean.studentRatings);
+    FullGroupRatingBean fullGroupRatingBean = (FullGroupRatingBean) o;
+    return Objects.equals(this.groupRating, fullGroupRatingBean.groupRating) &&
+        Objects.equals(this.studentRatings, fullGroupRatingBean.studentRatings) &&
+        Objects.equals(this.discipline, fullGroupRatingBean.discipline) &&
+        Objects.equals(this.group, fullGroupRatingBean.group);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(student, group, studentRatings);
+    return Objects.hash(groupRating, studentRatings, discipline, group);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class FullStudentBean {\n");
+    sb.append("class FullGroupRatingBean {\n");
     
-    sb.append("    student: ").append(toIndentedString(student)).append("\n");
-    sb.append("    group: ").append(toIndentedString(group)).append("\n");
+    sb.append("    groupRating: ").append(toIndentedString(groupRating)).append("\n");
     sb.append("    studentRatings: ").append(toIndentedString(studentRatings)).append("\n");
+    sb.append("    discipline: ").append(toIndentedString(discipline)).append("\n");
+    sb.append("    group: ").append(toIndentedString(group)).append("\n");
     sb.append("}");
     return sb.toString();
   }

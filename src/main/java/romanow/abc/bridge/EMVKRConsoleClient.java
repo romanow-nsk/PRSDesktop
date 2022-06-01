@@ -38,10 +38,9 @@ public class EMVKRConsoleClient {
     @Getter GroupsApi groupApi=null;
     @Getter StudentApi onlyStudentApi=null;
     @Getter TeacherApi onlyTeacherApi=null;
-    @Getter RatingSystemApi ratingSystemApi=null;
     @Getter TasksApi taskApi=null;
     @Getter ThemesApi themeApi=null;
-    @Getter TicketApi ticketApi=null;
+    @Getter StudentRatingApi studentRatingApi=null;
 
     public boolean isLogged(){
         return service!=null && token.length()!=0;
@@ -117,10 +116,9 @@ public class EMVKRConsoleClient {
                 groupApi = (GroupsApi) createService(ip,port,GroupsApi.class,token);
                 onlyStudentApi = (StudentApi) createService(ip,port,StudentApi.class,token);
                 onlyTeacherApi = (TeacherApi) createService(ip,port,TeacherApi.class,token);
-                ratingSystemApi = (RatingSystemApi) createService(ip,port,RatingSystemApi.class,token);
                 taskApi = (TasksApi) createService(ip,port,TasksApi.class,token);
                 themeApi = (ThemesApi) createService(ip,port,ThemesApi.class,token);
-                ticketApi = (TicketApi) createService(ip,port,TicketApi.class,token);
+                studentRatingApi = (StudentRatingApi) createService(ip,port,StudentRatingApi.class,token);
                 }
             } catch (IOException ee){
                 return ee.toString();
@@ -147,7 +145,7 @@ public class EMVKRConsoleClient {
         List<DisciplineBean> list = new APICallSync<List<DisciplineBean>>() {
             @Override
             public Call<List<DisciplineBean>> apiFun() {
-                return client.getDisciplineApi().getAll5();
+                return client.getDisciplineApi().getAll4();
                 }
             }.call();
         System.out.println(list);
