@@ -41,6 +41,7 @@ public class EMVKRConsoleClient {
     @Getter TasksApi taskApi=null;
     @Getter ThemesApi themeApi=null;
     @Getter StudentRatingApi studentRatingApi=null;
+    @Getter GroupRatingApi groupRatingApi=null;
 
     public boolean isLogged(){
         return service!=null && token.length()!=0;
@@ -118,6 +119,7 @@ public class EMVKRConsoleClient {
                 onlyTeacherApi = (TeacherApi) createService(ip,port,TeacherApi.class,token);
                 taskApi = (TasksApi) createService(ip,port,TasksApi.class,token);
                 themeApi = (ThemesApi) createService(ip,port,ThemesApi.class,token);
+                groupRatingApi = (GroupRatingApi)  createService(ip,port,GroupRatingApi.class,token);
                 studentRatingApi = (StudentRatingApi) createService(ip,port,StudentRatingApi.class,token);
                 }
             } catch (IOException ee){

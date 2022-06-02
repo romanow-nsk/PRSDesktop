@@ -76,8 +76,8 @@ public class EMVKRExamAdminPanel extends BasePanel{
         }
 
     private void refreshAll(){
-        refreshDisciplineList();
         refreshGroupsList();
+        refreshDisciplineList();
         refreshRatingsList();
         }
 
@@ -256,17 +256,25 @@ public class EMVKRExamAdminPanel extends BasePanel{
                     }
                 refreshThemeFull();
                 refreshRules();
-                new APICall<List<GroupBean>>(main){
+                new APICall<List<GroupRatingBean>>(main){
                     @Override
-                    public Call<List<GroupBean>> apiFun() {
-                        return  null; //main.client.getDisciplineApi().findGroups(oid);
+                    public Call<List<GroupRatingBean>> apiFun() {
+                        return  main.client.getGroupRatingApi().findAll2();
                     }
                     @Override
-                    public void onSucess(List<GroupBean> oo) {
-                        examGroupsList = oo;
+                    public void onSucess(List<GroupRatingBean> oo) {
+                        examGroupsList.clear();
                         ExamsForGroupList.removeAll();
-                        for(GroupBean group : oo){
-                            ExamsForGroupList.add(group.getName());
+                        for(GroupRatingBean group : oo){
+                            if (group.getDisciplineId()==cDiscipline.getDiscipline().getId()){
+                                GroupBean groupBean = groupsMap.get(group.getGroupId());
+                                if (groupBean==null)
+                                    System.out.println("Не найдена группа id="+group.getGroupId());
+                                else{
+                                    ExamsForGroupList.add(groupBean.getName());
+                                    examGroupsList.add(groupBean);
+                                    }
+                                }
                             }
                         refreshDisciplineExams();
                         }
