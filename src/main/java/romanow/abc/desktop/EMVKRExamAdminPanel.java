@@ -315,7 +315,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 disciplineGroupsList.clear();
                 GroupRatings.removeAll();
                 for(GroupRatingBean group : oo){
-                    if (group.getDisciplineId()==cDiscipline.getDiscipline().getId()){
+                    if (group.getDisciplineId().longValue()==cDiscipline.getDiscipline().getId().longValue()){
                         GroupBean groupBean = groupsMap.get(group.getGroupId());
                         if (groupBean==null)
                             System.out.println("Не найдена группа id="+group.getGroupId());
@@ -354,6 +354,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         //takingStateMashine.clear();
         Takings.removeAll();
         cTakings.clear();
+        cTaking=null;
         new APICall<List<ExamBean>>(main) {
             @Override
             public Call<List<ExamBean>> apiFun() {
@@ -362,7 +363,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(List<ExamBean> oo) {
                 for(ExamBean taking : oo){
-                    if (taking.getDisciplineId() !=cDiscipline.getDiscipline().getId())
+                    if (taking.getDisciplineId().longValue() !=cDiscipline.getDiscipline().getId().longValue())
                         continue;
                     cTakings.add(taking);
                     Takings.add(taking.getName());
@@ -370,7 +371,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 if (withPos && takingIdx!=-1)
                     Takings.select(takingIdx);
                 refreshSelectedTaking();
-
                 }
             };
     }
@@ -741,7 +741,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
         RuleQuestionSum = new javax.swing.JTextField();
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
-        jSeparator5 = new javax.swing.JSeparator();
         AnswerThemeTask = new java.awt.TextArea();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel14 = new javax.swing.JLabel();
@@ -1308,8 +1307,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         add(jSeparator2);
         jSeparator2.setBounds(447, 120, 10, 450);
-        add(jSeparator5);
-        jSeparator5.setBounds(10, 575, 440, 10);
 
         AnswerThemeTask.setEditable(false);
         add(AnswerThemeTask);
@@ -2326,7 +2323,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         cTaking.getExam().setOneGroup(TakingForGroup.isSelected());
         if (cTaking.getExam().isOneGroup()){
             long oid = cRating.getGroup().getGroup().getId();
-            cTaking.getGroup().getGroup().setId(oid);
+            cTaking.getExam().setGroupId(oid);
             }
         takingUpdate();
     }//GEN-LAST:event_TakingForGroupItemStateChanged
@@ -2350,6 +2347,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             @Override
             public void onSelect(OwnDateTime time) {
                 cTaking.getExam().setStart(time.timeInMS());
+                cTaking.getExam().setEnd(time.timeInMS()+Integer.parseInt(TakingDuration.getText()));
                 takingUpdate();
             }
         });
@@ -2365,6 +2363,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 exam.setExamRuleId(cRule.getId());
                 exam.setDisciplineId(cDiscipline.getDiscipline().getId());
                 exam.setGroupId(cGroup.getGroup().getId());
+                exam.setName(cDiscipline.getDiscipline().getName()+"-"+cGroup.getGroup().getName());
                 new APICall<GroupRatingBean>(main) {
                     @Override
                     public Call<GroupRatingBean> apiFun() {
@@ -2544,6 +2543,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         }
     public void refreshStudRatings(){
         //studRatingStateMashine.clear();
+        studRatings.clear();
         if (RatingOrTakingMode.isSelected()){
             if (cTaking==null)
                 return;
@@ -2947,7 +2947,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel Состояние;
     private javax.swing.JLabel Состояние1;
