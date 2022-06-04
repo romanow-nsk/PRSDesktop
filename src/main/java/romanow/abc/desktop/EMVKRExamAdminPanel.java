@@ -11,17 +11,26 @@ import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
 import romanow.abc.convert.onewayticket.OWTReader;
 import romanow.abc.convert.onewayticket.OWTTheme;
+import romanow.abc.core.DBRequest;
 import romanow.abc.core.UniException;
+import romanow.abc.core.constants.ConstValue;
+import romanow.abc.core.constants.ValuesBase;
+import romanow.abc.core.entity.baseentityes.JEmpty;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
-import romanow.abc.desktop.exam.ExamPeriodStateFactory;
+import romanow.abc.desktop.exam.AnswerStateFactory;
+import romanow.abc.desktop.exam.ExamTakingStateFactory;
+import romanow.abc.desktop.exam.StudentRatingStateFactory;
+import romanow.abc.desktop.exam.StudentStateFactory;
 import romanow.abc.exam.model.*;
 import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  *
@@ -36,81 +45,490 @@ public class EMVKRExamAdminPanel extends BasePanel{
     private HashMap<Long,FullThemeBean> ruleThemesMap = new HashMap<>();
     private ArrayList<FullThemeBean> ruleThemes = new ArrayList<>();
     private ExamRuleBean cRule=null;
-    private ExamBean cExam=null;
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
     private List<GroupBean> groups = new ArrayList<>();                 // Список групп
     private HashMap<Long,GroupBean> groupsMap = new HashMap<>();        // Мар всех групп
-    private HashMap<Long,Long> examGroupsMap = new HashMap<>();         // Мар групп для экзамена по дисциплине
-    private HashMap<Long,ExamRuleBean> examRulesMap = new HashMap<>();  // Мар имеющихся регламентов в экзаменах по дисциплине
     private FullGroupBean cGroup = null;                                // Текущая группа
-    private List<GroupBean> examGroupsList = new ArrayList<>();         // Экзамен для текущей дисциплины
-    private List<ExamBean> allExams = new ArrayList<>();                // Полный список экзаменов
-    private List<ExamBean> disciplineExams=new ArrayList<>();           // Экзамены для дисциплины
-    private List<ExamRuleBean> allExamRules = new ArrayList<>();        // Полный список регламентов
+    private List<GroupRatingBean> disciplineGroupsList = new ArrayList<>(); // Рейтинги групп (экзамен) для текущей дисциплины
     private List<ExamRuleBean> cExamRules = new ArrayList<>();          // Список регламентов для дисциплины
     private HashMap<Long,ExamRuleBean> cExamRulesMap = new HashMap<>(); // Мар регламентов для дисциплины
     private boolean refresh=false;                                      // Признак обновления для событий  CheckBox
-    private List<ExamBean> periods=new ArrayList<>();             // Список СДАЧ для экзамена
-    private ExamBean cPeriod=null;                                // Текущая сдача
     private boolean taskTextChanged=false;
     private EMVKRMainBaseFrame main;
-    private ExamPeriodStateFactory stateFactory = new ExamPeriodStateFactory();
+    private FullGroupRatingBean cRating =null;
+    private FullMessageBean cAnswerMessage =null;                       //
+    private FullStudentRatingBean cStudRating = null;
+    private ArrayList<FullTaskBean> sortedTasks =  new ArrayList<>();   // Отсортированы - вопрос/задача
+    private List<FullStudentRatingBean> studRatings = new ArrayList();
+    private ArrayList<FullAnswerBean> answers = new ArrayList<>();
+    private FullExamBean cTaking =null;                                 // Текущий прием
+    private FullAnswerBean cAnswer =null;                               // Текущий ответ
+    private FullGroupRatingBean cGroupRating=null;                      // Рейтинг группы для выбранного студента
+    private ArrayList<ExamBean> cTakings = new ArrayList<>();           // Список приема для экзамена (по дисциплине)
+    private AnswerStateFactory answerStateFactory = new AnswerStateFactory();
+    private ExamTakingStateFactory takingStateFactory = new ExamTakingStateFactory();
+    private StudentRatingStateFactory ratingStateFactory = new StudentRatingStateFactory();
+    private StudentStateFactory studentStateFactory = new StudentStateFactory();
+    private HashMap<Long,ExamRuleBean> rulesMap = new HashMap<>();
+    //------------------------------------------------------------------------------------------------------------------
+    //private ConstValue cTakingState = null;
+    //----------------------------------------------------------------------------------------
+    //private StateMashineView takingStateMashine;
+    //private StateMashineView answerStateMashine;
+    //private StateMashineView studRatingStateMashine;
+    //---------------------------------------------------------------------------------------
+    private int themeIdx = -1;
+    private int taskIdx = -1;
+    private int examIdx = -1;
+    private int ruleIdx = -1;
+    private int takingIdx = -1;
+    private int groupIdx = -1;
+    private int studentIdx = -1;
+    private int answerIdx = -1;
+    private int ratStudIdx = -1;
+    private boolean isRefresh=false;            // Для событий checkBox
+    //------------------------------------------------------------------------------------------------------------------
     public EMVKRExamAdminPanel() {
         initComponents();
-        }
+    }
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
         main = (EMVKRMainBaseFrame) main0;
-        ArtifactView.setEnabled(false);
-        ArtifactDownLoad.setEnabled(false);
         DisciplineSaveImport.setEnabled(false);
-        ArtifactDownLoad.setEnabled(false);
-        ArtifactView.setEnabled(false);
-        PeriodState.removeAll();
-        PeriodState.add("...");
-        for(ExamPeriodStateFactory.EnumPeriodStatePair pair : stateFactory.getList())
-            PeriodState.add(pair.name);
-        PeriodState.select(0);
+        TaskArtifactDownLoad.setEnabled(false);
+        TaskArtifactView.setEnabled(false);
+        //takingStateMashine = new StateMashineView(this,610,275,Values.TakingFactory);
+        //studRatingStateMashine = new StateMashineView(this,780,365,Values.StudRatingFactory);
+        //answerStateMashine = new StateMashineView(this,780,440,Values.AnswerFactory);
         refreshAll();
         }
 
-    private void refreshAll(){
+    private void savePos(){
+        themeIdx = Themes.getSelectedIndex();
+        taskIdx = Tasks.getSelectedIndex();
+        examIdx = GroupRatings.getSelectedIndex();
+        ruleIdx = Rules.getSelectedIndex();
+        takingIdx = Takings.getSelectedIndex();
+        groupIdx = Groups.getSelectedIndex();
+        studentIdx = Students.getSelectedIndex();
+        answerIdx = Answers.getSelectedIndex();
+        ratStudIdx = RatingStudentList.getSelectedIndex();
+        }
+
+    public void refreshAll(){
         refreshGroupsList();
         refreshDisciplineList();
-        refreshRatingsList();
-        }
+    }
 
-    private void refreshRatingsList(){
-        //new APICall<List<RatingSystemBean>>(main) {
-        //    @Override
-        //    public Call<List<RatingSystemBean>> apiFun() {
-        //        return main.client.getRatingSystemApi().getAll1();
-        //        }
-        //    @Override
-        //    public void onSucess(List<RatingSystemBean> oo) {
-        //        ratings = oo;
-        //        }
-        //    };
-        }
-
-    private void refreshAllRules(){
+    public void refreshRules(boolean withPos){
+        Rules.removeAll();
         new APICall<List<ExamRuleBean>>(main) {
             @Override
             public Call<List<ExamRuleBean>> apiFun() {
-                return main.client.getExamRuleApi().getAll3();
+                return main.client.getDisciplineApi().findExamRules(cDiscipline.getDiscipline().getId());
                 }
             @Override
             public void onSucess(List<ExamRuleBean> oo) {
-                allExamRules = oo;
-                refreshRules();
+                cExamRules = oo;
+                rulesMap.clear();
+                for(ExamRuleBean rule : cExamRules){
+                    Rules.add(rule.getName());
+                    rulesMap.put(rule.getId(),rule);
+                    }
+                if (ruleIdx!=-1)
+                    Rules.select(ruleIdx);
+                if (withPos && ruleIdx!=-1)
+                    Rules.select(ruleIdx);
+                refreshSelectedRule();
+
+                }
+            };
+        }
+
+    public void refreshSelectedRule(){
+        RuleName.setText("");
+        RuleOwnRating.setText("");
+        RuleExceciseForOne.setText("");
+        RuleThemes.removeAll();
+        cRule=null;
+        if (cExamRules.size()==0)
+            return;
+        cRule = cExamRules.get(Rules.getSelectedIndex());
+        RuleName.setText(cRule.getName());
+        RuleDuration.setText(""+cRule.getDuration());
+        RuleOwnRating.setText(""+cRule.getDuration());
+        RuleExceciseForOne.setText(""+cRule.getSingleExerciseDefaultRating());
+        RuleExcerciseSum.setText(""+cRule.getExercisesRatingSum());
+        RuleQuestionForOne.setText(""+cRule.getSingleQuestionDefaultRating());
+        RuleQuestionSum.setText(""+cRule.getQuestionsRatingSum());
+        RuleMinRating.setText(""+cRule.getMinimalSemesterRating());
+        RuleOwnRating.setText(""+cRule.getMinimalExamRating());
+        ruleThemes.clear();
+        RuleThemes.removeAll();
+        ruleThemesMap.clear();
+        for(Long themeId : cRule.getThemeIds()){
+            FullThemeBean theme  = disciplineThemesMap.get(themeId);
+            if (theme==null)
+                System.out.println("Не найдена тема id="+themeId);
+            else {
+                ruleThemes.add(theme);
+                RuleThemes.add(theme.getTheme().getName());
+                ruleThemesMap.put(theme.getTheme().getId(),theme);
+               }
+            }
+        }
+
+    public void refreshSelectedDiscipline(){
+        refreshSelectedDiscipline(true);
+        }
+
+    public void refreshSelectedDiscipline(boolean withPos){
+        if (withPos)
+            savePos();
+        answerClear();
+        Themes.removeAll();
+        Tasks.removeAll();
+        cDiscipline=null;
+        if (disciplines.size()==0)
+            return;
+        long oid = disciplines.get(Disciplines.getSelectedIndex()).getId();
+        new APICall<FullDisciplineBean>(main) {
+            @Override
+            public Call<FullDisciplineBean> apiFun() {
+                return main.client.getDisciplineApi().getFull5(oid,1);
+            }
+            @Override
+            public void onSucess(FullDisciplineBean oo) {
+                try {
+                    cDiscipline = oo;
+                    } catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Ошибка чтения дисциплины "+disciplines.get(Disciplines.getSelectedIndex()).getName());
+                        return;
+                        }
+                Themes.removeAll();
+                disciplineThemesMap.clear();
+                for(FullThemeBean theme : cDiscipline.getThemes()){
+                    Themes.add(theme.getTheme().getName());
+                    disciplineThemesMap.put(theme.getTheme().getId(),theme);
+                    }
+                refreshSelectedTheme(withPos);
+                refreshRules(withPos);
+                refreshRatings(withPos);
+                refreshStudRatings();
+                //takingStateMashine.refresh(cTaking);
+                //studRatingStateMashine.refresh(cStudRating);
+                //answerStateMashine.refresh(cAnswer);
+            }
+        };
+    }
+
+
+    public void refreshSelectedTheme(boolean withPos){
+        if (withPos && themeIdx!=-1)
+            Themes.select(themeIdx);
+        Tasks.removeAll();
+        if (cDiscipline.getThemes().size()==0)
+            return;
+        cTheme = cDiscipline.getThemes().get(Themes.getSelectedIndex());
+        new APICall<FullThemeBean>(main) {
+            @Override
+            public Call<FullThemeBean> apiFun() {
+                return main.client.getThemeApi().getFull(cTheme.getTheme().getId(),2);
+                }
+            @Override
+            public void onSucess(FullThemeBean oo) {
+                try {
+                    cTheme = oo;
+                    sortedTasks.clear();
+                    int iq = 1, it = 1;
+                    for (FullTaskBean task : cTheme.getTasks())
+                        if (task.getTask().getTaskType() == TaskBean.TaskTypeEnum.QUESTION){
+                            Tasks.add("Вопрос " + iq++);
+                            sortedTasks.add(task);
+                        }
+                    for (FullTaskBean task : cTheme.getTasks())
+                        if (task.getTask().getTaskType() == TaskBean.TaskTypeEnum.EXERCISE){
+                            Tasks.add("Задача " + it++);
+                            sortedTasks.add(task);
+                            }
+                    if (withPos && taskIdx!=-1)
+                        Tasks.select(taskIdx);
+                    refreshSelectedTask();
+                } catch (Exception ee){
+                    System.out.println(ee.toString());
+                    popup("Не прочитана тема: "+cTheme.getTheme().getName());
+                    return;
+                }
+            }
+        };
+    }
+
+    public void refreshSelectedTask(){
+        if (!taskTextChanged){
+            refreshSelectedTaskForce();
+            return;
+            }
+        taskTextChanged=false;
+        TaskSaveText.setEnabled(false);
+        new OKFull(200, 200, "Сохранить изменения текста", new I_ButtonFull() {
+            @Override
+            public void onPush(boolean yes) {
+                if (yes)
+                    taskUpdate();
+                else
+                    refreshSelectedTaskForce();
+            }
+        });
+    }
+
+    public void refreshSelectedTaskForce(){
+        TaskText.setText("");
+        if (cTheme.getTasks().size()==0)
+            return;
+        refresh=true;
+        TaskSaveText.setEnabled(false);
+        cTaskNum = Tasks.getSelectedIndex();
+        cTask = sortedTasks.get(cTaskNum);
+        boolean isTask = cTask.getTask().getTaskType()==TaskBean.TaskTypeEnum.EXERCISE;
+        TaskType.setSelected(isTask);
+        TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
+        TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),65));
+        boolean bb = cTask.getArtefact()!=null && cTask.getArtefact().getId()!=0;
+        TaskArtifactView.setEnabled(bb);
+        TaskArtifactDownLoad.setEnabled(bb);
+        refresh=false;
+    }
+
+    public void refreshRatings(boolean withPos){
+        GroupRatings.removeAll();
+        if (cDiscipline==null)
+            return;
+        new APICall<List<GroupRatingBean>>(main){
+            @Override
+            public Call<List<GroupRatingBean>> apiFun() {
+                return  main.client.getGroupRatingApi().findAll2();
+            }
+            @Override
+            public void onSucess(List<GroupRatingBean> oo) {
+                disciplineGroupsList.clear();
+                GroupRatings.removeAll();
+                for(GroupRatingBean group : oo){
+                    if (group.getDisciplineId()==cDiscipline.getDiscipline().getId()){
+                        GroupBean groupBean = groupsMap.get(group.getGroupId());
+                        if (groupBean==null)
+                            System.out.println("Не найдена группа id="+group.getGroupId());
+                        else{
+                            GroupRatings.add(groupBean.getName());
+                            disciplineGroupsList.add(group);
+                            }
+                        }
+                    }
+                if (withPos && examIdx!=-1)
+                    GroupRatings.select(examIdx);
+                refreshSelectedRating(withPos);
                 }
             };
     }
 
+    public void refreshSelectedRating(boolean withPos){
+        cRating =null;
+        if (disciplineGroupsList.size()==0)
+            return;
+        new APICall<FullGroupRatingBean>(main) {
+            @Override
+            public Call<FullGroupRatingBean> apiFun() {
+                return main.client.getGroupRatingApi().findFull1(disciplineGroupsList.get(GroupRatings.getSelectedIndex()).getId(),2);
+                }
+            @Override
+            public void onSucess(FullGroupRatingBean oo) {
+                cRating = oo;
+                GroupRatingName.setText(""+ cRating.getGroupRating().getName());
+                refreshTakings(withPos);
+                }
+            };
+    }
+
+    public void refreshTakings(boolean withPos){
+        //takingStateMashine.clear();
+        Takings.removeAll();
+        cTakings.clear();
+        new APICall<List<ExamBean>>(main) {
+            @Override
+            public Call<List<ExamBean>> apiFun() {
+                return main.client.getExamApi().getAll2();
+                }
+            @Override
+            public void onSucess(List<ExamBean> oo) {
+                for(ExamBean taking : oo){
+                    if (taking.getDisciplineId() !=cDiscipline.getDiscipline().getId())
+                        continue;
+                    cTakings.add(taking);
+                    Takings.add(taking.getName());
+                    }
+                if (withPos && takingIdx!=-1)
+                    Takings.select(takingIdx);
+                refreshSelectedTaking();
+
+                }
+            };
+    }
+
+    public void  refreshSelectedTaking(){
+        TakingAddAll.setVisible(false);
+        cTaking = null;
+        if (cTakings.size()==0)
+            return;
+        new APICall<FullExamBean>(main) {
+            @Override
+            public Call<FullExamBean> apiFun() {
+                return main.client.getExamApi().getFull3(cTakings.get(Takings.getSelectedIndex()).getId(),2);
+                }
+            @Override
+            public void onSucess(FullExamBean oo) {
+                cTaking = oo;
+                ExamBean exam = cTaking.getExam();
+                TakingName.setText(exam.getName());
+                if (exam.getStart()==0){
+                    TakingData.setText("---");
+                    TakingEndTime.setText("---");
+                }
+                else{
+                    OwnDateTime date1 = new OwnDateTime(exam.getStart());
+                    OwnDateTime date2 = new OwnDateTime(exam.getEnd());
+                    TakingData.setText(date1.dateToString());
+                    TakingStartTime.setText(date1.timeToString());
+                    TakingEndTime.setText(date2.timeToString());
+                }
+                TakingDuration.setText(""+(exam.getEnd()-exam.getStart())/1000/60);
+                ExamBean.StateEnum state = cTaking.getExam().getState();
+                isRefresh=true;
+                TakingForGroup.setSelected(exam.isOneGroup());
+                isRefresh=false;
+                TakingGroup.setText(!exam.isOneGroup() ? "" : groupsMap.get(exam.getGroupId()).getName());
+                TakingState.setText(takingStateFactory.getByValue(state));
+                //takingStateMashine.refresh(cTaking);
+                ExamBean.StateEnum ss = cTaking.getExam().getState();
+                TakingAddAll.setVisible(ss==ExamBean.StateEnum.TIME_SET || ss==ExamBean.StateEnum.READY);
+                }
+            };
+    }
+
+    public ConstValue choiceStateSet(ArrayList<ConstValue> list, Choice choice, int state) {
+        ConstValue out = null;
+        choice.select(0);
+        for (int i = 0; i < list.size(); i++) {
+            ConstValue cc = list.get(i);
+            if (cc.value() == state) {
+                choice.select(i + 1);
+                return cc;
+                }
+            }
+        return null;
+        }
+
+    public void refreshStudRatingFull(boolean withPos){
+        if (cStudRating==null)
+            return;
+        if (withPos)
+            savePos();
+        new APICall<FullStudentRatingBean>(main) {
+            @Override
+            public Call<FullStudentRatingBean> apiFun() {
+                return main.client.getStudentRatingApi().getFull1(cStudRating.getStudentRating().getId(), 3);
+                }
+            @Override
+            public void onSucess(FullStudentRatingBean oo) {
+                    cStudRating = oo;
+                    answers.clear();
+                    Answers.removeAll();
+                    int qIdx=1;
+                    int eIdx=1;
+                    for(FullAnswerBean answer : cStudRating.getAnswers()){
+                        if (answer.getTask().getTask().getTaskType()==TaskBean.TaskTypeEnum.QUESTION){
+                            Answers.add("Вопрос "+qIdx++);
+                            answers.add(answer);
+                            }
+                        }
+                    for(FullAnswerBean answer : cStudRating.getAnswers()){
+                        if (answer.getTask().getTask().getTaskType()==TaskBean.TaskTypeEnum.EXERCISE){
+                            Answers.add("Задача "+eIdx++);
+                            answers.add(answer);
+                        }
+                    }
+                    if (withPos && answerIdx!=-1)
+                        Answers.select(answerIdx);
+                    refreshSelectedAnswer();
+                    new APICall<FullGroupRatingBean>(main) {
+                        @Override
+                        public Call<FullGroupRatingBean> apiFun() {
+                            return main.client.getGroupRatingApi().findFull1(cStudRating.getStudentRating().getGroupRatingId(),1);
+                            }
+                        @Override
+                        public void onSucess(FullGroupRatingBean oo) {
+                            cGroupRating = oo;
+                        }
+                    };
+                }
+            };
+        }
+
+    public void refreshSelectedAnswer(){
+        cAnswer=null;
+        AnswerThemeTask.setText("");
+        AnswerMessageText.setText("");
+        AnswerBallSelector.setEnabled(false);
+        if (answers.size()==0)
+            return;
+        cAnswer = answers.get(Answers.getSelectedIndex());
+        AnswerState.setText(answerStateFactory.getByValue(cAnswer.getAnswer().getState()));
+        long themeId = cAnswer.getTask().getTask().getThemeId();
+        FullThemeBean theme = disciplineThemesMap.get(themeId);
+        String themeText = theme.getTheme().getName();
+        AnswerThemeTask.append(UtilsEM.formatSize(themeText,70)+"\n-----------------------------------------\n");
+        AnswerThemeTask.append(UtilsEM.formatSize(cAnswer.getTask().getTask().getText(),70));
+        AnswerMessages.removeAll();
+        int n=1;
+        for(FullMessageBean message : cAnswer.getMessages()){
+            AnswerMessages.add("Сообщение "+n+" "+message.getMessage().getText());
+            n++;
+            }
+        //answerStateMashine.refresh(cAnswer);
+        AnswerBall.setText(""+cAnswer.getAnswer().getRating());
+        AnswerMessageAdd.setEnabled(cAnswer.getAnswer().getState()==AnswerBean.StateEnum.IN_PROGRESS);
+        AnswerBallSelector.setEnabled(cAnswer.getAnswer().getState()==AnswerBean.StateEnum.CHECKING);
+        AnswerBallSelector.removeAll();
+        if(cAnswer.getAnswer().getState()==AnswerBean.StateEnum.CHECKING){
+            ExamRuleBean rule = rulesMap.get(cRating.getGroupRating().getExamRuleId());
+            boolean question = cAnswer.getTask().getTask().getTaskType()==TaskBean.TaskTypeEnum.QUESTION;
+            int maxBall = question ? rule.getSingleQuestionDefaultRating() : rule.getSingleExerciseDefaultRating();
+            for(int i=maxBall;i>=0;i--)
+                AnswerBallSelector.add(""+i);
+            if (question)
+                AnswerBallSelector.add(""+(-rule.getSingleQuestionDefaultRating()));
+            }
+        refreshSelectedMessage();
+        }
+
+    public void refreshSelectedMessage(){
+        cAnswerMessage=null;
+        AnswerArtifactView.setEnabled(false);
+        AnswerArtifactDownLoad.setEnabled(false);
+        AnswerArtifactUpload.setEnabled(false);
+        if (cAnswer==null || cAnswer.getMessages().size()==0)
+            return;
+        cAnswerMessage = cAnswer.getMessages().get(AnswerMessages.getSelectedIndex());
+        AnswerMessageText.setText(UtilsEM.formatSize(cAnswerMessage.getMessage().getText(),70));
+        AnswerArtifactUpload.setEnabled(true);
+        boolean bb = cAnswerMessage.getArtefact()!=null && cAnswerMessage.getArtefact().getId()!=0;
+        AnswerArtifactDownLoad.setEnabled(bb);
+        AnswerArtifactView.setEnabled(bb);
+        }
+
     private void refreshDisciplineList(){
-        Discipline.removeAll();
-        Theme.removeAll();
+        Disciplines.removeAll();
+        Themes.removeAll();
         TaskText.setText("");
         new APICall<List<DisciplineBean>>(main) {
             @Override
@@ -121,9 +539,8 @@ public class EMVKRExamAdminPanel extends BasePanel{
             public void onSucess(List<DisciplineBean> oo) {
                 disciplines = oo;
                 for(DisciplineBean dd : disciplines)
-                    Discipline.add(dd.getName());
-                refreshDisciplineFull();
-                refreshAllRules();
+                    Disciplines.add(dd.getName());
+                refreshSelectedDiscipline();
                 }
             };
         }
@@ -131,7 +548,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
     private void refreshRules(){
         cExamRules.clear();
         cExamRulesMap.clear();
-        RulesList.removeAll();
+        Rules.removeAll();
         new APICall<List<ExamRuleBean>>(main) {
             @Override
             public Call<List<ExamRuleBean>> apiFun() {
@@ -139,9 +556,9 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 }
             @Override
             public void onSucess(List<ExamRuleBean> oo) {
+                cExamRules = oo;
                 for(ExamRuleBean examRule : oo){
-                    RulesList.add(examRule.getName());
-                    cExamRules.add(examRule);
+                    Rules.add(examRule.getName());
                     cExamRulesMap.put(examRule.getId(),examRule);
                     }
                 refreshSelectedRule();
@@ -149,37 +566,9 @@ public class EMVKRExamAdminPanel extends BasePanel{
             };
         }
 
-    private void refreshSelectedRule(){
-        RuleName.setText("");
-        RuleDuration.setText("");
-        RuleExcerCount.setText("");
-        RuleThemesList.removeAll();
-        cRule=null;
-        if (cExamRules.size()==0)
-            return;
-        cRule = cExamRules.get(RulesList.getSelectedIndex());
-        RuleName.setText(cRule.getName());
-        RuleDuration.setText(""+cRule.getDuration());
-        //RuleExcerCount.setText(""+cRule.getExerciseCount());
-        //RuleQurestionCount.setText(""+cRule.getQuestionCount());
-        ruleThemes.clear();
-        RuleThemesList.removeAll();
-        ruleThemesMap.clear();
-        for(Long themeId : cRule.getThemeIds()){
-            FullThemeBean theme  = disciplineThemesMap.get(themeId);
-            if (theme==null)
-                System.out.println("Не найдена тема id="+themeId);
-            else {
-                ruleThemes.add(theme);
-                RuleThemesList.add(theme.getTheme().getName());
-                ruleThemesMap.put(theme.getTheme().getId(),theme);
-                }
-            }
-        }
-
     private void refreshGroupsList(){
-        Group.removeAll();
-        Student.removeAll();
+        Groups.removeAll();
+        Students.removeAll();
         new APICall<List<GroupBean>>(main) {
             @Override
             public Call<List<GroupBean>> apiFun() {
@@ -188,36 +577,22 @@ public class EMVKRExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(List<GroupBean> oo) {
                 groups = oo;
-                Group.removeAll();
+                Groups.removeAll();
                 groupsMap.clear();
                 for(GroupBean dd : groups){
-                    Group.add(dd.getName());
+                    Groups.add(dd.getName());
                     groupsMap.put(dd.getId(),dd);
                     }
                 refreshGroupFull();
                 }
             };
-        new APICall<List<ExamBean>>(main){
-            @Override
-            public Call<List<ExamBean>> apiFun() {
-                return main.client.getExamApi().getAll2();
-                }
-            @Override
-            public void onSucess(List<ExamBean> oo) {
-                allExams = oo;
-                ExamsTotalList.removeAll();
-                for(ExamBean exam : allExams){
-                    ExamsTotalList.add(exam.toString());
-                    }
-                }
-            };
         }
     private void refreshGroupFull(){
-        Student.removeAll();
+        Students.removeAll();
         cGroup=null;
         if (groups.size()==0)
             return;
-        long oid = groups.get(Group.getSelectedIndex()).getId();
+        long oid = groups.get(Groups.getSelectedIndex()).getId();
         new APICall<FullGroupBean>(main) {
             @Override
             public Call<FullGroupBean> apiFun() {
@@ -226,167 +601,19 @@ public class EMVKRExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(FullGroupBean oo) {
                 cGroup = oo;
-                Student.removeAll();
+                Students.removeAll();
                 for(StudentBean student : cGroup.getStudents())
-                    Student.add(student.getAccount().getName());
+                    Students.add(student.getAccount().getName());
                 //refreshStudentFull();
             }
         };
     }
-    private void refreshDisciplineFull(){
-        Theme.removeAll();
-        Task.removeAll();
-        cDiscipline=null;
-        if (disciplines.size()==0)
-            return;
-        final long oid = disciplines.get(Discipline.getSelectedIndex()).getId();
-        new APICall<FullDisciplineBean>(main) {
-            @Override
-            public Call<FullDisciplineBean> apiFun() {
-                return main.client.getDisciplineApi().getFull5(oid,2);
-                }
-            @Override
-            public void onSucess(FullDisciplineBean oo) {
-                cDiscipline = oo;
-                Theme.removeAll();
-                disciplineThemesMap.clear();
-                for(FullThemeBean theme : cDiscipline.getThemes()){
-                    Theme.add(theme.getTheme().getName());
-                    disciplineThemesMap.put(theme.getTheme().getId(),theme);
-                    }
-                refreshThemeFull();
-                refreshRules();
-                new APICall<List<GroupRatingBean>>(main){
-                    @Override
-                    public Call<List<GroupRatingBean>> apiFun() {
-                        return  main.client.getGroupRatingApi().findAll2();
-                    }
-                    @Override
-                    public void onSucess(List<GroupRatingBean> oo) {
-                        examGroupsList.clear();
-                        ExamsForGroupList.removeAll();
-                        for(GroupRatingBean group : oo){
-                            if (group.getDisciplineId()==cDiscipline.getDiscipline().getId()){
-                                GroupBean groupBean = groupsMap.get(group.getGroupId());
-                                if (groupBean==null)
-                                    System.out.println("Не найдена группа id="+group.getGroupId());
-                                else{
-                                    ExamsForGroupList.add(groupBean.getName());
-                                    examGroupsList.add(groupBean);
-                                    }
-                                }
-                            }
-                        refreshDisciplineExams();
-                        }
-                    };
-                }
-            };
-        }
-
-
-    private void refreshDisciplineExams(){
-        ExamList.removeAll();
-        disciplineExams.clear();
-        examGroupsMap.clear();
-        examRulesMap.clear();
-        if (cDiscipline==null)
-            return;
-        /*
-        for(ExamBean exam : allExams){
-            if(cDiscipline.getDiscipline().getId().longValue()==exam.getDisciplineId().longValue()){
-                disciplineExams.add(exam);
-                ExamRuleBean examRule = cExamRulesMap.get(exam.getExamRuleId());
-                if (examRule==null){
-                    System.out.println("Не найден регламент для экзамена id="+exam.getExamRuleId());
-                    continue;
-                    }
-                for(Long groupId : exam.getGroupIds())
-                    examGroupsMap.put(groupId,0L);
-                ExamList.add(examRule.getName());
-                examRulesMap.put(exam.getExamRuleId(),examRule);
-                }
-            }
-         */
-        refreshSelectedExam();
-        }
-
-    private void refreshSelectedExam(){
-        cExam=null;
-        ExamGroupsList.removeAll();
-        if (disciplineExams.size()==0)
-            return;
-        cExam = disciplineExams.get(ExamList.getSelectedIndex());
-        ExamGroupsList.removeAll();
-        /*
-        for(Long id : cExam.getGroupIds()){
-            GroupBean group = groupsMap.get(id);
-            if (group==null){
-                System.out.println("Не найдена группа id="+id);
-                continue;
-                }
-            ExamGroupsList.add(group.getName());
-            }
-         */
-        refreshExamPeriods();
-        }
-
-    private void  refreshExamPeriods(){
-        new APICall<List<ExamBean>>(main) {
-            @Override
-            public Call<List<ExamBean>> apiFun() {
-                return null; //main.client.getExamApi().getPeriods(cExam.getId());
-                }
-            @Override
-            public void onSucess(List<ExamBean> oo) {
-                periods = oo;
-                PeriodList.removeAll();
-                for(ExamBean examPeriod : periods){
-                    PeriodList.add(new OwnDateTime(examPeriod.getStart()).dateTimeToString());
-                    }
-                refreshSelectedExamPeriod();
-                }
-            };
-        }
-
-    private void  refreshSelectedExamPeriod(){
-        PeriodState.select(0);
-        cPeriod=null;
-        if (periods.size()==0)
-            return;
-        cPeriod = periods.get(PeriodList.getSelectedIndex());
-        new APICall<ExamBean>(main) {
-            @Override
-            public Call<ExamBean> apiFun() {
-                return main.client.getExamApi().getOne2(cPeriod.getId());
-                }
-            @Override
-            public void onSucess(ExamBean oo) {
-                cPeriod = oo;
-                periods.set(PeriodList.getSelectedIndex(),cPeriod);
-                if (cPeriod.getStart().longValue()==0){
-                    PeriodData.setText("---");
-                    PeriodStartTime.setText("---");
-                    PeriodEndTime.setText("---");
-                }
-                else{
-                    OwnDateTime date1 = new OwnDateTime(cPeriod.getStart());
-                    OwnDateTime date2 = new OwnDateTime(cPeriod.getEnd());
-                    PeriodData.setText(date1.dateToString());
-                    PeriodStartTime.setText(date1.timeToString());
-                    PeriodEndTime.setText(cPeriod.getEnd().longValue()==0 ? "---" : date2.timeToString());
-                }
-                int idx = stateFactory.getValueIdx(cPeriod.getState());
-                PeriodState.select(idx+1);
-                }
-            };
-        }
-
 
     private void refreshThemeFull(){
-        Task.removeAll();
+        Tasks.removeAll();
         if (cDiscipline.getThemes().size()==0)
             return;
-        cTheme = cDiscipline.getThemes().get(Theme.getSelectedIndex());
+        cTheme = cDiscipline.getThemes().get(Themes.getSelectedIndex());
         cTheme.getTasks().sort(new Comparator<FullTaskBean>() {
             @Override
             public int compare(FullTaskBean o1, FullTaskBean o2) {              // Сортировать по id (в порядке поступления)
@@ -396,10 +623,10 @@ public class EMVKRExamAdminPanel extends BasePanel{
         int iq=1,it=1;
         for(FullTaskBean task : cTheme.getTasks())
             if (task.getTask().getTaskType()== TaskBean.TaskTypeEnum.QUESTION)
-                Task.add("Вопрос "+iq++);
+                Tasks.add("Вопрос "+iq++);
         for(FullTaskBean task : cTheme.getTasks())
             if (task.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE)
-                Task.add("Задача "+it++);
+                Tasks.add("Задача "+it++);
         refreshTaskFull();
         }
 
@@ -409,15 +636,15 @@ public class EMVKRExamAdminPanel extends BasePanel{
             return;
         refresh=true;
         TaskSaveText.setEnabled(false);
-        cTaskNum = Task.getSelectedIndex();
+        cTaskNum = Tasks.getSelectedIndex();
         cTask = cTheme.getTasks().get(cTaskNum);
         boolean isTask = cTask.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
         TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),60));
         boolean bb = cTask.getArtefact()!=null;
-        ArtifactView.setEnabled(bb);
-        ArtifactDownLoad.setEnabled(bb);
+        TaskArtifactView.setEnabled(bb);
+        TaskArtifactDownLoad.setEnabled(bb);
         if (bb){
             ArtefactBean artefact = cTask.getArtefact();
             TaskText.append("\n"+artefact.getFileName());
@@ -456,8 +683,8 @@ public class EMVKRExamAdminPanel extends BasePanel{
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         TaskText = new java.awt.TextArea();
-        Discipline = new java.awt.Choice();
-        Theme = new java.awt.Choice();
+        Disciplines = new java.awt.Choice();
+        Themes = new java.awt.Choice();
         RefreshDisciplines = new javax.swing.JButton();
         DisciplineImport = new javax.swing.JButton();
         TaskRemove = new javax.swing.JButton();
@@ -466,10 +693,10 @@ public class EMVKRExamAdminPanel extends BasePanel{
         DisciplineRemove = new javax.swing.JButton();
         ThemeAdd = new javax.swing.JButton();
         ThemeRemove = new javax.swing.JButton();
-        Task = new java.awt.Choice();
-        ArtifactView = new javax.swing.JButton();
-        ArtifactUpload = new javax.swing.JButton();
-        ArtifactDownLoad = new javax.swing.JButton();
+        Tasks = new java.awt.Choice();
+        TaskArtifactView = new javax.swing.JButton();
+        TaskArtifactUpload = new javax.swing.JButton();
+        TaskArtifactDownLoad = new javax.swing.JButton();
         TaskSaveText = new javax.swing.JButton();
         DisciplineEdit = new javax.swing.JButton();
         ThemeEdit = new javax.swing.JButton();
@@ -477,8 +704,8 @@ public class EMVKRExamAdminPanel extends BasePanel{
         DisciplineSaveImport = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        Group = new java.awt.Choice();
-        Student = new java.awt.Choice();
+        Groups = new java.awt.Choice();
+        Students = new java.awt.Choice();
         RefreshGroups = new javax.swing.JButton();
         GroupAdd = new javax.swing.JButton();
         GroupRemove = new javax.swing.JButton();
@@ -488,50 +715,83 @@ public class EMVKRExamAdminPanel extends BasePanel{
         StudentEdit = new javax.swing.JButton();
         GroupsImport = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel6 = new javax.swing.JLabel();
-        ExamsForGroupList = new java.awt.Choice();
-        ExamsTotalList = new java.awt.Choice();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        RulesList = new java.awt.Choice();
+        Rules = new java.awt.Choice();
         jLabel9 = new javax.swing.JLabel();
-        RuleExcerCount = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        RuleDuration = new javax.swing.JTextField();
         RuleName = new javax.swing.JTextField();
         RuleThemeRemove = new javax.swing.JButton();
         RuleAdd = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        RuleThemesList = new java.awt.Choice();
+        RuleThemes = new java.awt.Choice();
         RuleThemeAdd = new javax.swing.JButton();
         RuleDelete = new javax.swing.JButton();
-        jLabel13 = new javax.swing.JLabel();
-        RuleQurestionCount = new javax.swing.JTextField();
         RuleThemeAddAll = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
+        TaskType = new javax.swing.JCheckBox();
+        jLabel17 = new javax.swing.JLabel();
+        RuleOwnRating = new javax.swing.JTextField();
+        RuleDuration = new javax.swing.JTextField();
+        jLabel22 = new javax.swing.JLabel();
+        RuleMinRating = new javax.swing.JTextField();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        RuleExceciseForOne = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        RuleExcerciseSum = new javax.swing.JTextField();
+        RuleQuestionForOne = new javax.swing.JTextField();
+        RuleQuestionSum = new javax.swing.JTextField();
+        jSeparator4 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
+        jSeparator5 = new javax.swing.JSeparator();
+        AnswerThemeTask = new java.awt.TextArea();
+        jSeparator3 = new javax.swing.JSeparator();
         jLabel14 = new javax.swing.JLabel();
-        ExamList = new java.awt.Choice();
-        ExamGroupsList = new java.awt.Choice();
+        GroupRatings = new java.awt.Choice();
         jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        PeriodForAll = new javax.swing.JCheckBox();
-        PeriodList = new java.awt.Choice();
-        PeriodData = new javax.swing.JTextField();
-        PeriodStartTime = new javax.swing.JTextField();
+        TakingForGroup = new javax.swing.JCheckBox();
+        Takings = new java.awt.Choice();
+        TakingData = new javax.swing.JTextField();
+        TakingEndTime = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        PeriodOneGroup = new java.awt.Choice();
-        ExamGroupAdd = new javax.swing.JButton();
-        ExamGroupRemove = new javax.swing.JButton();
-        ExamAdd = new javax.swing.JButton();
-        ExamRemove = new javax.swing.JButton();
-        PeriodAdd = new javax.swing.JButton();
-        PeriodRemove = new javax.swing.JButton();
+        GroupRatingAdd = new javax.swing.JButton();
+        GroupRatingRemove = new javax.swing.JButton();
+        TakingAdd = new javax.swing.JButton();
+        TakingRemove = new javax.swing.JButton();
         jLabel21 = new javax.swing.JLabel();
-        PeriodEndTime = new javax.swing.JTextField();
-        TaskType = new javax.swing.JCheckBox();
-        PeriodState = new java.awt.Choice();
+        TakingDuration = new javax.swing.JTextField();
+        TakingName = new javax.swing.JTextField();
+        GroupRatingName = new javax.swing.JTextField();
+        TakingGroup = new javax.swing.JTextField();
+        jLabel24 = new javax.swing.JLabel();
+        TakingStartTime = new javax.swing.JTextField();
+        RatingStudentList = new java.awt.Choice();
+        Состояние = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        RatingQuestionSum = new javax.swing.JTextField();
+        RatingSum = new javax.swing.JTextField();
+        Answers = new java.awt.Choice();
+        jLabel28 = new javax.swing.JLabel();
+        jSeparator6 = new javax.swing.JSeparator();
+        Состояние1 = new javax.swing.JLabel();
+        RatingSemesterSum = new javax.swing.JTextField();
+        AnswerBallSelector = new java.awt.Choice();
+        jLabel29 = new javax.swing.JLabel();
+        RatingOrTakingMode = new javax.swing.JCheckBox();
+        jLabel27 = new javax.swing.JLabel();
+        AnswerState = new javax.swing.JTextField();
+        TakingState = new javax.swing.JTextField();
+        RatingStudentState = new javax.swing.JTextField();
+        TakingAddAll = new javax.swing.JButton();
+        AnswerBall = new javax.swing.JTextField();
+        RatingExcerciseSum1 = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        AnswerMessages = new java.awt.Choice();
+        AnswerMessageText = new java.awt.TextArea();
+        AnswerArtifactView = new javax.swing.JButton();
+        AnswerArtifactUpload = new javax.swing.JButton();
+        AnswerArtifactDownLoad = new javax.swing.JButton();
+        AnswerMessageAdd = new javax.swing.JButton();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -563,21 +823,21 @@ public class EMVKRExamAdminPanel extends BasePanel{
         add(TaskText);
         TaskText.setBounds(20, 150, 420, 220);
 
-        Discipline.addItemListener(new java.awt.event.ItemListener() {
+        Disciplines.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                DisciplineItemStateChanged(evt);
+                DisciplinesItemStateChanged(evt);
             }
         });
-        add(Discipline);
-        Discipline.setBounds(20, 40, 300, 20);
+        add(Disciplines);
+        Disciplines.setBounds(20, 40, 300, 20);
 
-        Theme.addItemListener(new java.awt.event.ItemListener() {
+        Themes.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ThemeItemStateChanged(evt);
+                ThemesItemStateChanged(evt);
             }
         });
-        add(Theme);
-        Theme.setBounds(20, 80, 300, 20);
+        add(Themes);
+        Themes.setBounds(20, 80, 300, 20);
 
         RefreshDisciplines.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
         RefreshDisciplines.setBorderPainted(false);
@@ -667,46 +927,46 @@ public class EMVKRExamAdminPanel extends BasePanel{
         add(ThemeRemove);
         ThemeRemove.setBounds(370, 75, 30, 30);
 
-        Task.addItemListener(new java.awt.event.ItemListener() {
+        Tasks.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                TaskItemStateChanged(evt);
+                TasksItemStateChanged(evt);
             }
         });
-        add(Task);
-        Task.setBounds(20, 120, 300, 20);
+        add(Tasks);
+        Tasks.setBounds(20, 120, 300, 20);
 
-        ArtifactView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
-        ArtifactView.setBorderPainted(false);
-        ArtifactView.setContentAreaFilled(false);
-        ArtifactView.addActionListener(new java.awt.event.ActionListener() {
+        TaskArtifactView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
+        TaskArtifactView.setBorderPainted(false);
+        TaskArtifactView.setContentAreaFilled(false);
+        TaskArtifactView.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ArtifactViewActionPerformed(evt);
+                TaskArtifactViewActionPerformed(evt);
             }
         });
-        add(ArtifactView);
-        ArtifactView.setBounds(100, 380, 40, 30);
+        add(TaskArtifactView);
+        TaskArtifactView.setBounds(100, 380, 40, 30);
 
-        ArtifactUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
-        ArtifactUpload.setBorderPainted(false);
-        ArtifactUpload.setContentAreaFilled(false);
-        ArtifactUpload.addActionListener(new java.awt.event.ActionListener() {
+        TaskArtifactUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
+        TaskArtifactUpload.setBorderPainted(false);
+        TaskArtifactUpload.setContentAreaFilled(false);
+        TaskArtifactUpload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ArtifactUploadActionPerformed(evt);
+                TaskArtifactUploadActionPerformed(evt);
             }
         });
-        add(ArtifactUpload);
-        ArtifactUpload.setBounds(20, 380, 40, 30);
+        add(TaskArtifactUpload);
+        TaskArtifactUpload.setBounds(20, 380, 40, 30);
 
-        ArtifactDownLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/download.png"))); // NOI18N
-        ArtifactDownLoad.setBorderPainted(false);
-        ArtifactDownLoad.setContentAreaFilled(false);
-        ArtifactDownLoad.addActionListener(new java.awt.event.ActionListener() {
+        TaskArtifactDownLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/download.png"))); // NOI18N
+        TaskArtifactDownLoad.setBorderPainted(false);
+        TaskArtifactDownLoad.setContentAreaFilled(false);
+        TaskArtifactDownLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ArtifactDownLoadActionPerformed(evt);
+                TaskArtifactDownLoadActionPerformed(evt);
             }
         });
-        add(ArtifactDownLoad);
-        ArtifactDownLoad.setBounds(60, 380, 40, 30);
+        add(TaskArtifactDownLoad);
+        TaskArtifactDownLoad.setBounds(60, 380, 40, 30);
 
         TaskSaveText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/save.png"))); // NOI18N
         TaskSaveText.setBorderPainted(false);
@@ -765,21 +1025,21 @@ public class EMVKRExamAdminPanel extends BasePanel{
         add(jLabel5);
         jLabel5.setBounds(490, 60, 70, 16);
 
-        Group.addItemListener(new java.awt.event.ItemListener() {
+        Groups.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                GroupItemStateChanged(evt);
+                GroupsItemStateChanged(evt);
             }
         });
-        add(Group);
-        Group.setBounds(490, 40, 240, 20);
+        add(Groups);
+        Groups.setBounds(490, 40, 240, 20);
 
-        Student.addItemListener(new java.awt.event.ItemListener() {
+        Students.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                StudentItemStateChanged(evt);
+                StudentsItemStateChanged(evt);
             }
         });
-        add(Student);
-        Student.setBounds(490, 80, 240, 20);
+        add(Students);
+        Students.setBounds(490, 80, 240, 20);
 
         RefreshGroups.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
         RefreshGroups.setBorderPainted(false);
@@ -869,55 +1129,19 @@ public class EMVKRExamAdminPanel extends BasePanel{
         add(GroupsImport);
         GroupsImport.setBounds(860, 40, 40, 30);
         add(jSeparator1);
-        jSeparator1.setBounds(460, 120, 480, 10);
+        jSeparator1.setBounds(450, 120, 490, 10);
 
-        jLabel6.setText("Все экзамены");
-        add(jLabel6);
-        jLabel6.setBounds(730, 590, 120, 20);
-        add(ExamsForGroupList);
-        ExamsForGroupList.setBounds(310, 380, 130, 20);
-        add(ExamsTotalList);
-        ExamsTotalList.setBounds(20, 620, 790, 20);
-
-        jLabel7.setText("Кол-во задач");
-        add(jLabel7);
-        jLabel7.setBounds(20, 530, 100, 20);
-
-        jLabel8.setText("Экзамен для групп");
-        add(jLabel8);
-        jLabel8.setBounds(180, 380, 120, 20);
-
-        RulesList.addItemListener(new java.awt.event.ItemListener() {
+        Rules.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                RulesListItemStateChanged(evt);
+                RulesItemStateChanged(evt);
             }
         });
-        add(RulesList);
-        RulesList.setBounds(20, 440, 230, 20);
+        add(Rules);
+        Rules.setBounds(20, 420, 230, 20);
 
         jLabel9.setText("Регламенты");
         add(jLabel9);
-        jLabel9.setBounds(20, 410, 80, 20);
-
-        RuleExcerCount.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleExcerCountKeyPressed(evt);
-            }
-        });
-        add(RuleExcerCount);
-        RuleExcerCount.setBounds(110, 530, 40, 25);
-
-        jLabel10.setText("Продолж. (мин)");
-        add(jLabel10);
-        jLabel10.setBounds(160, 500, 100, 20);
-
-        RuleDuration.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleDurationKeyPressed(evt);
-            }
-        });
-        add(RuleDuration);
-        RuleDuration.setBounds(270, 500, 50, 25);
+        jLabel9.setBounds(150, 390, 80, 20);
 
         RuleName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -925,7 +1149,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             }
         });
         add(RuleName);
-        RuleName.setBounds(20, 470, 230, 25);
+        RuleName.setBounds(20, 450, 230, 25);
 
         RuleThemeRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         RuleThemeRemove.setBorderPainted(false);
@@ -936,7 +1160,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             }
         });
         add(RuleThemeRemove);
-        RuleThemeRemove.setBounds(400, 550, 30, 30);
+        RuleThemeRemove.setBounds(390, 540, 30, 30);
 
         RuleAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         RuleAdd.setBorderPainted(false);
@@ -947,13 +1171,13 @@ public class EMVKRExamAdminPanel extends BasePanel{
             }
         });
         add(RuleAdd);
-        RuleAdd.setBounds(270, 440, 30, 30);
+        RuleAdd.setBounds(270, 410, 30, 30);
 
         jLabel11.setText("Темы");
         add(jLabel11);
-        jLabel11.setBounds(20, 560, 70, 16);
-        add(RuleThemesList);
-        RuleThemesList.setBounds(110, 560, 280, 20);
+        jLabel11.setBounds(20, 550, 50, 16);
+        add(RuleThemes);
+        RuleThemes.setBounds(70, 550, 310, 20);
 
         RuleThemeAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
         RuleThemeAdd.setBorderPainted(false);
@@ -975,19 +1199,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             }
         });
         add(RuleDelete);
-        RuleDelete.setBounds(310, 440, 30, 30);
-
-        jLabel13.setText("Кол-во тестов");
-        add(jLabel13);
-        jLabel13.setBounds(20, 500, 100, 20);
-
-        RuleQurestionCount.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                RuleQurestionCountKeyPressed(evt);
-            }
-        });
-        add(RuleQurestionCount);
-        RuleQurestionCount.setBounds(110, 500, 40, 25);
+        RuleDelete.setBounds(310, 410, 30, 30);
 
         RuleThemeAddAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
         RuleThemeAddAll.setBorderPainted(false);
@@ -998,152 +1210,11 @@ public class EMVKRExamAdminPanel extends BasePanel{
             }
         });
         add(RuleThemeAddAll);
-        RuleThemeAddAll.setBounds(350, 440, 30, 30);
+        RuleThemeAddAll.setBounds(350, 410, 30, 30);
 
         jLabel12.setText("Все темы");
         add(jLabel12);
-        jLabel12.setBounds(350, 420, 80, 16);
-
-        jLabel14.setText("Экзамены (по регламентам)");
-        add(jLabel14);
-        jLabel14.setBounds(460, 130, 250, 16);
-
-        ExamList.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ExamListItemStateChanged(evt);
-            }
-        });
-        add(ExamList);
-        ExamList.setBounds(460, 150, 190, 20);
-        add(ExamGroupsList);
-        ExamGroupsList.setBounds(740, 150, 100, 20);
-
-        jLabel15.setText("Окончание");
-        add(jLabel15);
-        jLabel15.setBounds(650, 225, 80, 16);
-
-        jLabel16.setText("Группы");
-        add(jLabel16);
-        jLabel16.setBounds(740, 130, 42, 16);
-
-        PeriodForAll.setText("Группа/ведомость");
-        add(PeriodForAll);
-        PeriodForAll.setBounds(460, 300, 130, 20);
-        add(PeriodList);
-        PeriodList.setBounds(460, 200, 240, 20);
-
-        PeriodData.setEnabled(false);
-        PeriodData.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                PeriodDataMouseClicked(evt);
-            }
-        });
-        add(PeriodData);
-        PeriodData.setBounds(460, 240, 110, 25);
-
-        PeriodStartTime.setEnabled(false);
-        PeriodStartTime.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                PeriodStartTimeMouseClicked(evt);
-            }
-        });
-        add(PeriodStartTime);
-        PeriodStartTime.setBounds(590, 240, 50, 25);
-
-        jLabel18.setText("Сдача экзамена");
-        add(jLabel18);
-        jLabel18.setBounds(460, 180, 140, 16);
-
-        jLabel19.setText("Статус");
-        add(jLabel19);
-        jLabel19.setBounds(460, 275, 60, 16);
-
-        jLabel20.setText("Дата");
-        add(jLabel20);
-        jLabel20.setBounds(460, 225, 70, 16);
-
-        PeriodOneGroup.setEnabled(false);
-        add(PeriodOneGroup);
-        PeriodOneGroup.setBounds(600, 300, 100, 20);
-
-        ExamGroupAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        ExamGroupAdd.setBorderPainted(false);
-        ExamGroupAdd.setContentAreaFilled(false);
-        ExamGroupAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ExamGroupAddActionPerformed(evt);
-            }
-        });
-        add(ExamGroupAdd);
-        ExamGroupAdd.setBounds(850, 140, 30, 30);
-
-        ExamGroupRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        ExamGroupRemove.setBorderPainted(false);
-        ExamGroupRemove.setContentAreaFilled(false);
-        ExamGroupRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ExamGroupRemoveActionPerformed(evt);
-            }
-        });
-        add(ExamGroupRemove);
-        ExamGroupRemove.setBounds(890, 140, 30, 30);
-
-        ExamAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        ExamAdd.setBorderPainted(false);
-        ExamAdd.setContentAreaFilled(false);
-        ExamAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ExamAddActionPerformed(evt);
-            }
-        });
-        add(ExamAdd);
-        ExamAdd.setBounds(660, 140, 30, 30);
-
-        ExamRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        ExamRemove.setBorderPainted(false);
-        ExamRemove.setContentAreaFilled(false);
-        ExamRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ExamRemoveActionPerformed(evt);
-            }
-        });
-        add(ExamRemove);
-        ExamRemove.setBounds(700, 140, 30, 30);
-
-        PeriodAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        PeriodAdd.setBorderPainted(false);
-        PeriodAdd.setContentAreaFilled(false);
-        PeriodAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PeriodAddActionPerformed(evt);
-            }
-        });
-        add(PeriodAdd);
-        PeriodAdd.setBounds(710, 190, 30, 30);
-
-        PeriodRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        PeriodRemove.setBorderPainted(false);
-        PeriodRemove.setContentAreaFilled(false);
-        PeriodRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PeriodRemoveActionPerformed(evt);
-            }
-        });
-        add(PeriodRemove);
-        PeriodRemove.setBounds(750, 190, 30, 30);
-
-        jLabel21.setText("Начало");
-        add(jLabel21);
-        jLabel21.setBounds(590, 225, 70, 16);
-
-        PeriodEndTime.setEnabled(false);
-        PeriodEndTime.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                PeriodEndTimeMouseClicked(evt);
-            }
-        });
-        add(PeriodEndTime);
-        PeriodEndTime.setBounds(650, 240, 50, 25);
+        jLabel12.setBounds(350, 390, 80, 16);
 
         TaskType.setText("Задача(1)/Вопрос(0)");
         TaskType.addItemListener(new java.awt.event.ItemListener() {
@@ -1154,13 +1225,420 @@ public class EMVKRExamAdminPanel extends BasePanel{
         add(TaskType);
         TaskType.setBounds(180, 100, 160, 20);
 
-        PeriodState.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                PeriodStateItemStateChanged(evt);
+        jLabel17.setText("Рейтинг экзамена");
+        add(jLabel17);
+        jLabel17.setBounds(260, 510, 110, 20);
+
+        RuleOwnRating.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleOwnRatingKeyPressed(evt);
             }
         });
-        add(PeriodState);
-        PeriodState.setBounds(520, 275, 180, 20);
+        add(RuleOwnRating);
+        RuleOwnRating.setBounds(380, 510, 50, 25);
+
+        RuleDuration.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleDurationKeyPressed(evt);
+            }
+        });
+        add(RuleDuration);
+        RuleDuration.setBounds(380, 450, 50, 25);
+
+        jLabel22.setText("Продолж. (мин)");
+        add(jLabel22);
+        jLabel22.setBounds(260, 450, 100, 20);
+
+        RuleMinRating.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleMinRatingKeyPressed(evt);
+            }
+        });
+        add(RuleMinRating);
+        RuleMinRating.setBounds(380, 480, 50, 25);
+
+        jLabel23.setText("Рейтинг допуска");
+        add(jLabel23);
+        jLabel23.setBounds(260, 480, 110, 20);
+
+        jLabel7.setText("Задача: за одну - сумма ");
+        add(jLabel7);
+        jLabel7.setBounds(20, 510, 140, 20);
+
+        RuleExceciseForOne.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleExceciseForOneKeyPressed(evt);
+            }
+        });
+        add(RuleExceciseForOne);
+        RuleExceciseForOne.setBounds(170, 510, 30, 25);
+
+        jLabel13.setText("Тест: за один - сумма");
+        add(jLabel13);
+        jLabel13.setBounds(20, 480, 140, 20);
+
+        RuleExcerciseSum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleExcerciseSumKeyPressed(evt);
+            }
+        });
+        add(RuleExcerciseSum);
+        RuleExcerciseSum.setBounds(210, 510, 40, 25);
+
+        RuleQuestionForOne.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleQuestionForOneKeyPressed(evt);
+            }
+        });
+        add(RuleQuestionForOne);
+        RuleQuestionForOne.setBounds(170, 480, 30, 25);
+
+        RuleQuestionSum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RuleQuestionSumKeyPressed(evt);
+            }
+        });
+        add(RuleQuestionSum);
+        RuleQuestionSum.setBounds(210, 480, 40, 25);
+
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        add(jSeparator4);
+        jSeparator4.setBounds(485, 10, 3, 110);
+
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        add(jSeparator2);
+        jSeparator2.setBounds(447, 120, 10, 450);
+        add(jSeparator5);
+        jSeparator5.setBounds(10, 575, 440, 10);
+
+        AnswerThemeTask.setEditable(false);
+        add(AnswerThemeTask);
+        AnswerThemeTask.setBounds(10, 580, 490, 80);
+
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        add(jSeparator3);
+        jSeparator3.setBounds(447, 120, 10, 450);
+
+        jLabel14.setText("Группы по дисциплине (рейтинги)");
+        add(jLabel14);
+        jLabel14.setBounds(460, 130, 250, 16);
+
+        GroupRatings.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                GroupRatingsItemStateChanged(evt);
+            }
+        });
+        add(GroupRatings);
+        GroupRatings.setBounds(460, 150, 230, 20);
+
+        jLabel15.setText("Продолж. (мин)");
+        add(jLabel15);
+        jLabel15.setBounds(780, 280, 100, 16);
+
+        TakingForGroup.setText("Одна группа");
+        TakingForGroup.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                TakingForGroupItemStateChanged(evt);
+            }
+        });
+        TakingForGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingForGroupActionPerformed(evt);
+            }
+        });
+        add(TakingForGroup);
+        TakingForGroup.setBounds(820, 180, 110, 20);
+
+        Takings.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                TakingsItemStateChanged(evt);
+            }
+        });
+        add(Takings);
+        Takings.setBounds(460, 220, 230, 20);
+
+        TakingData.setEnabled(false);
+        TakingData.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TakingDataMouseClicked(evt);
+            }
+        });
+        add(TakingData);
+        TakingData.setBounds(700, 250, 110, 25);
+
+        TakingEndTime.setEnabled(false);
+        add(TakingEndTime);
+        TakingEndTime.setBounds(880, 250, 50, 25);
+
+        jLabel18.setText("Прием экзамена");
+        add(jLabel18);
+        jLabel18.setBounds(460, 200, 140, 16);
+
+        jLabel19.setText("Состояние приема");
+        add(jLabel19);
+        jLabel19.setBounds(460, 280, 130, 16);
+
+        jLabel20.setText("Дата");
+        add(jLabel20);
+        jLabel20.setBounds(780, 230, 40, 16);
+
+        GroupRatingAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        GroupRatingAdd.setBorderPainted(false);
+        GroupRatingAdd.setContentAreaFilled(false);
+        GroupRatingAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GroupRatingAddActionPerformed(evt);
+            }
+        });
+        add(GroupRatingAdd);
+        GroupRatingAdd.setBounds(700, 140, 30, 30);
+
+        GroupRatingRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        GroupRatingRemove.setBorderPainted(false);
+        GroupRatingRemove.setContentAreaFilled(false);
+        GroupRatingRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GroupRatingRemoveActionPerformed(evt);
+            }
+        });
+        add(GroupRatingRemove);
+        GroupRatingRemove.setBounds(740, 140, 30, 30);
+
+        TakingAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        TakingAdd.setBorderPainted(false);
+        TakingAdd.setContentAreaFilled(false);
+        TakingAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingAddActionPerformed(evt);
+            }
+        });
+        add(TakingAdd);
+        TakingAdd.setBounds(700, 210, 30, 30);
+
+        TakingRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        TakingRemove.setBorderPainted(false);
+        TakingRemove.setContentAreaFilled(false);
+        TakingRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingRemoveActionPerformed(evt);
+            }
+        });
+        add(TakingRemove);
+        TakingRemove.setBounds(740, 210, 30, 30);
+
+        jLabel21.setText("Оконч.");
+        add(jLabel21);
+        jLabel21.setBounds(880, 230, 60, 16);
+
+        TakingDuration.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TakingDurationKeyPressed(evt);
+            }
+        });
+        add(TakingDuration);
+        TakingDuration.setBounds(880, 280, 50, 25);
+
+        TakingName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TakingNameKeyPressed(evt);
+            }
+        });
+        add(TakingName);
+        TakingName.setBounds(460, 250, 230, 25);
+
+        GroupRatingName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                GroupRatingNameKeyPressed(evt);
+            }
+        });
+        add(GroupRatingName);
+        GroupRatingName.setBounds(460, 175, 230, 25);
+
+        TakingGroup.setEnabled(false);
+        add(TakingGroup);
+        TakingGroup.setBounds(820, 205, 70, 25);
+
+        jLabel24.setText("Начало");
+        add(jLabel24);
+        jLabel24.setBounds(820, 230, 70, 16);
+
+        TakingStartTime.setEnabled(false);
+        add(TakingStartTime);
+        TakingStartTime.setBounds(820, 250, 50, 25);
+
+        RatingStudentList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RatingStudentListItemStateChanged(evt);
+            }
+        });
+        add(RatingStudentList);
+        RatingStudentList.setBounds(520, 375, 250, 20);
+
+        Состояние.setText("Состояние обучения");
+        add(Состояние);
+        Состояние.setBounds(650, 400, 130, 16);
+
+        jLabel26.setText("Семестр  Вопросы/Задачи/Итог");
+        add(jLabel26);
+        jLabel26.setBounds(460, 400, 180, 16);
+
+        RatingQuestionSum.setEnabled(false);
+        add(RatingQuestionSum);
+        RatingQuestionSum.setBounds(520, 420, 35, 25);
+
+        RatingSum.setEnabled(false);
+        add(RatingSum);
+        RatingSum.setBounds(600, 420, 35, 25);
+
+        Answers.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                AnswersItemStateChanged(evt);
+            }
+        });
+        add(Answers);
+        Answers.setBounds(520, 450, 250, 20);
+
+        jLabel28.setText("Балл");
+        add(jLabel28);
+        jLabel28.setBounds(660, 470, 60, 16);
+        add(jSeparator6);
+        jSeparator6.setBounds(460, 350, 470, 10);
+
+        Состояние1.setText("Состояние ответа");
+        add(Состояние1);
+        Состояние1.setBounds(520, 470, 140, 16);
+
+        RatingSemesterSum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                RatingSemesterSumKeyPressed(evt);
+            }
+        });
+        add(RatingSemesterSum);
+        RatingSemesterSum.setBounds(460, 420, 40, 25);
+
+        AnswerBallSelector.setEnabled(false);
+        add(AnswerBallSelector);
+        AnswerBallSelector.setBounds(720, 490, 50, 20);
+
+        jLabel29.setText("Ответы");
+        add(jLabel29);
+        jLabel29.setBounds(460, 450, 60, 16);
+
+        RatingOrTakingMode.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        RatingOrTakingMode.setText("По приему экзамена (1) / По группе (0)");
+        RatingOrTakingMode.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RatingOrTakingModeItemStateChanged(evt);
+            }
+        });
+        add(RatingOrTakingMode);
+        RatingOrTakingMode.setBounds(460, 355, 280, 20);
+
+        jLabel27.setText("Студент");
+        add(jLabel27);
+        jLabel27.setBounds(460, 380, 60, 16);
+
+        AnswerState.setEnabled(false);
+        AnswerState.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                AnswerStateMouseClicked(evt);
+            }
+        });
+        add(AnswerState);
+        AnswerState.setBounds(520, 490, 140, 25);
+
+        TakingState.setEnabled(false);
+        TakingState.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TakingStateMouseClicked(evt);
+            }
+        });
+        add(TakingState);
+        TakingState.setBounds(460, 300, 140, 25);
+
+        RatingStudentState.setEnabled(false);
+        RatingStudentState.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                RatingStudentStateMouseClicked(evt);
+            }
+        });
+        add(RatingStudentState);
+        RatingStudentState.setBounds(640, 420, 130, 25);
+
+        TakingAddAll.setText("Назначить всех");
+        TakingAddAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TakingAddAllActionPerformed(evt);
+            }
+        });
+        add(TakingAddAll);
+        TakingAddAll.setBounds(810, 310, 120, 22);
+
+        AnswerBall.setEnabled(false);
+        add(AnswerBall);
+        AnswerBall.setBounds(670, 490, 40, 25);
+
+        RatingExcerciseSum1.setEnabled(false);
+        add(RatingExcerciseSum1);
+        RatingExcerciseSum1.setBounds(560, 420, 35, 25);
+
+        jLabel25.setText("Сообщения");
+        add(jLabel25);
+        jLabel25.setBounds(450, 520, 70, 16);
+
+        AnswerMessages.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                AnswerMessagesItemStateChanged(evt);
+            }
+        });
+        add(AnswerMessages);
+        AnswerMessages.setBounds(520, 520, 310, 20);
+        add(AnswerMessageText);
+        AnswerMessageText.setBounds(520, 550, 350, 110);
+
+        AnswerArtifactView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
+        AnswerArtifactView.setBorderPainted(false);
+        AnswerArtifactView.setContentAreaFilled(false);
+        AnswerArtifactView.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AnswerArtifactViewActionPerformed(evt);
+            }
+        });
+        add(AnswerArtifactView);
+        AnswerArtifactView.setBounds(880, 630, 40, 30);
+
+        AnswerArtifactUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
+        AnswerArtifactUpload.setBorderPainted(false);
+        AnswerArtifactUpload.setContentAreaFilled(false);
+        AnswerArtifactUpload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AnswerArtifactUploadActionPerformed(evt);
+            }
+        });
+        add(AnswerArtifactUpload);
+        AnswerArtifactUpload.setBounds(880, 560, 40, 30);
+
+        AnswerArtifactDownLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/download.png"))); // NOI18N
+        AnswerArtifactDownLoad.setBorderPainted(false);
+        AnswerArtifactDownLoad.setContentAreaFilled(false);
+        AnswerArtifactDownLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AnswerArtifactDownLoadActionPerformed(evt);
+            }
+        });
+        add(AnswerArtifactDownLoad);
+        AnswerArtifactDownLoad.setBounds(880, 600, 40, 30);
+
+        AnswerMessageAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
+        AnswerMessageAdd.setBorderPainted(false);
+        AnswerMessageAdd.setContentAreaFilled(false);
+        AnswerMessageAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AnswerMessageAddActionPerformed(evt);
+            }
+        });
+        add(AnswerMessageAdd);
+        AnswerMessageAdd.setBounds(880, 520, 30, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshDisciplinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshDisciplinesActionPerformed
@@ -1183,7 +1661,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             DisciplineSaveImport.setEnabled(true);
             } catch (Exception ee){
                 popup("Ошибка импорта тестов:\n"+ee.toString());
-                Discipline.setEnabled(false);
+                Disciplines.setEnabled(false);
                 }
 
 
@@ -1291,7 +1769,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
                     }
                     @Override
                     public void onSucess(ThemeBean oo) {
-                        refreshDisciplineFull();
+                        refreshSelectedDiscipline();
                     }
                 };
             }
@@ -1318,23 +1796,23 @@ public class EMVKRExamAdminPanel extends BasePanel{
         });
     }//GEN-LAST:event_ThemeRemoveActionPerformed
 
-    private void DisciplineItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DisciplineItemStateChanged
-        refreshDisciplineFull();
-    }//GEN-LAST:event_DisciplineItemStateChanged
+    private void DisciplinesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DisciplinesItemStateChanged
+        refreshSelectedDiscipline();
+    }//GEN-LAST:event_DisciplinesItemStateChanged
 
-    private void ThemeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ThemeItemStateChanged
+    private void ThemesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ThemesItemStateChanged
         refreshThemeFull();
-    }//GEN-LAST:event_ThemeItemStateChanged
+    }//GEN-LAST:event_ThemesItemStateChanged
 
-    private void TaskItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TaskItemStateChanged
+    private void TasksItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TasksItemStateChanged
         refreshTaskFull();
-    }//GEN-LAST:event_TaskItemStateChanged
+    }//GEN-LAST:event_TasksItemStateChanged
 
-    private void ArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactViewActionPerformed
+    private void TaskArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactViewActionPerformed
 
-    }//GEN-LAST:event_ArtifactViewActionPerformed
+    }//GEN-LAST:event_TaskArtifactViewActionPerformed
 
-    private void ArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactUploadActionPerformed
+    private void TaskArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactUploadActionPerformed
         main.uploadFileAsync(new I_Value<ArtefactBean>() {
             @Override
             public void onEnter(ArtefactBean value) {
@@ -1342,10 +1820,10 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 taskUpdate();
                 }
             });
-        }//GEN-LAST:event_ArtifactUploadActionPerformed
-    private void ArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArtifactDownLoadActionPerformed
+        }//GEN-LAST:event_TaskArtifactUploadActionPerformed
+    private void TaskArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactDownLoadActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_ArtifactDownLoadActionPerformed
+    }//GEN-LAST:event_TaskArtifactDownLoadActionPerformed
 
     private void TaskSaveTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskSaveTextActionPerformed
         TaskSaveText.setEnabled(false);
@@ -1436,13 +1914,13 @@ public class EMVKRExamAdminPanel extends BasePanel{
         });
     }//GEN-LAST:event_DisciplineSaveImportActionPerformed
 
-    private void GroupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_GroupItemStateChanged
+    private void GroupsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_GroupsItemStateChanged
         refreshGroupFull();
-    }//GEN-LAST:event_GroupItemStateChanged
+    }//GEN-LAST:event_GroupsItemStateChanged
 
-    private void StudentItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentItemStateChanged
+    private void StudentsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentsItemStateChanged
         // TODO add your handling code here:
-    }//GEN-LAST:event_StudentItemStateChanged
+    }//GEN-LAST:event_StudentsItemStateChanged
 
     private void RefreshGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshGroupsActionPerformed
         refreshGroupsList();
@@ -1609,34 +2087,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
                 }
         }
 
-    private void periodStartTimeUpdate(long timeInMS){
-        cPeriod.setStart(timeInMS);
-        new APICall<ExamBean>(main) {
-            @Override
-            public Call<ExamBean> apiFun() {
-                return main.client.getExamApi().updateExam(cPeriod);
-                }
-            @Override
-            public void onSucess(ExamBean oo) {
-                popup("Время сдачи изменено");
-                refreshSelectedExamPeriod();
-                }
-            };
-        }
-    private void periodStateUpdate(ExamBean.StateEnum state){
-        cPeriod.state(ExamBean.StateEnum.fromValue(state.getValue()));
-        new APICall<ExamBean>(main) {
-            @Override
-            public Call<ExamBean> apiFun() {
-                return main.client.getExamApi().updateExam(cPeriod);
-                }
-            @Override
-            public void onSucess(ExamBean oo) {
-                popup("Состояние сдачи изменено");
-                refreshSelectedExamPeriod();
-                }
-            };
-        }
 
     private static String shortString(String ss, int size){
         return ss.length()<=size ? ss : ss.substring(0,size)+"...";
@@ -1650,7 +2100,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
         new OK(200, 200, "Удалить тему: " + shortString(cTheme.getTheme().getName(), 20), new I_Button() {
             @Override
             public void onPush() {
-                int idx = RuleThemesList.getSelectedIndex();
+                int idx = RuleThemes.getSelectedIndex();
                 cRule.getThemeIds().remove(idx);
                 ruleUpdate(null);
                 }
@@ -1679,7 +2129,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(ExamRuleBean oo) {
-                        refreshAllRules();
                         refreshRules();
                         }
                     };
@@ -1693,30 +2142,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
         cRule.setName(RuleName.getText());
         ruleUpdate(evt);
     }//GEN-LAST:event_RuleNameKeyPressed
-
-    private void RuleDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDurationKeyPressed
-        if(evt.getKeyCode()!=10) return;
-        if (cRule==null) return;
-        try {
-            cRule.setDuration(Integer.parseInt(RuleDuration.getText()));
-            ruleUpdate(evt);
-            } catch (Exception ee){
-                popup("Ошибка формата целого");
-                main.viewUpdate(evt,false);
-                }
-    }//GEN-LAST:event_RuleDurationKeyPressed
-
-    private void RuleExcerCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExcerCountKeyPressed
-        if(evt.getKeyCode()!=10) return;
-        if (cRule==null) return;
-        try {
-            //cRule.setExerciseCount(Integer.parseInt(RuleExcerCount.getText()));
-            ruleUpdate(evt);
-        } catch (Exception ee){
-            popup("Ошибка формата целого");
-            main.viewUpdate(evt,false);
-            }
-    }//GEN-LAST:event_RuleExcerCountKeyPressed
 
     private void RuleThemeAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeAddActionPerformed
         if (cRule==null)
@@ -1760,21 +2185,9 @@ public class EMVKRExamAdminPanel extends BasePanel{
 
     }//GEN-LAST:event_RuleDeleteActionPerformed
 
-    private void RuleQurestionCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQurestionCountKeyPressed
-        if(evt.getKeyCode()!=10) return;
-        if (cRule==null) return;
-        try {
-            //cRule.setQuestionCount(Integer.parseInt(RuleQurestionCount.getText()));
-            ruleUpdate(evt);
-        } catch (Exception ee){
-            popup("Ошибка формата целого");
-            main.viewUpdate(evt,false);
-            }
-    }//GEN-LAST:event_RuleQurestionCountKeyPressed
-
-    private void RulesListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RulesListItemStateChanged
+    private void RulesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RulesItemStateChanged
         refreshSelectedRule();
-    }//GEN-LAST:event_RulesListItemStateChanged
+    }//GEN-LAST:event_RulesItemStateChanged
 
     private void RuleThemeAddAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeAddAllActionPerformed
         if (cRule==null)
@@ -1790,147 +2203,6 @@ public class EMVKRExamAdminPanel extends BasePanel{
             }
         });
     }//GEN-LAST:event_RuleThemeAddAllActionPerformed
-
-    private void ExamGroupAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupAddActionPerformed
-        if (cGroup==null || cExam==null)
-            return;
-        if (examGroupsMap.get(cGroup.getGroup().getId())!=null){
-            popup("Группа "+cGroup.getGroup().getName()+" уже в экзамене");
-            return;
-            }
-        new OK(200, 200, "Добавить группу " + cGroup.getGroup().getName(), new I_Button() {
-            @Override
-            public void onPush() {
-                //cExam.getGroupIds().add(cGroup.getGroup().getId());
-                new APICall<ExamBean>(main) {
-                    @Override
-                    public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().updateExam(cExam);
-                    }
-                    @Override
-                    public void onSucess(ExamBean oo) {
-                        popup("Группа "+cGroup.getGroup().getName()+" добавлена");
-                        refreshSelectedExam();
-                    }
-                };
-            }
-        });
-    }//GEN-LAST:event_ExamGroupAddActionPerformed
-
-    private void ExamGroupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamGroupRemoveActionPerformed
-        if (cGroup==null || cExam==null)
-            return;
-        /*
-        long groupId = cExam.getGroupIds().get(ExamGroupsList.getSelectedIndex()).longValue();
-        final GroupBean group = groupsMap.get(groupId);
-        new OK(200, 200, "Удалить группу " + group.getName(), new I_Button() {
-            @Override
-            public void onPush() {
-                cExam.getGroupIds().remove(ExamGroupsList.getSelectedIndex());
-                new APICall<ExamBean>(main) {
-                    @Override
-                    public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().updateExam(cExam);
-                    }
-                    @Override
-                    public void onSucess(ExamBean oo) {
-                        popup("Группа "+group.getName()+" удалена");
-                        refreshSelectedExam();
-                    }
-                };
-            }
-        });
-         */
-
-    }//GEN-LAST:event_ExamGroupRemoveActionPerformed
-
-    private void ExamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamAddActionPerformed
-        if (cRule==null)
-            return;
-        if (examRulesMap.get(cRule.getId())!=null){
-            popup("Экзамен для регламента: "+cRule.getName()+" уже создан");
-            return;
-            }
-        new OK(200, 200, "Экзамен для регламента: " + cRule.getName(), new I_Button() {
-            @Override
-            public void onPush() {
-                final ExamBean exam = new ExamBean();
-                //exam.setExamRuleId(cRule.getId());
-                exam.setDisciplineId(cDiscipline.getDiscipline().getId());
-                exam.setStart(new OwnDateTime().timeInMS());
-                ArrayList<Long> xx = new ArrayList<>();
-                xx.add(groups.get(0).getId());
-                new APICall<ExamBean>(main) {
-                    @Override
-                    public Call<ExamBean> apiFun() {
-                        return main.client.getExamApi().createExam(exam);
-                        }
-                    @Override
-                    public void onSucess(ExamBean oo) {
-                        refreshDisciplineFull();
-                        }
-                    };
-                }
-            });
-    }//GEN-LAST:event_ExamAddActionPerformed
-
-    private void ExamRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamRemoveActionPerformed
-        if (cExam==null)
-            return;
-        new OK(200, 200, "Удалить экзамен для регламента: " + ExamList.getItem(ExamList.getSelectedIndex()), new I_Button() {
-            @Override
-            public void onPush() {
-                new APICall<Void>(main) {
-                    @Override
-                    public Call<Void> apiFun() {
-                        return main.client.getExamApi().deleteExam(cExam.getId());
-                        }
-                    @Override
-                    public void onSucess(Void oo) {
-                        refreshDisciplineFull();
-                    }
-                };
-            }
-        });
-    }//GEN-LAST:event_ExamRemoveActionPerformed
-
-    private void PeriodAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodAddActionPerformed
-        if (cExam==null)
-            return;
-        new OK(200, 200, "Добавить сдачу экзамена по: " + cDiscipline.getDiscipline().getName(), new I_Button() {
-            @Override
-            public void onPush() {
-                }
-            });
-    }//GEN-LAST:event_PeriodAddActionPerformed
-
-    private void PeriodRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodRemoveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PeriodRemoveActionPerformed
-
-    private void PeriodStartTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodStartTimeMouseClicked
-    }//GEN-LAST:event_PeriodStartTimeMouseClicked
-
-    private void PeriodDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodDataMouseClicked
-        if (evt.getClickCount()<2)
-            return;
-        if (cPeriod==null)
-            return;
-        new CalendarView("Начало экзамена", new I_CalendarTime() {
-            @Override
-            public void onSelect(OwnDateTime time) {
-                periodStartTimeUpdate(time.timeInMS());
-                }
-            });
-    }//GEN-LAST:event_PeriodDataMouseClicked
-
-    private void PeriodEndTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PeriodEndTimeMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PeriodEndTimeMouseClicked
-
-    private void ExamListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ExamListItemStateChanged
-        refreshSelectedExam();
-    }//GEN-LAST:event_ExamListItemStateChanged
 
     private void TaskTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TaskTypeItemStateChanged
         if (refresh)
@@ -1951,12 +2223,586 @@ public class EMVKRExamAdminPanel extends BasePanel{
         TaskSaveText.setEnabled(true);
     }//GEN-LAST:event_TaskTextKeyPressed
 
-    private void PeriodStateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PeriodStateItemStateChanged
-        int idx = PeriodState.getSelectedIndex();
-        if (idx==0)
+    private void RuleOwnRatingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleOwnRatingKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setMinimalExamRating(Integer.parseInt(RuleOwnRating.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleOwnRatingKeyPressed
+
+    private void RuleDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleDurationKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setDuration(Integer.parseInt(RuleDuration.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleDurationKeyPressed
+
+    private void RuleMinRatingKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleMinRatingKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setMinimalSemesterRating(Integer.parseInt(RuleMinRating.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleMinRatingKeyPressed
+
+    private void RuleExceciseForOneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExceciseForOneKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setSingleExerciseDefaultRating(Integer.parseInt(RuleExceciseForOne.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleExceciseForOneKeyPressed
+
+    private void RuleExcerciseSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleExcerciseSumKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setExercisesRatingSum(Integer.parseInt(RuleExcerciseSum.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleExcerciseSumKeyPressed
+
+    private void RuleQuestionForOneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQuestionForOneKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setSingleQuestionDefaultRating(Integer.parseInt(RuleQuestionForOne.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleQuestionForOneKeyPressed
+
+    private void RuleQuestionSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RuleQuestionSumKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRule==null) return;
+        try {
+            cRule.setQuestionsRatingSum(Integer.parseInt(RuleQuestionSum.getText()));
+            ruleUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_RuleQuestionSumKeyPressed
+
+    private void GroupRatingsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_GroupRatingsItemStateChanged
+        refreshSelectedRating(false);
+        if (!RatingOrTakingMode.isSelected())
+        refreshStudRatings();
+    }//GEN-LAST:event_GroupRatingsItemStateChanged
+
+    private void TakingForGroupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TakingForGroupItemStateChanged
+        if (isRefresh)
+        return;
+        if (cTaking==null)
+        return;
+        if (TakingForGroup.isSelected() && GroupRatings.getItemCount()==0){
+            popup("Нет групп в списке к экзамену");
+            TakingForGroup.setSelected(false);
             return;
-        periodStateUpdate(stateFactory.getList().get(idx-1).value);
-    }//GEN-LAST:event_PeriodStateItemStateChanged
+            }
+        cTaking.getExam().setOneGroup(TakingForGroup.isSelected());
+        if (cTaking.getExam().isOneGroup()){
+            long oid = cRating.getGroup().getGroup().getId();
+            cTaking.getGroup().getGroup().setId(oid);
+            }
+        takingUpdate();
+    }//GEN-LAST:event_TakingForGroupItemStateChanged
+
+    private void TakingForGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingForGroupActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TakingForGroupActionPerformed
+
+    private void TakingsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TakingsItemStateChanged
+        refreshSelectedTaking();
+        if (RatingOrTakingMode.isSelected())
+        refreshStudRatings();
+    }//GEN-LAST:event_TakingsItemStateChanged
+
+    private void TakingDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TakingDataMouseClicked
+        if (evt.getClickCount()<2)
+        return;
+        if (cTaking ==null)
+        return;
+        new CalendarView("Начало экзамена", new I_CalendarTime() {
+            @Override
+            public void onSelect(OwnDateTime time) {
+                cTaking.getExam().setStart(time.timeInMS());
+                takingUpdate();
+            }
+        });
+    }//GEN-LAST:event_TakingDataMouseClicked
+
+    private void GroupRatingAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupRatingAddActionPerformed
+        if (cGroup==null || cDiscipline==null || cRule==null)
+        return;
+        new OK(200, 200, "Добавить рейтинг " + cDiscipline.getDiscipline().getName()+"-"+cGroup.getGroup().getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                final GroupRatingBean exam = new GroupRatingBean();
+                exam.setExamRuleId(cRule.getId());
+                exam.setDisciplineId(cDiscipline.getDiscipline().getId());
+                exam.setGroupId(cGroup.getGroup().getId());
+                new APICall<GroupRatingBean>(main) {
+                    @Override
+                    public Call<GroupRatingBean> apiFun() {
+                        return main.client.getGroupRatingApi().create2(exam);
+                    }
+                    @Override
+                    public void onSucess(GroupRatingBean oo) {
+                        refreshSelectedDiscipline(GroupRatings.getItemCount()!=0);
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_GroupRatingAddActionPerformed
+
+    private void GroupRatingRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupRatingRemoveActionPerformed
+        if (GroupRatings.getItemCount()==0)
+        return;
+        new OK(200, 200, "Удалить рейтинг " + GroupRatings.getItem(GroupRatings.getSelectedIndex()), new I_Button() {
+            @Override
+            public void onPush() {
+                new APICall<Void>(main) {
+                    @Override
+                    public Call<Void> apiFun() {
+                        return main.client.getGroupRatingApi().delete2(cRating.getGroupRating().getId());
+                    }
+                    @Override
+                    public void onSucess(Void oo) {
+                        refreshSelectedDiscipline(GroupRatings.getItemCount()!=1);
+                        popup("Рейтинг удален");
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_GroupRatingRemoveActionPerformed
+
+    private void TakingAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingAddActionPerformed
+        if (cRating ==null)
+        return;
+        new OK(200, 200, "Добавить сдачу экзамена по: " + cDiscipline.getDiscipline().getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                ExamBean taking = new ExamBean();
+                taking.setState(ExamBean.StateEnum.REDACTION);
+                taking.setName("Новый прием экзамена");
+                taking.setDisciplineId(cDiscipline.getDiscipline().getId());
+                new APICall<ExamBean>(main) {
+                    @Override
+                    public Call<ExamBean> apiFun() {
+                        return main.client.getExamApi().createExam(taking);
+                        }
+                    @Override
+                    public void onSucess(ExamBean oo) {
+                        refreshSelectedDiscipline(Takings.getItemCount()!=0);
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_TakingAddActionPerformed
+
+    private void TakingRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingRemoveActionPerformed
+        if (cTaking ==null)
+        return;
+        new OK(200, 200, "Удалить прием: " + cTaking.getExam().getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                new APICall<Void>(main) {
+                    @Override
+                    public Call<Void> apiFun() {
+                        return main.client.getExamApi().deleteExam(cTaking.getExam().getId());
+                    }
+                    @Override
+                    public void onSucess(Void oo) {
+                        refreshSelectedDiscipline();
+                        popup("Прием удален");
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_TakingRemoveActionPerformed
+
+    public void takingUpdate(){
+        new APICall<ExamBean>(main) {
+            @Override
+            public Call<ExamBean> apiFun() {
+                return main.client.getExamApi().updateExam(cTaking.getExam());
+            }
+            @Override
+            public void onSucess(ExamBean oo) {
+                savePos();
+                popup("Прием экзамена обновлен");
+                refreshSelectedDiscipline();
+                }
+            };
+        }
+
+    private void TakingDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TakingDurationKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cTaking==null) return;
+        try {
+            cTaking.getExam().setEnd(cTaking.getExam().getStart()+Integer.parseInt(TakingDuration.getText()));
+            takingUpdate();
+            main.viewUpdate(evt,true);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+        }
+    }//GEN-LAST:event_TakingDurationKeyPressed
+
+    private void TakingNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TakingNameKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cTaking ==null) return;
+        cTaking.getExam().setName(TakingName.getText());
+        takingUpdate();
+        main.viewUpdate(evt,true);
+    }//GEN-LAST:event_TakingNameKeyPressed
+
+    private void GroupRatingNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_GroupRatingNameKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRating ==null) return;
+        cRating.getGroupRating().setName(GroupRatingName.getText());
+        ratingUpdate();
+        main.viewUpdate(evt,true);
+    }//GEN-LAST:event_GroupRatingNameKeyPressed
+
+    private void RatingStudentListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingStudentListItemStateChanged
+        cStudRating = studRatings.get(RatingStudentList.getSelectedIndex());
+        refreshSelectedStudRating();
+    }//GEN-LAST:event_RatingStudentListItemStateChanged
+
+    private void AnswersItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_AnswersItemStateChanged
+        refreshSelectedAnswer();
+    }//GEN-LAST:event_AnswersItemStateChanged
+
+    private void RatingSemesterSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RatingSemesterSumKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cStudRating==null)
+        return;
+        try{
+            cStudRating.getStudentRating().setSemesterRating(Integer.parseInt(RatingSemesterSum.getText()));
+            //studRatingStateMashine.forceStateChange(cStudRating,Values.StudRatingAllowed);
+        } catch(Exception ee){
+            popup("Ошибка формата целого");
+        }
+    }//GEN-LAST:event_RatingSemesterSumKeyPressed
+
+    public void ratingUpdate(){
+        if (cRating ==null) return;
+        new APICall<GroupRatingBean>(main) {
+            @Override
+            public Call<GroupRatingBean> apiFun() {
+                return main.client.getGroupRatingApi().update2(cRating.getGroupRating());
+            }
+            @Override
+            public void onSucess(GroupRatingBean oo) {
+                savePos();
+                refreshSelectedDiscipline();
+                }
+            };
+        }
+    private void loadStudRating(final  List<StudentRatingBean> oo, final int idx){
+        if (idx==oo.size()){
+            createRatingStudentList();
+            refreshSelectedStudRating();
+            return;
+            }
+        new APICall<FullStudentRatingBean>(main) {
+            @Override
+            public Call<FullStudentRatingBean> apiFun() {
+                return main.client.getStudentRatingApi().getFull1(oo.get(idx).getId(),2);
+                }
+            @Override
+            public void onSucess(FullStudentRatingBean vv) {
+                studRatings.add(vv);
+                loadStudRating(oo,idx+1);
+                }
+            };
+        }
+    public void refreshStudRatings(){
+        //studRatingStateMashine.clear();
+        if (RatingOrTakingMode.isSelected()){
+            if (cTaking==null)
+                return;
+            new APICall<List<StudentRatingBean>>(main) {
+                @Override
+                public Call<List<StudentRatingBean>> apiFun() {
+                    return main.client.getExamApi().getStudentRatings(cTaking.getExam().getId());
+                    }
+                @Override
+                public void onSucess(List<StudentRatingBean> oo) {
+                    loadStudRating(oo,0);
+                    }
+                };
+            }
+        else{
+            if (cRating ==null)
+                return;
+            new APICall<FullGroupRatingBean>(main) {
+                @Override
+                public Call<FullGroupRatingBean> apiFun() {
+                    return main.client.getGroupRatingApi().findFull1(cRating.getGroupRating().getId(),2);
+                }
+                @Override
+                public void onSucess(FullGroupRatingBean oo) {
+                    cGroupRating = oo;
+                    studRatings = oo.getStudentRatings();
+                    createRatingStudentList();
+                    refreshSelectedStudRating();
+                }
+            };
+        }
+
+    }
+
+    public void createRatingStudentList(){
+        RatingStudentList.removeAll();
+        for(FullStudentRatingBean rating : studRatings)
+            RatingStudentList.add(rating.getStudent().getStudent().getAccount().getName());
+        refreshSelectedStudRating();
+        }
+
+    public void refreshSelectedStudRating(){
+        answerClear();
+        cStudRating=null;
+        if (studRatings.size()==0)
+            return;
+        cStudRating = studRatings.get(RatingStudentList.getSelectedIndex());
+        refreshStudRatingFull(true);
+        StudentRatingBean studentRating = cStudRating.getStudentRating();
+        RatingSemesterSum.setEnabled(studentRating.getStudentRatingState()== StudentRatingBean.StudentRatingStateEnum.NOT_ALLOWED);
+        RatingSum.setText(""+ studentRating.getExerciseRating());
+        int val1= studentRating.getSemesterRating();
+        int val2= studentRating.getQuestionRating();
+        int val3 = studentRating.getExerciseRating();
+        RatingSemesterSum.setText(""+ val1);
+        RatingQuestionSum.setText(""+ val2);
+        RatingExcerciseSum1.setText(""+val3);
+        RatingSum.setText(""+(val1+val2+val3));
+        RatingStudentState.setText(ratingStateFactory.getByValue(cStudRating.getStudentRating().getStudentRatingState()));
+        //studRatingStateMashine.refresh(cStudRating);
+        }
+
+    public void answerClear(){
+        AnswerBallSelector.removeAll();
+        AnswerMessageText.setText("");
+        AnswerThemeTask.setText("");
+        AnswerState.setText("");
+        AnswerArtifactView.setEnabled(false);
+        AnswerMessageAdd.setEnabled(false);
+        AnswerArtifactDownLoad.setEnabled(false);
+        AnswerArtifactUpload.setEnabled(false);
+        AnswerMessages.removeAll();
+        //answerStateMashine.clear();
+        }
+
+    private void RatingOrTakingModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingOrTakingModeItemStateChanged
+        refreshStudRatings();
+    }//GEN-LAST:event_RatingOrTakingModeItemStateChanged
+
+    private void AnswerStateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AnswerStateMouseClicked
+        if (evt.getClickCount()<2)
+        return;
+        if (cAnswer ==null)
+        return;
+        new ListSelector(200, 200, "Состояние приема", answerStateFactory.getNames(), new I_ListSelected() {
+            @Override
+            public void onSelect(final int idx) {
+                new OK(200, 200, "Сменить состояние на " + answerStateFactory.getList().get(idx).name, new I_Button() {
+                    @Override
+                    public void onPush() {
+                        cAnswer.getAnswer().setState(answerStateFactory.getList().get(idx).value);
+                        answerUpdateState();
+                    }
+                });
+            }
+        });
+    }//GEN-LAST:event_AnswerStateMouseClicked
+
+
+    private void answerUpdateState(){
+        new APICall<AnswerBean>(main) {
+            @Override
+            public Call<AnswerBean> apiFun() {
+                return main.client.getAnswerApi().updateState2(cAnswer.getAnswer());
+            }
+            @Override
+            public void onSucess(AnswerBean oo) {
+                refreshSelectedDiscipline();
+                popup("Состояние ответа изменено");
+            }
+        };
+    }
+
+
+    private void takingUpdateState(){
+        new APICall<ExamBean>(main) {
+            @Override
+            public Call<ExamBean> apiFun() {
+                return main.client.getExamApi().updateState1(cTaking.getExam());
+                }
+            @Override
+            public void onSucess(ExamBean oo) {
+                refreshSelectedDiscipline();
+                popup("Состояние приема экзамена изменено");
+            }
+        };
+    }
+
+
+    private void ratingUpdateState(){
+        new APICall<StudentRatingBean>(main) {
+            @Override
+            public Call<StudentRatingBean> apiFun() {
+                return main.client.getStudentRatingApi().updateState(cStudRating.getStudentRating());
+            }
+            @Override
+            public void onSucess(StudentRatingBean oo) {
+                refreshSelectedDiscipline();
+                popup("Состояние сдачи студентом изменено");
+            }
+        };
+    }
+
+
+    private void TakingStateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TakingStateMouseClicked
+        if (evt.getClickCount()<2)
+        return;
+        if (cTaking ==null)
+        return;
+        new ListSelector(200, 200, "Состояние приема", takingStateFactory.getNames(), new I_ListSelected() {
+            @Override
+            public void onSelect(final int idx) {
+                new OK(200, 200, "Сменить состояние на " + takingStateFactory.getList().get(idx).name, new I_Button() {
+                    @Override
+                    public void onPush() {
+                        cTaking.getExam().setState(takingStateFactory.getList().get(idx).value);
+                        takingUpdateState();
+                    }
+                });
+            }
+        });
+    }//GEN-LAST:event_TakingStateMouseClicked
+
+    private void RatingStudentStateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RatingStudentStateMouseClicked
+        if (evt.getClickCount()<2)
+        return;
+        if (cStudRating ==null)
+        return;
+        new ListSelector(200, 200, "Состояние приема", ratingStateFactory.getNames(), new I_ListSelected() {
+            @Override
+            public void onSelect(final int idx) {
+                new OK(200, 200, "Сменить состояние на " + ratingStateFactory.getList().get(idx).name, new I_Button() {
+                    @Override
+                    public void onPush() {
+                        cStudRating.getStudentRating().studentRatingState(ratingStateFactory.getList().get(idx).value);
+                        ratingUpdateState();
+                    }
+                });
+            }
+        });
+    }//GEN-LAST:event_RatingStudentStateMouseClicked
+
+    private void TakingAddAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TakingAddAllActionPerformed
+        ExamBean examBean = new ExamBean();
+        examBean.setDisciplineId(cDiscipline.getDiscipline().getId());
+        examBean.setOneGroup(false);
+        examBean.setName("Новый приемп экзамена");
+        new APICall<ExamBean>(main) {
+            @Override
+            public Call<ExamBean> apiFun() {
+                return main.client.getExamApi().createExam(examBean);
+                }
+            @Override
+            public void onSucess(ExamBean oo) {
+                savePos();
+                refreshSelectedDiscipline();
+                }
+            };
+    }//GEN-LAST:event_TakingAddAllActionPerformed
+
+    private void AnswerMessagesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_AnswerMessagesItemStateChanged
+        refreshSelectedMessage();
+    }//GEN-LAST:event_AnswerMessagesItemStateChanged
+
+    private void AnswerArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactViewActionPerformed
+
+    }//GEN-LAST:event_AnswerArtifactViewActionPerformed
+
+    private void AnswerArtifactUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactUploadActionPerformed
+        main.uploadFileAsync(new I_Value<ArtefactBean>() {
+            @Override
+            public void onEnter(final ArtefactBean value) {
+                MessageBean message = new MessageBean();
+                message.setText(AnswerMessageText.getText());
+                message.setAccountId(main.loginUser.getOid());
+                new APICall<MessageBean>(main) {
+                    @Override
+                    public Call<MessageBean> apiFun() {
+                        return main.client.getAnswerApi().newMessage(message,cAnswer.getAnswer().getId());
+                    }
+                    @Override
+                    public void onSucess(MessageBean oo) {
+                        popup("Ответ с фото");
+                        savePos();
+                        refreshStudRatingFull(true);
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_AnswerArtifactUploadActionPerformed
+
+     private void AnswerArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactDownLoadActionPerformed
+
+    }//GEN-LAST:event_AnswerArtifactDownLoadActionPerformed
+
+    private void AnswerMessageAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerMessageAddActionPerformed
+        if (cAnswer==null)
+        return;
+        new OK(200, 200, "Добавить сообщение к ответу", new I_Button() {
+            @Override
+            public void onPush() {
+                final MessageBean message = new MessageBean();
+                message.setText(AnswerMessageText.getText());
+                message.setAccountId(main.loginUser.getOid());
+                new APICall<MessageBean>(main) {
+                    @Override
+                    public Call<MessageBean> apiFun() {
+                        return main.client.getAnswerApi().newMessage(message,cAnswer.getAnswer().getId());
+                    }
+                    @Override
+                    public void onSucess(MessageBean oo) {
+                        popup("Ответ изменен");
+                        savePos();
+                        refreshStudRatingFull(true);
+                    }
+                };
+            }
+        });
+    }//GEN-LAST:event_AnswerMessageAddActionPerformed
 
     public void taskUpdate(){
         if (cTask==null)
@@ -1992,85 +2838,118 @@ public class EMVKRExamAdminPanel extends BasePanel{
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton ArtifactDownLoad;
-    private javax.swing.JButton ArtifactUpload;
-    private javax.swing.JButton ArtifactView;
-    private java.awt.Choice Discipline;
+    private javax.swing.JButton AnswerArtifactDownLoad;
+    private javax.swing.JButton AnswerArtifactUpload;
+    private javax.swing.JButton AnswerArtifactView;
+    private javax.swing.JTextField AnswerBall;
+    private java.awt.Choice AnswerBallSelector;
+    private javax.swing.JButton AnswerMessageAdd;
+    private java.awt.TextArea AnswerMessageText;
+    private java.awt.Choice AnswerMessages;
+    private javax.swing.JTextField AnswerState;
+    private java.awt.TextArea AnswerThemeTask;
+    private java.awt.Choice Answers;
     private javax.swing.JButton DisciplineAdd;
     private javax.swing.JButton DisciplineEdit;
     private javax.swing.JButton DisciplineImport;
     private javax.swing.JButton DisciplineRemove;
     private javax.swing.JButton DisciplineSaveImport;
-    private javax.swing.JButton ExamAdd;
-    private javax.swing.JButton ExamGroupAdd;
-    private javax.swing.JButton ExamGroupRemove;
-    private java.awt.Choice ExamGroupsList;
-    private java.awt.Choice ExamList;
-    private javax.swing.JButton ExamRemove;
-    private java.awt.Choice ExamsForGroupList;
-    private java.awt.Choice ExamsTotalList;
+    private java.awt.Choice Disciplines;
     private javax.swing.JCheckBox FullTrace;
-    private java.awt.Choice Group;
     private javax.swing.JButton GroupAdd;
     private javax.swing.JButton GroupEdit;
+    private javax.swing.JButton GroupRatingAdd;
+    private javax.swing.JTextField GroupRatingName;
+    private javax.swing.JButton GroupRatingRemove;
+    private java.awt.Choice GroupRatings;
     private javax.swing.JButton GroupRemove;
+    private java.awt.Choice Groups;
     private javax.swing.JButton GroupsImport;
-    private javax.swing.JButton PeriodAdd;
-    private javax.swing.JTextField PeriodData;
-    private javax.swing.JTextField PeriodEndTime;
-    private javax.swing.JCheckBox PeriodForAll;
-    private java.awt.Choice PeriodList;
-    private java.awt.Choice PeriodOneGroup;
-    private javax.swing.JButton PeriodRemove;
-    private javax.swing.JTextField PeriodStartTime;
-    private java.awt.Choice PeriodState;
+    private javax.swing.JTextField RatingExcerciseSum1;
+    private javax.swing.JCheckBox RatingOrTakingMode;
+    private javax.swing.JTextField RatingQuestionSum;
+    private javax.swing.JTextField RatingSemesterSum;
+    private java.awt.Choice RatingStudentList;
+    private javax.swing.JTextField RatingStudentState;
+    private javax.swing.JTextField RatingSum;
     private javax.swing.JButton RefreshDisciplines;
     private javax.swing.JButton RefreshGroups;
     private javax.swing.JButton RuleAdd;
     private javax.swing.JButton RuleDelete;
     private javax.swing.JTextField RuleDuration;
-    private javax.swing.JTextField RuleExcerCount;
+    private javax.swing.JTextField RuleExceciseForOne;
+    private javax.swing.JTextField RuleExcerciseSum;
+    private javax.swing.JTextField RuleMinRating;
     private javax.swing.JTextField RuleName;
-    private javax.swing.JTextField RuleQurestionCount;
+    private javax.swing.JTextField RuleOwnRating;
+    private javax.swing.JTextField RuleQuestionForOne;
+    private javax.swing.JTextField RuleQuestionSum;
     private javax.swing.JButton RuleThemeAdd;
     private javax.swing.JButton RuleThemeAddAll;
     private javax.swing.JButton RuleThemeRemove;
-    private java.awt.Choice RuleThemesList;
-    private java.awt.Choice RulesList;
-    private java.awt.Choice Student;
+    private java.awt.Choice RuleThemes;
+    private java.awt.Choice Rules;
     private javax.swing.JButton StudentAdd;
     private javax.swing.JButton StudentEdit;
     private javax.swing.JButton StudentRemove;
-    private java.awt.Choice Task;
+    private java.awt.Choice Students;
+    private javax.swing.JButton TakingAdd;
+    private javax.swing.JButton TakingAddAll;
+    private javax.swing.JTextField TakingData;
+    private javax.swing.JTextField TakingDuration;
+    private javax.swing.JTextField TakingEndTime;
+    private javax.swing.JCheckBox TakingForGroup;
+    private javax.swing.JTextField TakingGroup;
+    private javax.swing.JTextField TakingName;
+    private javax.swing.JButton TakingRemove;
+    private javax.swing.JTextField TakingStartTime;
+    private javax.swing.JTextField TakingState;
+    private java.awt.Choice Takings;
     private javax.swing.JButton TaskAdd;
+    private javax.swing.JButton TaskArtifactDownLoad;
+    private javax.swing.JButton TaskArtifactUpload;
+    private javax.swing.JButton TaskArtifactView;
     private javax.swing.JButton TaskRemove;
     private javax.swing.JButton TaskSaveText;
     private java.awt.TextArea TaskText;
     private javax.swing.JCheckBox TaskType;
     private javax.swing.JLabel TaskTypeLabel;
-    private java.awt.Choice Theme;
+    private java.awt.Choice Tasks;
     private javax.swing.JButton ThemeAdd;
     private javax.swing.JButton ThemeEdit;
     private javax.swing.JButton ThemeRemove;
-    private javax.swing.JLabel jLabel10;
+    private java.awt.Choice Themes;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JLabel Состояние;
+    private javax.swing.JLabel Состояние1;
     // End of variables declaration//GEN-END:variables
 }

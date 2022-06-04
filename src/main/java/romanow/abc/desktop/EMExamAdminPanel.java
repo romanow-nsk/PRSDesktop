@@ -97,8 +97,6 @@ public class EMExamAdminPanel extends BasePanel{
         TaskArtifactView.setEnabled(false);
         TaskArtifactDownLoad.setEnabled(false);
         DisciplineSaveImport.setEnabled(false);
-        TaskArtifactDownLoad.setEnabled(false);
-        TaskArtifactView.setEnabled(false);
         takingStateMap = Values.constMap().getGroupMapByValue("Taking");
         ticketStateMap = Values.constMap().getGroupMapByValue("StudRating");
         answerStateMap = Values.constMap().getGroupMapByValue("Answer");
@@ -2677,7 +2675,7 @@ public class EMExamAdminPanel extends BasePanel{
                 new OK(200, 200, "Сменить состояние на " + answerStateList.get(idx).title(), new I_Button() {
                     @Override
                     public void onPush() {
-                        cStudRating.setState(answerStateList.get(idx).value());
+                        cAnswer.setState(answerStateList.get(idx).value());
                         answerUpdate();
                     }
                 });
