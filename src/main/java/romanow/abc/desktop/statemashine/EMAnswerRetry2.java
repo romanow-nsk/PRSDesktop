@@ -1,7 +1,7 @@
 package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.EMAnswer;
+import romanow.abc.core.entity.subjectarea.SAAnswer;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMAnswerRetry2 extends EMClientEmpty {
@@ -15,6 +15,6 @@ public class EMAnswerRetry2 extends EMClientEmpty {
         }
     @Override
     public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {
-        ((EMAnswer)env).setRating(0);
+        ((SAAnswer)env).setRating(0);
         }
     }

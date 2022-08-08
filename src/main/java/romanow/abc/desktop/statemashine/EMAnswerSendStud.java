@@ -2,7 +2,7 @@ package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.constants.Values;
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.EMExamTaking;
+import romanow.abc.core.entity.subjectarea.SAExamTaking;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMAnswerSendStud implements I_ClientTransition {
@@ -11,7 +11,7 @@ public class EMAnswerSendStud implements I_ClientTransition {
         if (panel.getCStudRating().getState()!=Values.StudRatingOnExam)
             return "Отправка ответов закончена студентом";
         long oid = panel.getCStudRating().getEMExamTaking().getOid();
-        EMExamTaking taking = panel.getCDiscipline().getTakings().getById(oid);
+        SAExamTaking taking = panel.getCDiscipline().getTakings().getById(oid);
         if (taking.getState()!=Values.TakingInProcess)
             return "Отправка ответов закончена преподавателем";
         return "";

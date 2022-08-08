@@ -1,8 +1,7 @@
 package romanow.abc.desktop.statemashine;
 
-import romanow.abc.core.constants.Values;
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.EMAnswer;
+import romanow.abc.core.entity.subjectarea.SAAnswer;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMAnswerSetRating extends EMClientEmpty{
@@ -16,6 +15,6 @@ public class EMAnswerSetRating extends EMClientEmpty{
         }
     @Override
     public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {
-        ((EMAnswer)env).setRating(Integer.parseInt(panel.getAnswerBall().getSelectedItem()));
+        ((SAAnswer)env).setRating(Integer.parseInt(panel.getAnswerBall().getSelectedItem()));
         }
     }

@@ -1,8 +1,7 @@
 package romanow.abc.desktop;
 
-import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.API.RestAPIBase;
-import romanow.abc.core.API.RestAPIEM;
+import romanow.abc.core.API.RestAPI;
 import romanow.abc.core.UniException;
 import romanow.abc.core.constants.Values;
 import romanow.abc.core.entity.subjectarea.*;
@@ -11,7 +10,7 @@ import romanow.abc.core.entity.users.User;
 
 public class EMClient extends Client {
     long mainServerNodeId = 0;                         // oid текущего узла для ДЦ
-    RestAPIEM service2;
+    RestAPI service2;
     public EMClient(){
         this(true);
         }
@@ -44,14 +43,14 @@ public class EMClient extends Client {
     @Override
     public void onLoginSuccess(){
         try {
-            service2 = (RestAPIEM) startSecondClient(getServerIP(),""+getServerPort(),RestAPIEM.class);
+            service2 = (RestAPI) startSecondClient(getServerIP(),""+getServerPort(), RestAPI.class);
             getWorkSettings();
             } catch (UniException e) {
                 popup("Ошибка соединения: " +e.toString());
                 }
         }
 
-    public void setExternalData(String token, User uu, WorkSettings ws0, RestAPIBase service0, RestAPIEM service20, boolean localUser0){
+    public void setExternalData(String token, User uu, WorkSettings ws0, RestAPIBase service0, RestAPI service20, boolean localUser0){
         debugToken = token;
         loginUser = uu;
         workSettings = ws0;

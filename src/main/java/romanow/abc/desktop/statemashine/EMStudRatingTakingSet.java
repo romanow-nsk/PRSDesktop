@@ -1,18 +1,18 @@
 package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.EMExamTaking;
-import romanow.abc.core.entity.subjectarea.EMStudRating;
+import romanow.abc.core.entity.subjectarea.SAExamTaking;
+import romanow.abc.core.entity.subjectarea.SAStudRating;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMStudRatingTakingSet implements I_ClientTransition {
     @Override
     public String testTransition(EMExamAdminPanel panel, StateEntity env) {
-        EMStudRating rating = (EMStudRating)env;
-        EMExamTaking taking = panel.getCTaking();
+        SAStudRating rating = (SAStudRating)env;
+        SAExamTaking taking = panel.getCTaking();
         if (taking==null)
             return "Не выбран прием экзамена";
-        if (taking.isOneGroup() && rating.getStudent().getRef().getEMGroup().getOid()!=taking.getGroup().getOid()){
+        if (taking.isOneGroup() && rating.getStudent().getRef().getSAGroup().getOid()!=taking.getGroup().getOid()){
             return "Прием экзамена для другой группы";
             }
         return "";
@@ -23,7 +23,7 @@ public class EMStudRatingTakingSet implements I_ClientTransition {
     }
     @Override
     public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {
-        EMStudRating rating = (EMStudRating)env;
+        SAStudRating rating = (SAStudRating)env;
         rating.getEMExamTaking().setOid(panel.getCTaking().getOid());
         }
 }

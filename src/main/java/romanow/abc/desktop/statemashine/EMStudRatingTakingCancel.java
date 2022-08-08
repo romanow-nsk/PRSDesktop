@@ -1,8 +1,7 @@
 package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.EMExamTaking;
-import romanow.abc.core.entity.subjectarea.EMStudRating;
+import romanow.abc.core.entity.subjectarea.SAStudRating;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMStudRatingTakingCancel implements I_ClientTransition {
@@ -16,6 +15,6 @@ public class EMStudRatingTakingCancel implements I_ClientTransition {
     }
     @Override
     public void onTransitionBefore(EMExamAdminPanel panel, StateEntity env) {
-        ((EMStudRating)env).getEMExamTaking().setOid(0);
+        ((SAStudRating)env).getEMExamTaking().setOid(0);
         }
 }

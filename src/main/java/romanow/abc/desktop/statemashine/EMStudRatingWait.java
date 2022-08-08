@@ -1,7 +1,6 @@
 package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.EMStudRating;
 import romanow.abc.desktop.EMExamAdminPanel;
 
 public class EMStudRatingWait implements I_ClientTransition{

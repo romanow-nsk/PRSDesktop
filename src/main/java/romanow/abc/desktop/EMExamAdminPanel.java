@@ -41,35 +41,35 @@ import java.util.*;
  * @author romanow
  */
 public class EMExamAdminPanel extends BasePanel{
-    private ArrayList<EMDiscipline> disciplines = new ArrayList<>();    // Список дисциплин
-    @Getter private EMDiscipline cDiscipline = null;                            // Текущая дисциплина
-    @Getter private EMTheme cTheme = null;                                      // Текущая тема
-    @Getter private EMTask cTask=null;                                          // Текущая задача/тест
-    @Getter private EMExamRule cRule=null;
-    @Getter private EMGroupRating cRating =null;
-    @Getter private EMGroup cGroup = null;                                      // Текущая группа
-    @Getter private EMExamTaking cTaking =null;                                 // Текущий прием
-    @Getter private EMAnswer cAnswer =null;                                     // Текущий ответ
-    @Getter private EMMessage cAnswerMessage =null;                             //
+    private ArrayList<SADiscipline> disciplines = new ArrayList<>();    // Список дисциплин
+    @Getter private SADiscipline cDiscipline = null;                            // Текущая дисциплина
+    @Getter private SATheme cTheme = null;                                      // Текущая тема
+    @Getter private SATask cTask=null;                                          // Текущая задача/тест
+    @Getter private SAExamRule cRule=null;
+    @Getter private SAGroupRating cRating =null;
+    @Getter private SAGroup cGroup = null;                                      // Текущая группа
+    @Getter private SAExamTaking cTaking =null;                                 // Текущий прием
+    @Getter private SAAnswer cAnswer =null;                                     // Текущий ответ
+    @Getter private SAMessage cAnswerMessage =null;                             //
     private ConstValue cTakingState = null;
-    private EMGroupRating cGroupRating = null;
-    private EMExamTaking cExamTaking = null;
-    @Getter private EMStudRating cStudRating = null;
-    @Getter private ArrayList<EMGroup> groups = new ArrayList<>();              // Список групп полный
-    @Getter private ArrayList<EMExamTaking> cTakings = new ArrayList<>();       // Список приема для экзамена
+    private SAGroupRating cGroupRating = null;
+    private SAExamTaking cExamTaking = null;
+    @Getter private SAStudRating cStudRating = null;
+    @Getter private ArrayList<SAGroup> groups = new ArrayList<>();              // Список групп полный
+    @Getter private ArrayList<SAExamTaking> cTakings = new ArrayList<>();       // Список приема для экзамена
     private HashMap<Integer,ConstValue> takingStateMap;
     private HashMap<Integer,ConstValue> ticketStateMap;
     private HashMap<Integer,ConstValue> answerStateMap;
     private ArrayList<ConstValue> takingStateList;
     private ArrayList<ConstValue> ticketStateList;
     private ArrayList<ConstValue> answerStateList;
-    private ArrayList<EMTask> sortedTasks =  new ArrayList<>();         // Отсортированы - вопрос/задача
+    private ArrayList<SATask> sortedTasks =  new ArrayList<>();         // Отсортированы - вопрос/задача
     //----------------------------------------------------------------------------------------
-    private ArrayList<EMTheme> ruleThemes = new ArrayList<>();          // Темы регламента
-    private HashMap<Long,EMTheme> ruleThemesMap = new HashMap<>();
-    private HashMap<Long,EMGroup> groupsMap = new HashMap<>();          // Мар всех групп
-    private EntityRefList<EMStudRating> studRatings = new EntityRefList<>();
-    private EntityRefList<EMAnswer> answers = new EntityRefList<>();
+    private ArrayList<SATheme> ruleThemes = new ArrayList<>();          // Темы регламента
+    private HashMap<Long, SATheme> ruleThemesMap = new HashMap<>();
+    private HashMap<Long, SAGroup> groupsMap = new HashMap<>();          // Мар всех групп
+    private EntityRefList<SAStudRating> studRatings = new EntityRefList<>();
+    private EntityRefList<SAAnswer> answers = new EntityRefList<>();
     private StateMashineView takingStateMashine;
     private StateMashineView answerStateMashine;
     private StateMashineView studRatingStateMashine;
@@ -141,7 +141,7 @@ public class EMExamAdminPanel extends BasePanel{
                 Disciplines.removeAll();
                 try {
                 for(DBRequest request : oo){
-                    EMDiscipline discipline = (EMDiscipline) request.get(main.gson);
+                    SADiscipline discipline = (SADiscipline) request.get(main.gson);
                     Disciplines.add(discipline.getName());
                     disciplines.add(discipline);
                     }
@@ -156,7 +156,7 @@ public class EMExamAdminPanel extends BasePanel{
 
     public void refreshRules(boolean withPos){
         Rules.removeAll();
-        for(EMExamRule rule : cDiscipline.getRules()){
+        for(SAExamRule rule : cDiscipline.getRules()){
             Rules.add(rule.getName());
             }
         if (ruleIdx!=-1)
@@ -188,7 +188,7 @@ public class EMExamAdminPanel extends BasePanel{
         ruleThemesMap.clear();
         RuleThemes.removeAll();
         for(EntityLink themeId : cRule.getThemes()){
-            EMTheme theme  = cDiscipline.getThemes().getById(themeId.getOid());
+            SATheme theme  = cDiscipline.getThemes().getById(themeId.getOid());
             if (theme==null)
                 System.out.println("Не найдена тема id="+themeId);
             else {
@@ -214,7 +214,7 @@ public class EMExamAdminPanel extends BasePanel{
                 Groups.removeAll();
                 try {
                     for (DBRequest dd : oo) {
-                        EMGroup group = (EMGroup)dd.get(main.gson);
+                        SAGroup group = (SAGroup)dd.get(main.gson);
                         Groups.add(group.getName());
                         groupsMap.put(group.getOid(), group);
                         groups.add(group);
@@ -242,9 +242,9 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(DBRequest oo) {
                 try{
-                    cGroup = (EMGroup)oo.get(main.gson);
+                    cGroup = (SAGroup)oo.get(main.gson);
                     Students.removeAll();
-                    for(EMStudent student : cGroup.getStudents())
+                    for(SAStudent student : cGroup.getStudents())
                         Students.add(student.getUser().getTitle());
                     //refreshStudentFull();
                     }catch (Exception ee){
@@ -277,7 +277,7 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(DBRequest oo) {
                 try {
-                    cDiscipline = (EMDiscipline) oo.get(main.gson);
+                    cDiscipline = (SADiscipline) oo.get(main.gson);
                     } catch (Exception ee){
                         System.out.println(ee.toString());
                         popup("Ошибка чтения дисциплины "+cDiscipline.getName());
@@ -285,7 +285,7 @@ public class EMExamAdminPanel extends BasePanel{
                         }
                 cDiscipline.createMaps();
                 Themes.removeAll();
-                for(EMTheme theme : cDiscipline.getThemes())
+                for(SATheme theme : cDiscipline.getThemes())
                     Themes.add(theme.getName());
                 refreshSelectedTheme(withPos);
                 refreshRules(withPos);
@@ -302,8 +302,8 @@ public class EMExamAdminPanel extends BasePanel{
         GroupRatings.removeAll();
         if (cDiscipline==null)
             return;
-        for(EMGroupRating exam : cDiscipline.getRatings()){
-            EMExamRule rule = cDiscipline.getRules().getById(exam.getRule().getOid());
+        for(SAGroupRating exam : cDiscipline.getRatings()){
+            SAExamRule rule = cDiscipline.getRules().getById(exam.getExamRule().getOid());
             GroupRatings.add((exam.getName().length()==0 ?  "..." : exam.getName())+" "+(rule==null ? "???" : rule.getName()));
             }
         if (withPos)
@@ -324,7 +324,7 @@ public class EMExamAdminPanel extends BasePanel{
         takingStateMashine.clear();
         Takings.removeAll();
         cTakings.clear();
-        for(EMExamTaking taking : cDiscipline.getTakings()){
+        for(SAExamTaking taking : cDiscipline.getTakings()){
             if (taking.isOneGroup() && taking.getGroup().getOid() != cRating.getGroup().getOid())
                 continue;
             cTakings.add(taking);
@@ -401,7 +401,7 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(DBRequest oo) {
                 try {
-                    cTheme = (EMTheme) oo.get(main.gson);
+                    cTheme = (SATheme) oo.get(main.gson);
                     //cTheme.getTasks().sort(new Comparator<EMTask>() {
                     //    @Override
                     //    public int compare(EMTask o1, EMTask o2) {              // Сортировать по id (в порядке поступления)
@@ -410,12 +410,12 @@ public class EMExamAdminPanel extends BasePanel{
                     //    });
                     sortedTasks.clear();
                     int iq = 1, it = 1;
-                    for (EMTask task : cTheme.getTasks())
+                    for (SATask task : cTheme.getTasks())
                         if (task.getType() == Values.TaskQuestion){
                             Tasks.add("Вопрос " + iq++ + " " + task.getName());
                             sortedTasks.add(task);
                             }
-                    for (EMTask task : cTheme.getTasks())
+                    for (SATask task : cTheme.getTasks())
                         if (task.getType() == Values.TaskExercise){
                             Tasks.add("Задача " + it++ + " " + task.getName());
                             sortedTasks.add(task);
@@ -1486,7 +1486,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Добавить вопрос/задачу", new I_Button() {
             @Override
             public void onPush() {
-                final EMTask task = new EMTask();
+                final SATask task = new SATask();
                 task.setTaskText("Новый вопрос/задача");
                 task.setType(Values.TaskQuestion);
                 task.getEMTheme().setOid(cTheme.getOid());
@@ -1509,7 +1509,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200,200,"Добавить дисциплину", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                EMDiscipline discipline = new EMDiscipline();
+                SADiscipline discipline = new SADiscipline();
                 discipline.setName(value);
                 new APICall<JLong>(main) {
                     @Override
@@ -1551,7 +1551,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200,200,"Добавить тему в "+cDiscipline.getName(), new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                EMTheme bean = new EMTheme();
+                SATheme bean = new SATheme();
                 bean.setName(value);
                 bean.getEMDiscipline().setOid(cDiscipline.getOid());
                 new APICall<JLong>(main) {
@@ -1670,7 +1670,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200, 200, "Дисциплина с тестами: " + owtImportData.getHead(), owtImportData.getHead(),new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                EMDiscipline discipline = new EMDiscipline();
+                SADiscipline discipline = new SADiscipline();
                 discipline.setName(value);
                 new APICall<JLong>(main) {
                     @Override
@@ -1683,8 +1683,8 @@ public class EMExamAdminPanel extends BasePanel{
                         int idx2=0;
                         OWTTheme owtTheme=null;
                         try {
-                            final EMTheme theme = new EMTheme();
-                            final EMTask task = new EMTask();
+                            final SATheme theme = new SATheme();
+                            final SATask task = new SATask();
                             for (idx1 = 0; idx1 < owtImportData.size(); idx1++) {
                                 idx2=-1;
                                 owtTheme = owtImportData.get(idx1);
@@ -1736,7 +1736,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OKName(200,200,"Добавить группу", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
-                EMGroup bean = new EMGroup();
+                SAGroup bean = new SAGroup();
                 bean.setName(value);
                 new APICall<JLong>(main) {
                     @Override
@@ -1803,7 +1803,7 @@ public class EMExamAdminPanel extends BasePanel{
                     return;
                     }
                 System.out.println("Импорт группы "+sheets[idx]);
-                final  EMGroup group = new EMGroup();
+                final SAGroup group = new SAGroup();
                 group.setName(sheets[idx]);
                 try {
                     final JLong group2 = new APICallSync<JLong>() {
@@ -1827,9 +1827,9 @@ public class EMExamAdminPanel extends BasePanel{
                             account.setPassword("1234");
                             user.setTypeId(Values.UserEMStudent);
                             user.setAccount(account);
-                            EMStudent student = new EMStudent();
+                            SAStudent student = new SAStudent();
                             student.setState(Values.StudentStateNormal);
-                            student.getEMGroup().setOid(group2.getValue());
+                            student.getSAGroup().setOid(group2.getValue());
                             try {
                                 JLong userOid = new APICallSync<JLong>() {
                                     @Override
@@ -1927,7 +1927,7 @@ public class EMExamAdminPanel extends BasePanel{
         if (cRule.getThemes().size()==0)
             return;
         long oid = cRule.getThemes().get(RuleThemes.getSelectedIndex()).getOid();
-        EMTheme theme = cDiscipline.getThemes().getById(oid);
+        SATheme theme = cDiscipline.getThemes().getById(oid);
         new OK(200, 200, "Удалить тему: " + shortString(theme.getName(), 20), new I_Button() {
             @Override
             public void onPush() {
@@ -1942,7 +1942,7 @@ public class EMExamAdminPanel extends BasePanel{
     private void RuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleAddActionPerformed
         if (cDiscipline==null)
             return;
-        final EMExamRule ruleBean = new EMExamRule();
+        final SAExamRule ruleBean = new SAExamRule();
         new OKName(200, 200, "Добавить регламент", new I_Value<String>() {
             @Override
             public void onEnter(String value) {
@@ -2063,7 +2063,7 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onPush() {
                 cRule.getThemes().clear();
-                for(EMTheme theme : cDiscipline.getThemes())
+                for(SATheme theme : cDiscipline.getThemes())
                     cRule.getThemes().add(theme.getOid());
                 ruleUpdate(null);
                 }
@@ -2089,8 +2089,8 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Добавить рейтинг " + cDiscipline.getName()+"-"+cGroup.getName(), new I_Button() {
             @Override
             public void onPush() {
-                final EMGroupRating exam = new EMGroupRating();
-                exam.getRule().setOid(cRule.getOid());
+                final SAGroupRating exam = new SAGroupRating();
+                exam.getExamRule().setOid(cRule.getOid());
                 exam.getEMDiscipline().setOid(cDiscipline.getOid());
                 exam.getGroup().setOid(cGroup.getOid());
                 new APICall<JLong>(main) {
@@ -2134,7 +2134,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Добавить сдачу экзамена по: " + cDiscipline.getName(), new I_Button() {
             @Override
             public void onPush() {
-                EMExamTaking taking = new EMExamTaking();
+                SAExamTaking taking = new SAExamTaking();
                 taking.setState(Values.TakingEdit);
                 taking.setName("Новый прием экзамена");
                 taking.getEMDiscipline().setOid(cDiscipline.getOid());
@@ -2287,13 +2287,13 @@ public class EMExamAdminPanel extends BasePanel{
         if (RatingOrTakingMode.isSelected()){
             if (cTaking==null)
                 return;
-            new APICall<EMExamTaking>(main) {
+            new APICall<SAExamTaking>(main) {
                 @Override
-                public Call<EMExamTaking> apiFun() {
+                public Call<SAExamTaking> apiFun() {
                     return ((EMClient)main).service2.getRatingsForTaking(main.debugToken, cTaking.getOid());
                     }
                 @Override
-                public void onSucess(EMExamTaking oo) {
+                public void onSucess(SAExamTaking oo) {
                     cExamTaking = oo;
                     studRatings = oo.getRatings();
                     createRatingStudentList();
@@ -2304,13 +2304,13 @@ public class EMExamAdminPanel extends BasePanel{
         else{
             if (cRating ==null)
                 return;
-            new APICall<EMGroupRating>(main) {
+            new APICall<SAGroupRating>(main) {
                 @Override
-                public Call<EMGroupRating> apiFun() {
+                public Call<SAGroupRating> apiFun() {
                     return ((EMClient)main).service2.getRatingsForGroup(main.debugToken, cRating.getOid());
                 }
                 @Override
-                public void onSucess(EMGroupRating oo) {
+                public void onSucess(SAGroupRating oo) {
                     cGroupRating = oo;
                     studRatings = oo.getRatings();
                     createRatingStudentList();
@@ -2325,7 +2325,7 @@ public class EMExamAdminPanel extends BasePanel{
         if (cStudRating==null)
             return;
         int sumE=0,sumQ=0;
-        for(EMAnswer answer : answers)
+        for(SAAnswer answer : answers)
             if (answer.getTask().getRef().getType()==Values.TaskQuestion)
                 sumQ += answer.getRating();
             else
@@ -2355,7 +2355,7 @@ public class EMExamAdminPanel extends BasePanel{
 
     public void createRatingStudentList(){
         RatingStudentList.removeAll();
-        for(EMStudRating rating : studRatings)
+        for(SAStudRating rating : studRatings)
             RatingStudentList.add(rating.getStudent().getRef().getUser().getTitle());
         refreshSelectedStudRating();
         }
@@ -2400,13 +2400,13 @@ public class EMExamAdminPanel extends BasePanel{
         cAnswer = answers.get(Answers.getSelectedIndex());
         AnswerState.setText(answerStateMap.get(cAnswer.getState()).title());
         long themeId = cAnswer.getTask().getRef().getEMTheme().getOid();
-        EMTheme theme = cDiscipline.getThemes().getById(themeId);
+        SATheme theme = cDiscipline.getThemes().getById(themeId);
         String themeText = theme.getName();
         AnswerThemeTask.append(UtilsEM.formatSize(themeText,70)+"\n-----------------------------------------\n");
         AnswerThemeTask.append(UtilsEM.formatSize(cAnswer.getTask().getRef().getTaskText(),70));
         AnswerMessages.removeAll();
         int n=1;
-        for(EntityLink<EMMessage> message : cAnswer.getMessages()){
+        for(EntityLink<SAMessage> message : cAnswer.getMessages()){
             AnswerMessages.add("Сообщение "+n+" "+message.getRef().getText());
             n++;
             }
@@ -2416,8 +2416,8 @@ public class EMExamAdminPanel extends BasePanel{
         AnswerBallSelector.setEnabled(cAnswer.getState()==Values.AnswerCheck);
         AnswerBallSelector.removeAll();
         if(cAnswer.getState()==Values.AnswerCheck){
-            EMGroupRating rating = cDiscipline.getRatings().getById(cStudRating.getEMGroupRating().getOid());
-            EMExamRule rule = cDiscipline.getRules().getById(rating.getRule().getOid());
+            SAGroupRating rating = cDiscipline.getRatings().getById(cStudRating.getEMGroupRating().getOid());
+            SAExamRule rule = cDiscipline.getRules().getById(rating.getExamRule().getOid());
             boolean question = cAnswer.getTask().getRef().getType()==Values.TaskQuestion;
             int maxBall = question ? rule.getOneQuestionDefBall() : rule.getOneExcerciceDefBall();
             for(int i=maxBall;i>=0;i--)
@@ -2457,18 +2457,18 @@ public class EMExamAdminPanel extends BasePanel{
             @Override
             public void onSucess(DBRequest oo) {
                 try {
-                    cStudRating = (EMStudRating) oo.get(main.gson);
+                    cStudRating = (SAStudRating) oo.get(main.gson);
                     answers.clear();
                     Answers.removeAll();
                     int qIdx=1;
                     int eIdx=1;
-                    for(EMAnswer answer : cStudRating.getAnswers()){
+                    for(SAAnswer answer : cStudRating.getAnswers()){
                         if (answer.getTask().getRef().getType()==Values.TaskQuestion){
                             Answers.add("Вопрос "+qIdx++);
                             answers.add(answer);
                             }
                         }
-                    for(EMAnswer answer : cStudRating.getAnswers()){
+                    for(SAAnswer answer : cStudRating.getAnswers()){
                         if (answer.getTask().getRef().getType()==Values.TaskExercise){
                             Answers.add("Задача "+eIdx++);
                             answers.add(answer);
@@ -2730,7 +2730,7 @@ public class EMExamAdminPanel extends BasePanel{
         new OK(200, 200, "Добавить сообщение к ответу", new I_Button() {
             @Override
             public void onPush() {
-                final EMMessage message = new EMMessage();
+                final SAMessage message = new SAMessage();
                 message.setText(AnswerMessageText.getText());
                 message.getAuthor().setOid(main.loginUser.getOid());
                 new APICall<JLong>(main) {
