@@ -5,6 +5,7 @@
  */
 package romanow.abc.desktop;
 
+import com.google.gson.Gson;
 import lombok.Getter;
 import retrofit2.Call;
 import romanow.abc.bridge.APICallSync;
@@ -26,6 +27,7 @@ import romanow.abc.core.entity.baseentityes.JLong;
 import romanow.abc.core.entity.subjectarea.*;
 import romanow.abc.core.entity.users.Account;
 import romanow.abc.core.entity.users.User;
+import romanow.abc.core.mongo.*;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.excel.ExcelX2;
@@ -41,7 +43,15 @@ import java.util.*;
  * @author romanow
  */
 public class PRSSemesterAdminPanel extends BasePanel{
-
+    private ArrayList<User> teachers = new ArrayList<>();
+    private ArrayList<SAGroupRating> allRatings = new ArrayList<>();        // Список рейтингов
+    private ArrayList<SAGroupRating> notAssigned = new ArrayList<>();       // Список рейтингов
+    private SATeacher current;
+    public void initPanel(MainBaseFrame main0){
+        super.initPanel(main0);
+        initComponents();
+        refreshTeachers();
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -55,12 +65,12 @@ public class PRSSemesterAdminPanel extends BasePanel{
         TaskTypeLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        Disciplines = new java.awt.Choice();
-        Themes = new java.awt.Choice();
+        Teachers = new java.awt.Choice();
+        RatingsAssigned = new java.awt.Choice();
         RefreshAll = new javax.swing.JButton();
-        TutorPermissionAdd = new javax.swing.JButton();
-        TutorPermissionRemove = new javax.swing.JButton();
-        Tasks = new java.awt.Choice();
+        RatingAdd = new javax.swing.JButton();
+        RatingRemove = new javax.swing.JButton();
+        RatingsNotAssigned = new java.awt.Choice();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -77,21 +87,21 @@ public class PRSSemesterAdminPanel extends BasePanel{
         add(jLabel3);
         jLabel3.setBounds(20, 50, 160, 16);
 
-        Disciplines.addItemListener(new java.awt.event.ItemListener() {
+        Teachers.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                DisciplinesItemStateChanged(evt);
+                TeachersItemStateChanged(evt);
             }
         });
-        add(Disciplines);
-        Disciplines.setBounds(70, 30, 270, 20);
+        add(Teachers);
+        Teachers.setBounds(70, 30, 270, 20);
 
-        Themes.addItemListener(new java.awt.event.ItemListener() {
+        RatingsAssigned.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ThemesItemStateChanged(evt);
+                RatingsAssignedItemStateChanged(evt);
             }
         });
-        add(Themes);
-        Themes.setBounds(20, 70, 320, 20);
+        add(RatingsAssigned);
+        RatingsAssigned.setBounds(20, 70, 320, 20);
 
         RefreshAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
         RefreshAll.setBorderPainted(false);
@@ -104,60 +114,197 @@ public class PRSSemesterAdminPanel extends BasePanel{
         add(RefreshAll);
         RefreshAll.setBounds(20, 20, 30, 30);
 
-        TutorPermissionAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/up.PNG"))); // NOI18N
-        TutorPermissionAdd.setBorderPainted(false);
-        TutorPermissionAdd.setContentAreaFilled(false);
-        TutorPermissionAdd.addActionListener(new java.awt.event.ActionListener() {
+        RatingAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/up.PNG"))); // NOI18N
+        RatingAdd.setBorderPainted(false);
+        RatingAdd.setContentAreaFilled(false);
+        RatingAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TutorPermissionAddActionPerformed(evt);
+                RatingAddActionPerformed(evt);
             }
         });
-        add(TutorPermissionAdd);
-        TutorPermissionAdd.setBounds(350, 110, 30, 30);
+        add(RatingAdd);
+        RatingAdd.setBounds(350, 110, 30, 30);
 
-        TutorPermissionRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
-        TutorPermissionRemove.setBorderPainted(false);
-        TutorPermissionRemove.setContentAreaFilled(false);
-        TutorPermissionRemove.addActionListener(new java.awt.event.ActionListener() {
+        RatingRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
+        RatingRemove.setBorderPainted(false);
+        RatingRemove.setContentAreaFilled(false);
+        RatingRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TutorPermissionRemoveActionPerformed(evt);
+                RatingRemoveActionPerformed(evt);
             }
         });
-        add(TutorPermissionRemove);
-        TutorPermissionRemove.setBounds(350, 70, 30, 30);
+        add(RatingRemove);
+        RatingRemove.setBounds(350, 70, 30, 30);
 
-        Tasks.addItemListener(new java.awt.event.ItemListener() {
+        RatingsNotAssigned.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                TasksItemStateChanged(evt);
+                RatingsNotAssignedItemStateChanged(evt);
             }
         });
-        add(Tasks);
-        Tasks.setBounds(20, 110, 320, 20);
+        add(RatingsNotAssigned);
+        RatingsNotAssigned.setBounds(20, 110, 320, 20);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void RefreshAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshAllActionPerformed
+    public void refreshTeachers(){
+        DBQueryList query =  new DBQueryList().
+            add(new DBQueryInt(I_DBQuery.ModeEQ,"typeId",Values.UserTeacher)).
+            add(new DBQueryBoolean("valid",true));
+        final String xmlQuery = new DBXStream().toXML(query);
+        new APICall<ArrayList<DBRequest>>(null){
+            @Override
+            public Call<ArrayList<DBRequest>> apiFun() {
+                return main.getService().getEntityListByQuery(main.getDebugToken(),"User",xmlQuery,1);
+                }
+            @Override
+            public void onSucess(ArrayList<DBRequest> oo) {
+                teachers.clear();
+                Teachers.removeAll();
+                for(DBRequest dd : oo){
+                    try {
+                        User ss = (User) dd.get(new Gson());
+                        teachers.add(ss);
+                        Teachers.add(ss.getTitle());
+                        } catch (UniException e) {
+                            System.out.println(e);
+                            }
+                    }
+                loadRatings();
+                }
+            };
+        }
 
+    public void loadRatings(){
+        new APICall<ArrayList<DBRequest>>(null){
+            @Override
+            public Call<ArrayList<DBRequest>> apiFun() {
+                return main.getService().getEntityList(main.getDebugToken(),"SAGroupRating",Values.GetAllModeActual,0);
+                }
+            @Override
+            public void onSucess(ArrayList<DBRequest> oo) {
+                allRatings.clear();
+                for(DBRequest dd : oo){
+                    try {
+                        SAGroupRating ss = (SAGroupRating) dd.get(new Gson());
+                        allRatings.add(ss);
+                        } catch (UniException e) {
+                            System.out.println(e);
+                            }
+                        }
+                loadTeacherRatings();
+                }
+            };
+        }
+    public void loadTeacherRatings(){
+        RatingsAssigned.removeAll();
+        RatingsNotAssigned.removeAll();
+        if (Teachers.getItemCount()==0){
+            return;
+            }
+        int idx = Teachers.getSelectedIndex();
+        final long userOid = teachers.get(idx).getOid();
+        DBQueryList query =  new DBQueryList().
+                add(new DBQueryLong(I_DBQuery.ModeEQ,"user",userOid)).
+                add(new DBQueryBoolean("valid",true));
+        final String xmlQuery = new DBXStream().toXML(query);
+        new APICall<ArrayList<DBRequest>>(null){
+            @Override
+            public Call<ArrayList<DBRequest>> apiFun() {
+                return main.getService().getEntityListByQuery(main.getDebugToken(),"SATeacher",xmlQuery,1);
+                }
+            @Override
+            public void onSucess(ArrayList<DBRequest> oo) {
+                if (oo.size()==0){
+                    current = new SATeacher();
+                    current.getUser().setOid(userOid);
+                    addNewTeacher();
+                    showRatingAssignment();
+                    return;
+                    }
+                try {
+                    current = (SATeacher)  oo.get(0).get(new Gson());
+                    showRatingAssignment();
+                    } catch (UniException e) {
+                        System.out.println(e);
+                        }
+                    }
+                };
+            }
+
+        public void showRatingAssignment(){
+            RatingsAssigned.removeAll();
+            for(EntityLink<SAGroupRating> ss : current.getRatings())
+                RatingsAssigned.add(ss.getTitle());
+            RatingsNotAssigned.removeAll();
+            notAssigned.clear();
+            for(SAGroupRating ss : allRatings)
+                if (current.getRatings().getById(ss.getOid())==null){
+                    notAssigned.add(ss);
+                    RatingsNotAssigned.add(ss.getTitle());
+                }
+            }
+        public void addNewTeacher(){
+            new APICall<JLong>(null) {
+                @Override
+                public Call<JLong> apiFun() {
+                    return main.getService().addEntity(main.debugToken,new DBRequest(current,main.gson),0);
+                    }
+                @Override
+                public void onSucess(JLong oo) {
+                    }
+                };
+            }
+
+    private void RefreshAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshAllActionPerformed
+        refreshTeachers();
     }//GEN-LAST:event_RefreshAllActionPerformed
 
-    private void TutorPermissionAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TutorPermissionAddActionPerformed
+    private void RatingAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingAddActionPerformed
+        if (RatingsNotAssigned.getItemCount()==0 || teachers.size()==0)
+            return;
+        int idx = RatingsNotAssigned.getSelectedIndex();
+        long oid = notAssigned.get(idx).getOid();
+        current.getRatings().add(oid);
+        new APICall<JEmpty>(null) {
+            @Override
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken,new DBRequest(current,main.gson));
+            }
+            @Override
+            public void onSucess(JEmpty oo) {
+                loadTeacherRatings();
+            }
+        };
+    }//GEN-LAST:event_RatingAddActionPerformed
 
-    }//GEN-LAST:event_TutorPermissionAddActionPerformed
+    private void RatingRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingRemoveActionPerformed
+        if (RatingsAssigned.getItemCount()==0 || teachers.size()==0)
+            return;
+        int idx = RatingsAssigned.getSelectedIndex();
+        current.getRatings().remove(idx);
+        new APICall<JEmpty>(null) {
+            @Override
+            public Call<JEmpty> apiFun() {
+                return main.service.updateEntity(main.debugToken,new DBRequest(current,main.gson));
+                }
+            @Override
+            public void onSucess(JEmpty oo) {
+                loadTeacherRatings();
+                }
+            };
 
-    private void TutorPermissionRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TutorPermissionRemoveActionPerformed
+    }//GEN-LAST:event_RatingRemoveActionPerformed
 
-    }//GEN-LAST:event_TutorPermissionRemoveActionPerformed
+    private void TeachersItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TeachersItemStateChanged
+        loadTeacherRatings();
+    }//GEN-LAST:event_TeachersItemStateChanged
 
-    private void DisciplinesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DisciplinesItemStateChanged
+    private void RatingsAssignedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingsAssignedItemStateChanged
 
-    }//GEN-LAST:event_DisciplinesItemStateChanged
+    }//GEN-LAST:event_RatingsAssignedItemStateChanged
 
-    private void ThemesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ThemesItemStateChanged
+    private void RatingsNotAssignedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingsNotAssignedItemStateChanged
 
-    }//GEN-LAST:event_ThemesItemStateChanged
-
-    private void TasksItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TasksItemStateChanged
-
-    }//GEN-LAST:event_TasksItemStateChanged
+    }//GEN-LAST:event_RatingsNotAssignedItemStateChanged
 
 
 
@@ -179,13 +326,13 @@ public class PRSSemesterAdminPanel extends BasePanel{
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private java.awt.Choice Disciplines;
+    private javax.swing.JButton RatingAdd;
+    private javax.swing.JButton RatingRemove;
+    private java.awt.Choice RatingsAssigned;
+    private java.awt.Choice RatingsNotAssigned;
     private javax.swing.JButton RefreshAll;
     private javax.swing.JLabel TaskTypeLabel;
-    private java.awt.Choice Tasks;
-    private java.awt.Choice Themes;
-    private javax.swing.JButton TutorPermissionAdd;
-    private javax.swing.JButton TutorPermissionRemove;
+    private java.awt.Choice Teachers;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     // End of variables declaration//GEN-END:variables
