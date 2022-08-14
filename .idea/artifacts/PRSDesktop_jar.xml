@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="EMDesktop:jar">
+  <artifact type="jar" name="PRSDesktop:jar">
     <output-path>$PROJECT_DIR$</output-path>
     <root id="archive" name="EMDesktop.jar">
       <element id="module-output" name="ABCCore" />

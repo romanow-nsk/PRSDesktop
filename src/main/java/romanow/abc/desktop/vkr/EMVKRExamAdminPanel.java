@@ -292,7 +292,7 @@ public class EMVKRExamAdminPanel extends BasePanel {
         boolean isTask = cTask.getTask().getTaskType()==TaskBean.TaskTypeEnum.EXERCISE;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
-        TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),65));
+        TaskText.setText(UtilsPRS.formatSize(cTask.getTask().getText(),65));
         boolean bb = cTask.getArtefact()!=null && cTask.getArtefact().getId()!=0;
         TaskArtifactView.setEnabled(bb);
         TaskArtifactDownLoad.setEnabled(bb);
@@ -484,8 +484,8 @@ public class EMVKRExamAdminPanel extends BasePanel {
         long themeId = cAnswer.getTask().getTask().getThemeId();
         FullThemeBean theme = disciplineThemesMap.get(themeId);
         String themeText = theme.getTheme().getName();
-        AnswerThemeTask.append(UtilsEM.formatSize(themeText,70)+"\n-----------------------------------------\n");
-        AnswerThemeTask.append(UtilsEM.formatSize(cAnswer.getTask().getTask().getText(),70));
+        AnswerThemeTask.append(UtilsPRS.formatSize(themeText,70)+"\n-----------------------------------------\n");
+        AnswerThemeTask.append(UtilsPRS.formatSize(cAnswer.getTask().getTask().getText(),70));
         AnswerMessages.removeAll();
         int n=1;
         for(FullMessageBean message : cAnswer.getMessages()){
@@ -517,7 +517,7 @@ public class EMVKRExamAdminPanel extends BasePanel {
         if (cAnswer==null || cAnswer.getMessages().size()==0)
             return;
         cAnswerMessage = cAnswer.getMessages().get(AnswerMessages.getSelectedIndex());
-        AnswerMessageText.setText(UtilsEM.formatSize(cAnswerMessage.getMessage().getText(),70));
+        AnswerMessageText.setText(UtilsPRS.formatSize(cAnswerMessage.getMessage().getText(),70));
         AnswerArtifactUpload.setEnabled(true);
         boolean bb = cAnswerMessage.getArtefact()!=null && cAnswerMessage.getArtefact().getId()!=0;
         AnswerArtifactDownLoad.setEnabled(bb);
@@ -639,7 +639,7 @@ public class EMVKRExamAdminPanel extends BasePanel {
         boolean isTask = cTask.getTask().getTaskType()== TaskBean.TaskTypeEnum.EXERCISE;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
-        TaskText.setText(UtilsEM.formatSize(cTask.getTask().getText(),60));
+        TaskText.setText(UtilsPRS.formatSize(cTask.getTask().getText(),60));
         boolean bb = cTask.getArtefact()!=null;
         TaskArtifactView.setEnabled(bb);
         TaskArtifactDownLoad.setEnabled(bb);
@@ -2007,7 +2007,7 @@ public class EMVKRExamAdminPanel extends BasePanel {
                             System.out.println(values[0] + " " + values[1]);
                             AccountBean account = new AccountBean();
                             account.setUsername(values[1]);
-                            String ss[] = UtilsEM.parseFIO(values[0]);
+                            String ss[] = UtilsPRS.parseFIO(values[0]);
                             account.setName(ss[0]);
                             account.setSurname(ss[1]);
                             account.setPassword("1234");                    // TODO - пустой-не пустой

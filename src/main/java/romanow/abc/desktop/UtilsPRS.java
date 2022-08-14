@@ -1,6 +1,6 @@
 package romanow.abc.desktop;
 
-public class UtilsEM {
+public class UtilsPRS {
     public static String[]  parseFIO(String fio){
         fio = fio.trim();
         String out[]={"","",""};

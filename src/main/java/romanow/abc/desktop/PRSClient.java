@@ -36,8 +36,8 @@ public class PRSClient extends Client {
                 {Values.UserAdminType}));
         panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new int[]
                 {Values.UserAdminType}));
-        panelDescList.add(new PanelDescriptor("Тьютор",PRSExamAdminPanel.class,new int[]
-                {Values.UserAdminType,Values.UserEMTutor}));
+        panelDescList.add(new PanelDescriptor("Экзамены",PRSExamAdminPanel.class,new int[]
+                {Values.UserAdminType,Values.UserTutor}));
         }
     //-------------------------------------------------------------------------------------------------------
     @Override

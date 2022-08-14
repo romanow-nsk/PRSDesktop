@@ -133,7 +133,7 @@ public class PRSExamAdminPanel extends BasePanel{
         new APICall<ArrayList<DBRequest>>(main){
             @Override
             public Call<ArrayList<DBRequest>> apiFun() {
-                return main.service.getEntityList(main.debugToken,"EMDiscipline", Values.GetAllModeActual,0);
+                return main.service.getEntityList(main.debugToken,"SADiscipline", Values.GetAllModeActual,0);
                 }
             @Override
             public void onSucess(ArrayList<DBRequest> oo) {
@@ -205,7 +205,7 @@ public class PRSExamAdminPanel extends BasePanel{
         new APICall<ArrayList<DBRequest>>(main) {
             @Override
             public Call<ArrayList<DBRequest>> apiFun() {
-                return main.service.getEntityList(main.debugToken,"EMGroup",Values.GetAllModeActual,0);
+                return main.service.getEntityList(main.debugToken,"SAGroup",Values.GetAllModeActual,0);
                 }
             @Override
             public void onSucess(ArrayList<DBRequest> oo) {
@@ -237,7 +237,7 @@ public class PRSExamAdminPanel extends BasePanel{
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
-                return main.service.getEntity(main.debugToken,"EMGroup",cGroup.getOid(),2);
+                return main.service.getEntity(main.debugToken,"SAGroup",cGroup.getOid(),2);
                 }
             @Override
             public void onSucess(DBRequest oo) {
@@ -272,7 +272,7 @@ public class PRSExamAdminPanel extends BasePanel{
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
-                return main.service.getEntity(main.debugToken,"EMDiscipline",cDiscipline.getOid(),1);
+                return main.service.getEntity(main.debugToken,"SADiscipline",cDiscipline.getOid(),1);
                 }
             @Override
             public void onSucess(DBRequest oo) {
@@ -396,15 +396,15 @@ public class PRSExamAdminPanel extends BasePanel{
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
-                return main.service.getEntity(main.debugToken, "EMTheme",cTheme.getOid(),2);
+                return main.service.getEntity(main.debugToken, "SATheme",cTheme.getOid(),2);
                 }
             @Override
             public void onSucess(DBRequest oo) {
                 try {
                     cTheme = (SATheme) oo.get(main.gson);
-                    //cTheme.getTasks().sort(new Comparator<EMTask>() {
+                    //cTheme.getTasks().sort(new Comparator<SATask>() {
                     //    @Override
-                    //    public int compare(EMTask o1, EMTask o2) {              // Сортировать по id (в порядке поступления)
+                    //    public int compare(SATask o1, SATask o2) {              // Сортировать по id (в порядке поступления)
                     //        return o1.getOwnRating() - o2.getOid() > 0 ? 1 : -1;
                     //        }
                     //    });
@@ -443,7 +443,7 @@ public class PRSExamAdminPanel extends BasePanel{
         boolean isTask = cTask.getType()== Values.TaskExercise;
         TaskType.setSelected(isTask);
         TaskTypeLabel.setText(isTask ? "Задача" : "Вопрос (тест)");
-        TaskText.setText(UtilsEM.formatSize(cTask.getTaskText(),65));
+        TaskText.setText(UtilsPRS.formatSize(cTask.getTaskText(),65));
         boolean bb = cTask.getArtifact().getOid()!=0;
         TaskArtifactView.setEnabled(bb);
         TaskArtifactDownLoad.setEnabled(bb);
@@ -1469,7 +1469,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 new APICall<JBoolean>(main) {
                     @Override
                     public Call<JBoolean> apiFun() {
-                        return main.service.deleteById(main.debugToken,"EMTask",cTask.getOid());
+                        return main.service.deleteById(main.debugToken,"SATask",cTask.getOid());
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
@@ -1489,7 +1489,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 final SATask task = new SATask();
                 task.setTaskText("Новый вопрос/задача");
                 task.setType(Values.TaskQuestion);
-                task.getEMTheme().setOid(cTheme.getOid());
+                task.getSATheme().setOid(cTheme.getOid());
                 new APICall<JLong>(main) {
                     @Override
                     public Call<JLong> apiFun() {
@@ -1534,7 +1534,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 new APICall<JBoolean>(main) {
                     @Override
                     public Call<JBoolean> apiFun() {
-                        return main.service.deleteById(main.debugToken,"EMDiscipline",cDiscipline.getOid());
+                        return main.service.deleteById(main.debugToken,"SADiscipline",cDiscipline.getOid());
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
@@ -1553,7 +1553,7 @@ public class PRSExamAdminPanel extends BasePanel{
             public void onEnter(String value) {
                 SATheme bean = new SATheme();
                 bean.setName(value);
-                bean.getEMDiscipline().setOid(cDiscipline.getOid());
+                bean.getSADiscipline().setOid(cDiscipline.getOid());
                 new APICall<JLong>(main) {
                     @Override
                     public Call<JLong> apiFun() {
@@ -1577,7 +1577,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 new APICall<JBoolean>(main) {
                     @Override
                     public Call<JBoolean> apiFun() {        // TODO - это удаление
-                        return main.service.deleteById(main.debugToken,"EMTheme",cTheme.getOid());
+                        return main.service.deleteById(main.debugToken,"SATheme",cTheme.getOid());
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
@@ -1688,7 +1688,7 @@ public class PRSExamAdminPanel extends BasePanel{
                             for (idx1 = 0; idx1 < owtImportData.size(); idx1++) {
                                 idx2=-1;
                                 owtTheme = owtImportData.get(idx1);
-                                theme.getEMDiscipline().setOid(oo.getValue());
+                                theme.getSADiscipline().setOid(oo.getValue());
                                 theme.setName(owtTheme.getQuestion());
                                 final JLong theme1 = new APICallSync<JLong>() {
                                     @Override
@@ -1697,7 +1697,7 @@ public class PRSExamAdminPanel extends BasePanel{
                                         }
                                     }.call();
                                 for(idx2=0;idx2 < owtTheme.size();idx2++){
-                                    task.getEMTheme().setOid(theme1.getValue());
+                                    task.getSATheme().setOid(theme1.getValue());
                                     task.setType(Values.TaskQuestion);
                                     task.setTaskText(owtTheme.get(idx2).toString());
                                     new APICallSync<JLong>() {
@@ -1761,7 +1761,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 new APICall<JBoolean>(main) {
                     @Override
                     public Call<JBoolean> apiFun() {
-                        return main.service.deleteById(main.debugToken,"EMGroup",cGroup.getOid());
+                        return main.service.deleteById(main.debugToken,"SAGroup",cGroup.getOid());
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
@@ -1820,12 +1820,12 @@ public class PRSExamAdminPanel extends BasePanel{
                             User user = new User();
                             account.setLogin(values[1]);
                             user.setPost(values[1]);
-                            String ss[] = UtilsEM.parseFIO(values[0]);
+                            String ss[] = UtilsPRS.parseFIO(values[0]);
                             user.setLastName(ss[0]);
                             user.setFirstName(ss[1]);
                             user.setMiddleName(ss[2]);
                             account.setPassword("1234");
-                            user.setTypeId(Values.UserEMStudent);
+                            user.setTypeId(Values.UserStudent);
                             user.setAccount(account);
                             SAStudent student = new SAStudent();
                             student.setState(Values.StudentStateNormal);
@@ -1954,7 +1954,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 ruleBean.setQuestionRating(20);
                 ruleBean.setOneExcerciceDefBall(10);
                 ruleBean.setOneQuestionDefBall(2);
-                ruleBean.getEMDiscipline().setOid(cDiscipline.getOid());
+                ruleBean.getSADiscipline().setOid(cDiscipline.getOid());
                 ruleBean.setMinimalRating(0);
                 new APICall<JLong>(main) {
                     @Override
@@ -2028,7 +2028,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 new APICall<JBoolean>(main) {
                     @Override
                     public Call<JBoolean> apiFun() {
-                        return main.service.deleteById(main.debugToken,"EMExamRule",cRule.getOid());
+                        return main.service.deleteById(main.debugToken,"SAExamRule",cRule.getOid());
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
@@ -2091,7 +2091,7 @@ public class PRSExamAdminPanel extends BasePanel{
             public void onPush() {
                 final SAGroupRating exam = new SAGroupRating();
                 exam.getExamRule().setOid(cRule.getOid());
-                exam.getEMDiscipline().setOid(cDiscipline.getOid());
+                exam.getSADiscipline().setOid(cDiscipline.getOid());
                 exam.getGroup().setOid(cGroup.getOid());
                 new APICall<JLong>(main) {
                     @Override
@@ -2137,7 +2137,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 SAExamTaking taking = new SAExamTaking();
                 taking.setState(Values.TakingEdit);
                 taking.setName("Новый прием экзамена");
-                taking.getEMDiscipline().setOid(cDiscipline.getOid());
+                taking.getSADiscipline().setOid(cDiscipline.getOid());
                 new APICall<JLong>(main) {
                     @Override
                     public Call<JLong> apiFun() {
@@ -2161,7 +2161,7 @@ public class PRSExamAdminPanel extends BasePanel{
                 new APICall<JBoolean>(main) {
                     @Override
                     public Call<JBoolean> apiFun() {
-                        return main.service.deleteById(main.debugToken,"EMTacking", cTaking.getOid());
+                        return main.service.deleteById(main.debugToken,"SATacking", cTaking.getOid());
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
@@ -2399,11 +2399,11 @@ public class PRSExamAdminPanel extends BasePanel{
             return;
         cAnswer = answers.get(Answers.getSelectedIndex());
         AnswerState.setText(answerStateMap.get(cAnswer.getState()).title());
-        long themeId = cAnswer.getTask().getRef().getEMTheme().getOid();
+        long themeId = cAnswer.getTask().getRef().getSATheme().getOid();
         SATheme theme = cDiscipline.getThemes().getById(themeId);
         String themeText = theme.getName();
-        AnswerThemeTask.append(UtilsEM.formatSize(themeText,70)+"\n-----------------------------------------\n");
-        AnswerThemeTask.append(UtilsEM.formatSize(cAnswer.getTask().getRef().getTaskText(),70));
+        AnswerThemeTask.append(UtilsPRS.formatSize(themeText,70)+"\n-----------------------------------------\n");
+        AnswerThemeTask.append(UtilsPRS.formatSize(cAnswer.getTask().getRef().getTaskText(),70));
         AnswerMessages.removeAll();
         int n=1;
         for(EntityLink<SAMessage> message : cAnswer.getMessages()){
@@ -2416,7 +2416,7 @@ public class PRSExamAdminPanel extends BasePanel{
         AnswerBallSelector.setEnabled(cAnswer.getState()==Values.AnswerCheck);
         AnswerBallSelector.removeAll();
         if(cAnswer.getState()==Values.AnswerCheck){
-            SAGroupRating rating = cDiscipline.getRatings().getById(cStudRating.getEMGroupRating().getOid());
+            SAGroupRating rating = cDiscipline.getRatings().getById(cStudRating.getSAGroupRating().getOid());
             SAExamRule rule = cDiscipline.getRules().getById(rating.getExamRule().getOid());
             boolean question = cAnswer.getTask().getRef().getType()==Values.TaskQuestion;
             int maxBall = question ? rule.getOneQuestionDefBall() : rule.getOneExcerciceDefBall();
@@ -2438,7 +2438,7 @@ public class PRSExamAdminPanel extends BasePanel{
         if (cAnswer==null || cAnswer.getMessages().size()==0)
             return;
         cAnswerMessage = cAnswer.getMessages().get(AnswerMessages.getSelectedIndex()).getRef();
-        AnswerMessageText.setText(UtilsEM.formatSize(cAnswerMessage.getText(),70));
+        AnswerMessageText.setText(UtilsPRS.formatSize(cAnswerMessage.getText(),70));
         AnswerArtifactUpload.setEnabled(true);
         AnswerArtifactDownLoad.setEnabled( cAnswerMessage.getArtifact().getOid()!=0);
         AnswerArtifactView.setEnabled( cAnswerMessage.getArtifact().getOid()!=0);
@@ -2452,7 +2452,7 @@ public class PRSExamAdminPanel extends BasePanel{
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
-                return main.service.getEntity(main.debugToken,"EMStudRating",cStudRating.getOid(),3);
+                return main.service.getEntity(main.debugToken,"SAStudRating",cStudRating.getOid(),3);
                 }
             @Override
             public void onSucess(DBRequest oo) {

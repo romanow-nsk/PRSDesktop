@@ -1,6 +1,6 @@
 package romanow.abc.convert.onewayticket;
 
-import romanow.abc.desktop.UtilsEM;
+import romanow.abc.desktop.UtilsPRS;
 
 import java.util.ArrayList;
 
@@ -35,7 +35,7 @@ public class OWTTask extends ArrayList<String> {
     public void toLog(StringBuffer log){
         log.append("---");
         for(String qq : this)
-            log.append(UtilsEM.formatSize(qq,60)+"\n");
+            log.append(UtilsPRS.formatSize(qq,60)+"\n");
         }
 
 }

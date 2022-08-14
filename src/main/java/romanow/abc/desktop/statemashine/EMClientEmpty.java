@@ -9,7 +9,7 @@ import romanow.abc.desktop.PRSExamAdminPanel;
 public abstract class EMClientEmpty implements I_ClientTransition{
     public boolean onlyForTakingState(int state, PRSExamAdminPanel panel, StateEntity env){
         SAStudRating rating = panel.getCStudRating();
-        SAExamTaking taking = panel.getCDiscipline().getTakings().getById(rating.getEMExamTaking().getOid());
+        SAExamTaking taking = panel.getCDiscipline().getTakings().getById(rating.getSAExamTaking().getOid());
         return taking.getState()==state;
         }
     public String onlyInTaking(PRSExamAdminPanel panel, StateEntity env){

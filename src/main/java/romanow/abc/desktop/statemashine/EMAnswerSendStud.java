@@ -10,7 +10,7 @@ public class EMAnswerSendStud implements I_ClientTransition {
     public String testTransition(PRSExamAdminPanel panel, StateEntity env) {
         if (panel.getCStudRating().getState()!=Values.StudRatingOnExam)
             return "Отправка ответов закончена студентом";
-        long oid = panel.getCStudRating().getEMExamTaking().getOid();
+        long oid = panel.getCStudRating().getSAExamTaking().getOid();
         SAExamTaking taking = panel.getCDiscipline().getTakings().getById(oid);
         if (taking.getState()!=Values.TakingInProcess)
             return "Отправка ответов закончена преподавателем";

@@ -15,6 +15,6 @@ public class EMStudRatingTakingCancel implements I_ClientTransition {
     }
     @Override
     public void onTransitionBefore(PRSExamAdminPanel panel, StateEntity env) {
-        ((SAStudRating)env).getEMExamTaking().setOid(0);
+        ((SAStudRating)env).getSAExamTaking().setOid(0);
         }
 }

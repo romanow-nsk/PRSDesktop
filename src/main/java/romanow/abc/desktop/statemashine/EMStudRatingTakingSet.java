@@ -24,6 +24,6 @@ public class EMStudRatingTakingSet implements I_ClientTransition {
     @Override
     public void onTransitionBefore(PRSExamAdminPanel panel, StateEntity env) {
         SAStudRating rating = (SAStudRating)env;
-        rating.getEMExamTaking().setOid(panel.getCTaking().getOid());
+        rating.getSAExamTaking().setOid(panel.getCTaking().getOid());
         }
 }
