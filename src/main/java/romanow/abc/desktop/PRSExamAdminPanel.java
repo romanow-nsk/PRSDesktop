@@ -597,6 +597,7 @@ public class PRSExamAdminPanel extends BasePanel{
         add(TaskTypeLabel);
         TaskTypeLabel.setBounds(20, 100, 100, 16);
 
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Предмет");
         add(jLabel2);
         jLabel2.setBounds(60, 20, 70, 16);
@@ -814,6 +815,7 @@ public class PRSExamAdminPanel extends BasePanel{
         add(DisciplineSaveImport);
         DisciplineSaveImport.setBounds(405, 5, 40, 30);
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setText("Группа");
         add(jLabel4);
         jLabel4.setBounds(530, 20, 70, 16);
@@ -1047,6 +1049,7 @@ public class PRSExamAdminPanel extends BasePanel{
         add(jLabel12);
         jLabel12.setBounds(350, 390, 80, 16);
 
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel14.setText("Группы по дисциплине (рейтинги)");
         add(jLabel14);
         jLabel14.setBounds(460, 130, 250, 16);

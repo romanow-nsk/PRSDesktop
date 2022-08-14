@@ -33,6 +33,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="12" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="&#x41f;&#x440;&#x435;&#x434;&#x43c;&#x435;&#x442;"/>
       </Properties>
       <Constraints>
@@ -360,6 +363,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="12" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="&#x413;&#x440;&#x443;&#x43f;&#x43f;&#x430;"/>
       </Properties>
       <Constraints>
@@ -738,6 +744,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel14">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="12" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="&#x413;&#x440;&#x443;&#x43f;&#x43f;&#x44b; &#x43f;&#x43e; &#x434;&#x438;&#x441;&#x446;&#x438;&#x43f;&#x43b;&#x438;&#x43d;&#x435; (&#x440;&#x435;&#x439;&#x442;&#x438;&#x43d;&#x433;&#x438;)"/>
       </Properties>
       <Constraints>
