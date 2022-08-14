@@ -938,9 +938,9 @@ public class PRSExamAdminPanel extends BasePanel{
         add(Rules);
         Rules.setBounds(20, 410, 230, 20);
 
-        jLabel9.setText("Регламенты");
+        jLabel9.setText("Регламенты экзамена");
         add(jLabel9);
-        jLabel9.setBounds(180, 390, 80, 20);
+        jLabel9.setBounds(150, 385, 160, 20);
 
         RuleExceciseForOne.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {

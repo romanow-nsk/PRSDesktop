@@ -4,8 +4,8 @@
     <mapping directory="$PROJECT_DIR$/../../ABC/ABCCore" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../ABC/ABCDataServer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../ABC/ABCDesktop" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../EMCore" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../EMDataServer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../PRSCore" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../PRSDataServer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
 </project>

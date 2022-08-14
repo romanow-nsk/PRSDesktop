@@ -8,11 +8,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="EMDesktop" />
+        <module name="PRSCore" />
         <module name="EMDataServer" />
-        <module name="ABCDesktop" />
+        <module name="PRSDesktop" />
         <module name="ABCCore" />
-        <module name="EMCore" />
+        <module name="PRSDataServer" />
         <module name="ABCDataServer" />
+        <module name="ABCDesktop" />
+        <module name="EMCore" />
       </profile>
     </annotationProcessing>
   </component>

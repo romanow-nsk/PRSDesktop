@@ -556,11 +556,11 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x420;&#x435;&#x433;&#x43b;&#x430;&#x43c;&#x435;&#x43d;&#x442;&#x44b;"/>
+        <Property name="text" type="java.lang.String" value="&#x420;&#x435;&#x433;&#x43b;&#x430;&#x43c;&#x435;&#x43d;&#x442;&#x44b; &#x44d;&#x43a;&#x437;&#x430;&#x43c;&#x435;&#x43d;&#x430;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="180" y="390" width="80" height="20"/>
+          <AbsoluteConstraints x="150" y="385" width="160" height="20"/>
         </Constraint>
       </Constraints>
     </Component>
