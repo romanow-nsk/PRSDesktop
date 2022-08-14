@@ -1,4 +1,4 @@
-package romanow.abc.desktop;
+package romanow.abc.desktop.vkr;
 
 import romanow.abc.bridge.constants.UserRole;
 

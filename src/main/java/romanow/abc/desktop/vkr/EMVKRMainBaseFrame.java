@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package romanow.abc.desktop;
+package romanow.abc.desktop.vkr;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +15,8 @@ import romanow.abc.core.utils.FileNameExt;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import romanow.abc.desktop.I_Value;
+import romanow.abc.desktop.MainBaseFrame;
 import romanow.abc.vkr.exam.model.ArtefactBean;
 
 import java.io.*;

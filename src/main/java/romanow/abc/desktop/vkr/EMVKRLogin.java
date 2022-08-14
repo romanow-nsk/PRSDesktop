@@ -1,7 +1,9 @@
-package romanow.abc.desktop;
+package romanow.abc.desktop.vkr;
 
 import romanow.abc.bridge.EMVKRConsoleClient;
 import romanow.abc.core.constants.ValuesBase;
+import romanow.abc.desktop.I_Button;
+import romanow.abc.desktop.I_LogArea;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +12,7 @@ import java.awt.*;
  *
  * @author romanow
  */
-public class EMVKRLogin extends JFrame implements I_LogArea{
+public class EMVKRLogin extends JFrame implements I_LogArea {
     private EMVKRMainBaseFrame main;
     private I_Button back;
     private EMVKRConsoleClient emClient = new EMVKRConsoleClient();
@@ -180,8 +182,8 @@ public class EMVKRLogin extends JFrame implements I_LogArea{
             return;
         }
         main.setClient(emClient);
-        main.debugToken = emClient.getToken();   // Токен новой сессии
-        main.loginUser.setTypeId(ValuesBase.UserAdminType);
+        main.setDebugToken(emClient.getToken());   // Токен новой сессии
+        main.loginUser().setTypeId(ValuesBase.UserAdminType);
         main.onLoginSuccess();
         back.onPush();
         dispose();

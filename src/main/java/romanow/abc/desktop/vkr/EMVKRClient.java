@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package romanow.abc.desktop;
+package romanow.abc.desktop.vkr;
 
 import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.API.RestAPIBase;
@@ -13,6 +13,7 @@ import romanow.abc.core.constants.ValuesBase;
 import romanow.abc.core.entity.baseentityes.JEmpty;
 import romanow.abc.core.entity.users.User;
 import retrofit2.Response;
+import romanow.abc.desktop.*;
 
 import java.util.ArrayList;
 
@@ -120,7 +121,7 @@ public class EMVKRClient extends EMVKRMainBaseFrame   {
                         BasePanel panel = (BasePanel) pp.view.newInstance();
                         if (panel instanceof LogPanel)
                             logPanel = (LogPanel)panel;
-                        panel.editMode = editMode;
+                        panel.setEditMode(editMode);
                         panel.initPanel(this);
                         panels.add(panel);
                         PanelList.add(pp.name, panel);

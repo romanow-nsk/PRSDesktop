@@ -8,6 +8,7 @@ package romanow.abc.desktop;
 import romanow.abc.core.entity.contacts.Mail;
 import romanow.abc.core.entity.contacts.Phone;
 import romanow.abc.core.entity.users.Person;
+import romanow.abc.desktop.vkr.EMVKRClient;
 
 /**
  *

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package romanow.abc.desktop;
+package romanow.abc.desktop.vkr;
 
 import retrofit2.Call;
 import romanow.abc.bridge.APICallSync;
@@ -15,6 +15,7 @@ import romanow.abc.core.UniException;
 import romanow.abc.core.constants.ConstValue;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
+import romanow.abc.desktop.*;
 import romanow.abc.desktop.exam.AnswerStateFactory;
 import romanow.abc.desktop.exam.ExamTakingStateFactory;
 import romanow.abc.desktop.exam.StudentRatingStateFactory;
@@ -33,7 +34,7 @@ import java.util.List;
  *
  * @author romanow
  */
-public class EMVKRExamAdminPanel extends BasePanel{
+public class EMVKRExamAdminPanel extends BasePanel {
     private List<DisciplineBean> disciplines = new ArrayList<>();       // Список дисциплин
     private FullDisciplineBean cDiscipline = null;                      // Текущая дисциплина
     private FullThemeBean cTheme = null;                                // Текущая тема
@@ -2755,7 +2756,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             public void onEnter(final ArtefactBean value) {
                 MessageBean message = new MessageBean();
                 message.setText(AnswerMessageText.getText());
-                message.setAccountId(main.loginUser.getOid());
+                message.setAccountId(main.loginUser().getOid());
                 new APICall<MessageBean>(main) {
                     @Override
                     public Call<MessageBean> apiFun() {
@@ -2784,7 +2785,7 @@ public class EMVKRExamAdminPanel extends BasePanel{
             public void onPush() {
                 final MessageBean message = new MessageBean();
                 message.setText(AnswerMessageText.getText());
-                message.setAccountId(main.loginUser.getOid());
+                message.setAccountId(main.loginUser().getOid());
                 new APICall<MessageBean>(main) {
                     @Override
                     public Call<MessageBean> apiFun() {
