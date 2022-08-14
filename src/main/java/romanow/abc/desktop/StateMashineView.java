@@ -18,10 +18,10 @@ public class StateMashineView {
     private final static int bWidth=150;
     private final int panelX0;
     private final int panelY0;
-    private final EMExamAdminPanel panel;
+    private final PRSExamAdminPanel panel;
     private final TransitionsFactory factory;
     private ArrayList<JButton> bList = new ArrayList<>();
-    public StateMashineView(EMExamAdminPanel client0,int panelX0, int panelY0, TransitionsFactory factory0) {
+    public StateMashineView(PRSExamAdminPanel client0,int panelX0, int panelY0, TransitionsFactory factory0) {
         this.panelX0 = panelX0;
         this.panelY0 = panelY0;
         factory = factory0;
@@ -53,7 +53,7 @@ public class StateMashineView {
             new APICall<JEmpty>(panel.main) {
                 @Override
                 public Call<JEmpty> apiFun() {
-                    return ((EMClient)panel.main).service2.execTransition(panel.main.debugToken,new DBRequest(stateObject,panel.main.gson));
+                    return ((PRSClient)panel.main).service2.execTransition(panel.main.debugToken,new DBRequest(stateObject,panel.main.gson));
                     }
                 @Override
                 public void onSucess(JEmpty oo) {
@@ -96,7 +96,7 @@ public class StateMashineView {
                         new APICall<JEmpty>(panel.main) {
                             @Override
                             public Call<JEmpty> apiFun() {
-                                return ((EMClient)panel.main).service2.execTransition(panel.main.debugToken,new DBRequest(stateObject,panel.main.gson));
+                                return ((PRSClient)panel.main).service2.execTransition(panel.main.debugToken,new DBRequest(stateObject,panel.main.gson));
                                 }
                             @Override
                             public void onSucess(JEmpty oo) {

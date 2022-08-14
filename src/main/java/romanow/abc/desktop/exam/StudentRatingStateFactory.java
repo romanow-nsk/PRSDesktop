@@ -1,10 +1,6 @@
 package romanow.abc.desktop.exam;
 
-import romanow.abc.exam.model.ExamBean;
-import romanow.abc.exam.model.StudentRatingBean;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import romanow.abc.vkr.exam.model.StudentRatingBean;
 
 public class StudentRatingStateFactory extends EnumStateFactory<StudentRatingBean.StudentRatingStateEnum> {
     public StudentRatingStateFactory(){

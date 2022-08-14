@@ -1,7 +1,5 @@
 package romanow.abc.desktop.exam;
 
-import romanow.abc.exam.model.ExamBean;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 

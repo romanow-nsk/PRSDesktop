@@ -1,7 +1,6 @@
 package romanow.abc.desktop.exam;
 
-import romanow.abc.exam.model.StudentBean;
-import romanow.abc.exam.model.StudentRatingBean;
+import romanow.abc.vkr.exam.model.StudentBean;
 
 public class StudentStateFactory extends EnumStateFactory<StudentBean.StatusEnum> {
     public StudentStateFactory(){

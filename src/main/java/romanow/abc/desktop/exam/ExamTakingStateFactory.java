@@ -1,9 +1,6 @@
 package romanow.abc.desktop.exam;
 
-import romanow.abc.exam.model.ExamBean;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import romanow.abc.vkr.exam.model.ExamBean;
 
 public class ExamTakingStateFactory extends EnumStateFactory<ExamBean.StateEnum> {
     public ExamTakingStateFactory(){

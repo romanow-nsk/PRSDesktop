@@ -14,8 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import romanow.abc.bridge.constants.UserRole;
 import romanow.abc.core.constants.ValuesBase;
 import romanow.abc.core.utils.Base64Coder;
-import romanow.abc.exam.SwaggerAPI.*;
-import romanow.abc.exam.model.*;
+import romanow.abc.vkr.exam.SwaggerAPI.*;
+import romanow.abc.vkr.exam.model.DisciplineBean;
 
 
 import java.io.IOException;
@@ -30,14 +30,19 @@ public class EMVKRConsoleClient {
     @Getter HashMap<UserRole,UserRole> roles=null;
     @Getter RestAPI service = null;
     @Getter AccountApi accountApi=null;
-    @Getter AnswerApi answerApi=null;
-    @Getter ArtefactApi artefactApi=null;
-    @Getter DisciplinesApi disciplineApi=null;
-    @Getter ExamApi examApi=null;
+    @Getter
+    AnswerApi answerApi=null;
+    @Getter
+    ArtefactApi artefactApi=null;
+    @Getter
+    DisciplinesApi disciplineApi=null;
+    @Getter
+    ExamApi examApi=null;
     @Getter ExamRuleApi examRuleApi=null;
     @Getter GroupsApi groupApi=null;
     @Getter StudentApi onlyStudentApi=null;
-    @Getter TeacherApi onlyTeacherApi=null;
+    @Getter
+    TeacherApi onlyTeacherApi=null;
     @Getter TasksApi taskApi=null;
     @Getter ThemesApi themeApi=null;
     @Getter StudentRatingApi studentRatingApi=null;

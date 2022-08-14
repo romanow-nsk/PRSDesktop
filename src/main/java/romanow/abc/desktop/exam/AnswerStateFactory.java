@@ -1,9 +1,6 @@
 package romanow.abc.desktop.exam;
 
-import romanow.abc.exam.model.AnswerBean;
-import romanow.abc.exam.model.ExamBean;
-
-import javax.enterprise.inject.spi.Bean;
+import romanow.abc.vkr.exam.model.AnswerBean;
 
 public class AnswerStateFactory extends EnumStateFactory<AnswerBean.StateEnum> {
     public AnswerStateFactory(){

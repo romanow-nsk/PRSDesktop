@@ -8,12 +8,10 @@ package romanow.abc.desktop;
 import romanow.abc.core.constants.ValuesBase;
 import romanow.abc.core.entity.Entity;
 import romanow.abc.core.entity.EntityList;
-import romanow.abc.core.entity.artifacts.Artifact;
 import romanow.abc.core.entity.contacts.Mail;
 import romanow.abc.core.entity.contacts.Phone;
 import romanow.abc.core.entity.users.User;
 import retrofit2.Response;
-import romanow.abc.exam.model.ArtefactBean;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
