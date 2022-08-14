@@ -52,7 +52,7 @@ public class EMVKRClient extends EMVKRMainBaseFrame   {
         panelDescList.add(new EMVKRPanelDescriptor("Трассировка", LogPanel.class,new UserRole[]
                 {UserRole.ROLE_ADMIN}));
         //---------- <0 - readOnly Mode
-        panelDescList.add(new EMVKRPanelDescriptor("Пользователи", UserPanelBase.class,new UserRole[]
+        panelDescList.add(new EMVKRPanelDescriptor("Пользователи", EMVKRUserPanel.class,new UserRole[]
                 {UserRole.ROLE_ADMIN}));
         //panelDescList.add(new PanelDescriptor("Отчеты/Уведомления", ReportsPanelBase.class,new int[]
         //        {UserRole.ROLE_ADMIN, UserAdminType}));

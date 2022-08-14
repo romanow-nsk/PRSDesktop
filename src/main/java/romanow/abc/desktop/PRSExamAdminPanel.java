@@ -595,15 +595,15 @@ public class PRSExamAdminPanel extends BasePanel{
 
         TaskTypeLabel.setText("Вопрос");
         add(TaskTypeLabel);
-        TaskTypeLabel.setBounds(20, 105, 100, 16);
+        TaskTypeLabel.setBounds(20, 100, 100, 16);
 
         jLabel2.setText("Предмет");
         add(jLabel2);
-        jLabel2.setBounds(20, 25, 70, 16);
+        jLabel2.setBounds(60, 20, 70, 16);
 
         jLabel3.setText("Тема");
         add(jLabel3);
-        jLabel3.setBounds(20, 65, 70, 16);
+        jLabel3.setBounds(20, 60, 70, 16);
 
         TaskText.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
@@ -645,7 +645,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(RefreshDisciplines);
-        RefreshDisciplines.setBounds(80, 5, 30, 30);
+        RefreshDisciplines.setBounds(20, 5, 30, 30);
 
         DisciplineImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
         DisciplineImport.setBorderPainted(false);
@@ -656,7 +656,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(DisciplineImport);
-        DisciplineImport.setBounds(210, 5, 30, 30);
+        DisciplineImport.setBounds(370, 5, 30, 30);
 
         TaskRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         TaskRemove.setBorderPainted(false);
@@ -801,7 +801,7 @@ public class PRSExamAdminPanel extends BasePanel{
 
         FullTrace.setText("трассировка импорта");
         add(FullTrace);
-        FullTrace.setBounds(240, 10, 160, 20);
+        FullTrace.setBounds(220, 10, 160, 20);
 
         DisciplineSaveImport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/archive.png"))); // NOI18N
         DisciplineSaveImport.setBorderPainted(false);
@@ -816,7 +816,7 @@ public class PRSExamAdminPanel extends BasePanel{
 
         jLabel4.setText("Группа");
         add(jLabel4);
-        jLabel4.setBounds(490, 20, 70, 16);
+        jLabel4.setBounds(530, 20, 70, 16);
 
         Groups.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -843,7 +843,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(RefreshGroups);
-        RefreshGroups.setBounds(540, 5, 30, 30);
+        RefreshGroups.setBounds(490, 5, 30, 30);
 
         GroupAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         GroupAdd.setBorderPainted(false);
@@ -1057,7 +1057,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(GroupRatings);
-        GroupRatings.setBounds(460, 150, 230, 20);
+        GroupRatings.setBounds(460, 150, 340, 20);
 
         jLabel15.setText("Продолж. (мин)");
         add(jLabel15);
@@ -1119,7 +1119,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(GroupRatingAdd);
-        GroupRatingAdd.setBounds(700, 140, 30, 30);
+        GroupRatingAdd.setBounds(820, 140, 30, 30);
 
         GroupRatingRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         GroupRatingRemove.setBorderPainted(false);
@@ -1130,7 +1130,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(GroupRatingRemove);
-        GroupRatingRemove.setBounds(740, 140, 30, 30);
+        GroupRatingRemove.setBounds(860, 140, 30, 30);
 
         TakingAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         TakingAdd.setBorderPainted(false);
@@ -1229,7 +1229,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(GroupRatingName);
-        GroupRatingName.setBounds(460, 175, 230, 25);
+        GroupRatingName.setBounds(460, 175, 340, 25);
 
         TakingGroup.setEnabled(false);
         add(TakingGroup);
@@ -1388,7 +1388,7 @@ public class PRSExamAdminPanel extends BasePanel{
             }
         });
         add(TakingState);
-        TakingState.setBounds(460, 300, 140, 25);
+        TakingState.setBounds(550, 300, 140, 25);
 
         RatingStudentState.setEnabled(false);
         RatingStudentState.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2474,7 +2474,7 @@ public class PRSExamAdminPanel extends BasePanel{
                             answers.add(answer);
                             }
                         }
-                    if (withPos)
+                    if (withPos && answerIdx!=-1)
                         Answers.select(answerIdx);
                     refreshSelectedAnswer();
                     }catch (UniException ee){

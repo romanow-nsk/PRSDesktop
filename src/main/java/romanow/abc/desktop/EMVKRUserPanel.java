@@ -12,6 +12,9 @@ import romanow.abc.core.entity.contacts.Mail;
 import romanow.abc.core.entity.contacts.Phone;
 import romanow.abc.core.entity.users.User;
 import retrofit2.Response;
+import romanow.abc.desktop.BasePanel;
+import romanow.abc.desktop.EntityPanel;
+import romanow.abc.desktop.MainBaseFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -22,7 +25,7 @@ import java.io.IOException;
  *
  * @author romanow
  */
-public class UserPanelBase extends BasePanel{
+public class EMVKRUserPanel extends BasePanel {
     private EntityPanel userPanel;
     private ActionListener chain;
     private EntityList<Entity> types = new EntityList<>();
@@ -31,7 +34,7 @@ public class UserPanelBase extends BasePanel{
     /**
      * Creates new form MainPanel
      */
-    public UserPanelBase() {
+    public EMVKRUserPanel() {
         initComponents();
         }
     @Override
@@ -40,7 +43,7 @@ public class UserPanelBase extends BasePanel{
         userPanel = new EntityPanel(10,15,userAList,"User",main,true){
             @Override
             public Response apiFunGetAll() throws IOException {
-                return  main.service.getUserList(main.debugToken, ValuesBase.GetAllModeActual,0).execute();
+                return  main.getService().getUserList(main.debugToken, ValuesBase.GetAllModeActual,0).execute();
                 }
             @Override
             public Response apiFunGetById() throws IOException {
@@ -161,7 +164,7 @@ public class UserPanelBase extends BasePanel{
 
         jLabel1.setText("CardICC");
         add(jLabel1);
-        jLabel1.setBounds(310, 155, 60, 14);
+        jLabel1.setBounds(310, 155, 60, 16);
 
         N1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -205,23 +208,23 @@ public class UserPanelBase extends BasePanel{
 
         jLabel2.setText("Фамилия");
         add(jLabel2);
-        jLabel2.setBounds(10, 60, 70, 14);
+        jLabel2.setBounds(10, 60, 70, 16);
 
         jLabel3.setText("Имя");
         add(jLabel3);
-        jLabel3.setBounds(10, 90, 70, 14);
+        jLabel3.setBounds(10, 90, 70, 16);
 
         jLabel4.setText("Отчество");
         add(jLabel4);
-        jLabel4.setBounds(10, 120, 70, 14);
+        jLabel4.setBounds(10, 120, 70, 16);
 
         jLabel5.setText("Должность");
         add(jLabel5);
-        jLabel5.setBounds(220, 60, 70, 14);
+        jLabel5.setBounds(220, 60, 70, 16);
 
         jLabel6.setText("Телефон");
         add(jLabel6);
-        jLabel6.setBounds(220, 90, 70, 14);
+        jLabel6.setBounds(220, 90, 70, 16);
 
         Login.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -241,11 +244,11 @@ public class UserPanelBase extends BasePanel{
 
         jLabel8.setText("Логин");
         add(jLabel8);
-        jLabel8.setBounds(430, 60, 70, 14);
+        jLabel8.setBounds(430, 60, 70, 16);
 
         jLabel9.setText("Телефон МК");
         add(jLabel9);
-        jLabel9.setBounds(430, 90, 70, 14);
+        jLabel9.setBounds(430, 90, 70, 16);
 
         PASS.setText("jPasswordField1");
         PASS.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -254,11 +257,11 @@ public class UserPanelBase extends BasePanel{
             }
         });
         add(PASS);
-        PASS.setBounds(510, 110, 111, 25);
+        PASS.setBounds(510, 110, 90, 25);
 
         jLabel10.setText("Пароль");
         add(jLabel10);
-        jLabel10.setBounds(430, 120, 70, 14);
+        jLabel10.setBounds(430, 120, 70, 16);
 
         ViewPhoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/camera.png"))); // NOI18N
         ViewPhoto.setBorderPainted(false);
@@ -292,7 +295,7 @@ public class UserPanelBase extends BasePanel{
 
         jLabel7.setText("E-mail");
         add(jLabel7);
-        jLabel7.setBounds(220, 120, 70, 14);
+        jLabel7.setBounds(220, 120, 70, 16);
     }// </editor-fold>//GEN-END:initComponents
 
     private void N1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_N1KeyPressed

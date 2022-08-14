@@ -26,7 +26,7 @@ public class PRSClient extends Client {
         //---------- <0 - readOnly Mode
         panelDescList.add(new PanelDescriptor("Пользователи", UserPanelBase.class,new int[]
                 {Values.UserAdminType}));
-        panelDescList.add(new PanelDescriptor("Отчеты/Уведомления", ReportsPanelBase.class,new int[]
+        panelDescList.add(new PanelDescriptor("Отчеты", ReportsPanelBase.class,new int[]
                 {Values.UserAdminType}));
         panelDescList.add(new PanelDescriptor("Сервер",ServerPanel.class,new int[]
                 {Values.UserAdminType}));
@@ -38,6 +38,10 @@ public class PRSClient extends Client {
                 {Values.UserAdminType}));
         panelDescList.add(new PanelDescriptor("Сессия",PRSExamAdminPanel.class,new int[]
                 {Values.UserAdminType,Values.UserTutor}));
+        panelDescList.add(new PanelDescriptor("Семестр",PRSSemesterAdminPanel.class,new int[]
+                {Values.UserAdminType,Values.UserTutor}));
+        panelDescList.add(new PanelDescriptor("Успеваемость",PRSSemesterTeacherPanel.class,new int[]
+                {Values.UserAdminType,Values.UserTutor,Values.UserTeacher}));
         }
     //-------------------------------------------------------------------------------------------------------
     @Override
