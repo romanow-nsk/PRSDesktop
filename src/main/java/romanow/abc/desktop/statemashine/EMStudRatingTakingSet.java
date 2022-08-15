@@ -3,11 +3,11 @@ package romanow.abc.desktop.statemashine;
 import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.SAExamTaking;
 import romanow.abc.core.entity.subjectarea.SAStudRating;
-import romanow.abc.desktop.PRSExamAdminPanel;
+import romanow.abc.desktop.PRSBasePanel;
 
 public class EMStudRatingTakingSet implements I_ClientTransition {
     @Override
-    public String testTransition(PRSExamAdminPanel panel, StateEntity env) {
+    public String testTransition(PRSBasePanel panel, StateEntity env) {
         SAStudRating rating = (SAStudRating)env;
         SAExamTaking taking = panel.getCTaking();
         if (taking==null)
@@ -18,11 +18,11 @@ public class EMStudRatingTakingSet implements I_ClientTransition {
         return "";
         }
     @Override
-    public void onTransitionAfter(PRSExamAdminPanel panel, StateEntity env) {
+    public void onTransitionAfter(PRSBasePanel panel, StateEntity env) {
         panel.refreshStudRatingFull(true);
     }
     @Override
-    public void onTransitionBefore(PRSExamAdminPanel panel, StateEntity env) {
+    public void onTransitionBefore(PRSBasePanel panel, StateEntity env) {
         SAStudRating rating = (SAStudRating)env;
         rating.getSAExamTaking().setOid(panel.getCTaking().getOid());
         }

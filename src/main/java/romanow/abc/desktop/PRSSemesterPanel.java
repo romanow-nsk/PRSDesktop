@@ -42,7 +42,7 @@ import java.util.*;
  *
  * @author romanow
  */
-public class PRSSemesterAdminPanel extends BasePanel{
+public class PRSSemesterPanel extends PRSBasePanel{
     private ArrayList<User> teachers = new ArrayList<>();
     private ArrayList<SAGroupRating> allRatings = new ArrayList<>();        // Список рейтингов
     private ArrayList<SAGroupRating> notAssigned = new ArrayList<>();       // Список рейтингов
@@ -804,5 +804,29 @@ public class PRSSemesterAdminPanel extends BasePanel{
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    //---------------------- Пустышки автоматов -------------------------------------------------------------------------
+    @Override
+    public void refreshSelectedDiscipline(boolean withPos) {}
+    @Override
+    public void refreshSelectedStudRating() {}
+    @Override
+    public void refreshStudRatingFull(boolean withPos) {}
+    @Override
+    public SAStudRating getCStudRating() {
+        return null; }
+    @Override
+    public SADiscipline getCDiscipline() {
+        return null;}
+    @Override
+    public void calcRatingBall() {}
+    @Override
+    public SAExamTaking getCTaking() {
+        return null;}
+    @Override
+    public SAGroupRating getCRating() {
+        return null;}
+    @Override
+    public Choice getAnswerBall() {
+        return null;}
     // End of variables declaration//GEN-END:variables
 }

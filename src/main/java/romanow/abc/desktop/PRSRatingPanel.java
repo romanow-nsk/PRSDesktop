@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @author romanow
  */
-public class PRSExamAdminPanel extends BasePanel{
+public class PRSRatingPanel extends PRSBasePanel{
     private ArrayList<SADiscipline> disciplines = new ArrayList<>();    // Список дисциплин
     @Getter private SADiscipline cDiscipline = null;                            // Текущая дисциплина
     @Getter private SATheme cTheme = null;                                      // Текущая тема
@@ -89,7 +89,7 @@ public class PRSExamAdminPanel extends BasePanel{
     private OWTDiscipline owtImportData = null;
     private boolean refresh=false;                                      // Признак обновления для событий  CheckBox
     private boolean taskTextChanged=false;
-    public PRSExamAdminPanel() {
+    public PRSRatingPanel() {
         initComponents();
         }
     public void initPanel(MainBaseFrame main0){

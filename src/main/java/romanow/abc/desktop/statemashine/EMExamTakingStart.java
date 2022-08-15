@@ -3,11 +3,11 @@ package romanow.abc.desktop.statemashine;
 import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.SAExamTaking;
 import romanow.abc.core.utils.OwnDateTime;
-import romanow.abc.desktop.PRSExamAdminPanel;
+import romanow.abc.desktop.PRSBasePanel;
 
 public class EMExamTakingStart implements I_ClientTransition {
     @Override
-    public String testTransition(PRSExamAdminPanel panel, StateEntity env) {
+    public String testTransition(PRSBasePanel panel, StateEntity env) {
         SAExamTaking taking = (SAExamTaking) env;
         OwnDateTime date = new OwnDateTime();
         date.onlyDate();
@@ -18,10 +18,10 @@ public class EMExamTakingStart implements I_ClientTransition {
         return "";
         }
     @Override
-    public void onTransitionAfter(PRSExamAdminPanel panel, StateEntity env) {
+    public void onTransitionAfter(PRSBasePanel panel, StateEntity env) {
         panel.refreshSelectedDiscipline(true);
         }
     @Override
-    public void onTransitionBefore(PRSExamAdminPanel panel, StateEntity env) {
+    public void onTransitionBefore(PRSBasePanel panel, StateEntity env) {
         }
 }

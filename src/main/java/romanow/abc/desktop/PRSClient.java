@@ -36,12 +36,14 @@ public class PRSClient extends Client {
                 {Values.UserAdminType}));
         panelDescList.add(new PanelDescriptor("Настройки сервера",WorkSettingsPanel.class,new int[]
                 {Values.UserAdminType}));
-        panelDescList.add(new PanelDescriptor("Сессия",PRSExamAdminPanel.class,new int[]
+        panelDescList.add(new PanelDescriptor("Дисциплины",PRSDisciplinePanel.class,new int[]
                 {Values.UserAdminType,Values.UserTutor}));
-        panelDescList.add(new PanelDescriptor("Семестр",PRSSemesterAdminPanel.class,new int[]
+        panelDescList.add(new PanelDescriptor("Рейтинги",PRSRatingPanel.class,new int[]
                 {Values.UserAdminType,Values.UserTutor}));
-        panelDescList.add(new PanelDescriptor("Успеваемость",PRSSemesterTeacherPanel.class,new int[]
+        panelDescList.add(new PanelDescriptor("Семестр",PRSSemesterPanel.class,new int[]
                 {Values.UserAdminType,Values.UserTutor,Values.UserTeacher}));
+        panelDescList.add(new PanelDescriptor("Экзамен",PRSExamPanel.class,new int[]
+                {Values.UserAdminType,Values.UserTutor,Values.UserTeacher,Values.UserTeacher}));
         }
     //-------------------------------------------------------------------------------------------------------
     @Override

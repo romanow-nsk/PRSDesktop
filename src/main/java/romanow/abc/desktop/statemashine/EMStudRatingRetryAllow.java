@@ -1,7 +1,7 @@
 package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.desktop.PRSExamAdminPanel;
+import romanow.abc.desktop.PRSBasePanel;
 
 public class EMStudRatingRetryAllow extends EMStudRatingEmpty{
 }

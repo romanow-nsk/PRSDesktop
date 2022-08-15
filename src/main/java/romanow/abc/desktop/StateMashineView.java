@@ -18,10 +18,10 @@ public class StateMashineView {
     private final static int bWidth=150;
     private final int panelX0;
     private final int panelY0;
-    private final PRSExamAdminPanel panel;
+    private final PRSBasePanel panel;
     private final TransitionsFactory factory;
     private ArrayList<JButton> bList = new ArrayList<>();
-    public StateMashineView(PRSExamAdminPanel client0,int panelX0, int panelY0, TransitionsFactory factory0) {
+    public StateMashineView(PRSBasePanel client0,int panelX0, int panelY0, TransitionsFactory factory0) {
         this.panelX0 = panelX0;
         this.panelY0 = panelY0;
         factory = factory0;
