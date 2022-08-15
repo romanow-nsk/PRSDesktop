@@ -49,15 +49,18 @@ public class PRSDisciplinePanel extends BasePanel{
     @Getter private SATheme cTheme = null;                              // Текущая тема
     @Getter private SATask cTask=null;                                  // Текущая задача/тест
     @Getter private SAExamRule cRule=null;                              // Текущий регламент сдачи
+    @Getter private SAEduUnit cEduUnit=null;                            // Текущая уч.единица
     private ArrayList<SATask> sortedTasks =  new ArrayList<>();         // Отсортированы - вопрос/задача
     //----------------------------------------------------------------------------------------
     private ArrayList<SATheme> ruleThemes = new ArrayList<>();          // Темы регламента сдачи
     private HashMap<Long, SATheme> ruleThemesMap = new HashMap<>();
+    private ArrayList<ConstValue> eduUnitTypes = new ArrayList<>();
     //---------------------------------------------------------------------------------------
     private int themeIdx = -1;
     private int taskIdx = -1;
     private int ruleIdx = -1;
     private int semesterRuleIdx = -1;
+    private int eduUnutIdx = -1;
     //----------------------------------------------------------------------------------------
     private int cTaskNum=0;
     private OWTDiscipline owtImportData = null;
@@ -71,6 +74,10 @@ public class PRSDisciplinePanel extends BasePanel{
         TaskArtifactView.setEnabled(false);
         TaskArtifactDownLoad.setEnabled(false);
         DisciplineSaveImport.setEnabled(false);
+        eduUnitTypes = Values.constMap().getGroupList("EduUnit");
+        EduUnitType.removeAll();
+        for(ConstValue cc : eduUnitTypes)
+            EduUnitType.add(cc.title());
         refreshAll();
         }
 
@@ -79,6 +86,7 @@ public class PRSDisciplinePanel extends BasePanel{
         taskIdx = Tasks.getSelectedIndex();
         ruleIdx = Rules.getSelectedIndex();
         semesterRuleIdx = SemesterRules.getSelectedIndex();
+        eduUnutIdx = EduUnits.getSelectedIndex();
         }
 
     public void refreshAll(){
@@ -87,7 +95,7 @@ public class PRSDisciplinePanel extends BasePanel{
         }
 
     public void refreshSemesterRuleList(){
-        Rules.removeAll();
+        SemesterRules.removeAll();
         new APICall<ArrayList<DBRequest>>(main){
             @Override
             public Call<ArrayList<DBRequest>> apiFun() {
@@ -141,16 +149,48 @@ public class PRSDisciplinePanel extends BasePanel{
             };
         }
 
+    public void refreshEduUnits(boolean withPos){
+        EduUnits.removeAll();
+        cDiscipline.getUnits().sortByKeyNum();
+        caclEduUnitsSum();
+        for(SAEduUnit rule : cDiscipline.getUnits()){
+            EduUnits.add(rule.getName());
+            }
+        if (withPos && eduUnutIdx!=-1)
+            EduUnits.select(eduUnutIdx);
+        refreshSelectedEduUnit();
+        }
+
+
     public void refreshRules(boolean withPos){
         Rules.removeAll();
         for(SAExamRule rule : cDiscipline.getRules()){
             Rules.add(rule.getName());
             }
-        if (ruleIdx!=-1)
-            Rules.select(ruleIdx);
-        if (withPos)
+        if (withPos && ruleIdx!=-1)
             Rules.select(ruleIdx);
         refreshSelectedRule();
+        }
+
+    public void refreshSelectedEduUnit(){
+        refresh = true;
+        EduUnitName.setText("");
+        ManualPointSet.setSelected(false);
+        DeliveryWeek.setText("");
+        BasePoint.setText("");
+        cEduUnit=null;
+        if (cDiscipline.getUnits().size()==0){
+            refresh=false;
+            return;
+            }
+        cEduUnit = cDiscipline.getUnits().get(EduUnits.getSelectedIndex());
+        EduUnitName.setText(cEduUnit.getName());
+        DeliveryWeek.setText(""+cEduUnit.getDeliveryWeek());
+        BasePoint.setText(""+cEduUnit.getBasePoint());
+        ManualPointSet.setSelected(cEduUnit.isManualPointSet());
+        if (selectChoiceByState(eduUnitTypes,EduUnitType,cEduUnit.getUnitType())==null)
+            System.out.println("Недопустимый тип учебной единицы: "+cEduUnit.getUnitType());
+        refresh=false;
         }
 
     public void refreshSelectedRule(){
@@ -220,19 +260,20 @@ public class PRSDisciplinePanel extends BasePanel{
                     Themes.add(theme.getName());
                 refreshSelectedTheme(withPos);
                 refreshRules(withPos);
+                refreshEduUnits(withPos);
                 }
             };
         }
 
 
 
-    public ConstValue choiceStateSet(ArrayList<ConstValue> list, Choice choice, int state) {
+    public ConstValue selectChoiceByState(ArrayList<ConstValue> list, Choice choice, int state) {
         ConstValue out = null;
         choice.select(0);
         for (int i = 0; i < list.size(); i++) {
             ConstValue cc = list.get(i);
             if (cc.value() == state) {
-                choice.select(i + 1);
+                choice.select(i);
                 return cc;
                 }
             }
@@ -461,19 +502,19 @@ public class PRSDisciplinePanel extends BasePanel{
         OverDateWeeks = new javax.swing.JTextField();
         QualProc = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
-        EduUnit = new java.awt.Choice();
+        EduUnits = new java.awt.Choice();
         EduUnitAdd = new javax.swing.JButton();
         EduUnitRemove = new javax.swing.JButton();
         EduUnitToFront = new javax.swing.JButton();
         EduUnitToEnd = new javax.swing.JButton();
         EduUnitName = new javax.swing.JTextField();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        ManualPointSet = new javax.swing.JCheckBox();
         PointSum = new javax.swing.JTextField();
         jLabel33 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         DeliveryWeek = new javax.swing.JTextField();
         EduUnitType = new java.awt.Choice();
-        BasePoint2 = new javax.swing.JTextField();
+        BasePoint = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator6 = new javax.swing.JSeparator();
@@ -913,7 +954,7 @@ public class PRSDisciplinePanel extends BasePanel{
         add(SemesterRuleRemove);
         SemesterRuleRemove.setBounds(870, 20, 30, 30);
 
-        jLabel4.setText("Начало семестра");
+        jLabel4.setText("Пн. недели 1");
         add(jLabel4);
         jLabel4.setBounds(500, 110, 120, 16);
 
@@ -1044,8 +1085,14 @@ public class PRSDisciplinePanel extends BasePanel{
         QualProc.setBounds(850, 170, 40, 25);
         add(jSeparator2);
         jSeparator2.setBounds(20, 75, 450, 10);
-        add(EduUnit);
-        EduUnit.setBounds(500, 260, 310, 20);
+
+        EduUnits.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                EduUnitsItemStateChanged(evt);
+            }
+        });
+        add(EduUnits);
+        EduUnits.setBounds(500, 260, 310, 20);
 
         EduUnitAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         EduUnitAdd.setBorderPainted(false);
@@ -1099,9 +1146,14 @@ public class PRSDisciplinePanel extends BasePanel{
         add(EduUnitName);
         EduUnitName.setBounds(500, 290, 310, 25);
 
-        jCheckBox1.setText("\"Ручная\" установка");
-        add(jCheckBox1);
-        jCheckBox1.setBounds(750, 330, 140, 20);
+        ManualPointSet.setText("\"Ручная\" установка");
+        ManualPointSet.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ManualPointSetItemStateChanged(evt);
+            }
+        });
+        add(ManualPointSet);
+        ManualPointSet.setBounds(750, 330, 140, 20);
 
         PointSum.setEnabled(false);
         add(PointSum);
@@ -1114,12 +1166,30 @@ public class PRSDisciplinePanel extends BasePanel{
         jLabel14.setText("Балл");
         add(jLabel14);
         jLabel14.setBounds(650, 330, 60, 16);
+
+        DeliveryWeek.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                DeliveryWeekKeyPressed(evt);
+            }
+        });
         add(DeliveryWeek);
         DeliveryWeek.setBounds(590, 360, 40, 25);
+
+        EduUnitType.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                EduUnitTypeItemStateChanged(evt);
+            }
+        });
         add(EduUnitType);
         EduUnitType.setBounds(500, 330, 130, 20);
-        add(BasePoint2);
-        BasePoint2.setBounds(700, 330, 40, 25);
+
+        BasePoint.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                BasePointKeyPressed(evt);
+            }
+        });
+        add(BasePoint);
+        BasePoint.setBounds(700, 330, 40, 25);
 
         jLabel15.setText("Сумма");
         add(jLabel15);
@@ -1893,10 +1963,11 @@ public class PRSDisciplinePanel extends BasePanel{
         try {
             cSemesterRule.setOverDateWeeks(Integer.parseInt(OverDateWeeks.getText()));
             semesterRuleUpdate(evt);
-        } catch (Exception ee){
-            popup("Ошибка формата целого");
-            main.viewUpdate(evt,false);
-        }    }//GEN-LAST:event_OverDateWeeksKeyPressed
+            } catch (Exception ee){
+                popup("Ошибка формата целого");
+                main.viewUpdate(evt,false);
+                }
+    }//GEN-LAST:event_OverDateWeeksKeyPressed
 
     private void QualProcKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_QualProcKeyPressed
         if(evt.getKeyCode()!=10) return;
@@ -1911,28 +1982,174 @@ public class PRSDisciplinePanel extends BasePanel{
     }//GEN-LAST:event_QualProcKeyPressed
 
     private void EduUnitAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitAddActionPerformed
-
+        new OKName(200,200,"Добавить уч.единицу", new I_Value<String>() {
+            @Override
+            public void onEnter(String value) {
+                final SAEduUnit eduUnit  = new SAEduUnit();
+                int size = cDiscipline.getUnits().size();
+                int num = size==0 ? 1 : cDiscipline.getUnits().get(size-1).getOrderNum()+1;     // Последнего +1
+                eduUnit.setOrderNum(num);
+                eduUnit.setName(value);
+                eduUnit.getSADiscipline().setOid(cDiscipline.getOid());
+                new APICall<JLong>(main) {
+                    @Override
+                    public Call<JLong> apiFun() {
+                        return main.service.addEntity(main.debugToken,new DBRequest(eduUnit,main.gson),0);
+                        }
+                    @Override
+                    public void onSucess(JLong oo) {
+                        savePos();
+                        refreshSelectedDiscipline();
+                    }
+                };
+            }
+        });
     }//GEN-LAST:event_EduUnitAddActionPerformed
 
+    public void caclEduUnitsSum(){
+        PointSum.setText("");
+        if (cDiscipline==null)
+            return;
+        int sum=0;
+        for(SAEduUnit eduUnit : cDiscipline.getUnits())
+            sum += eduUnit.getBasePoint();
+        PointSum.setText(""+sum);
+        }
+
     private void EduUnitRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitRemoveActionPerformed
-        // TODO add your handling code here:
+        if (cEduUnit==null)
+            return;
+        new OK(200, 200, "Удалить уч.единицу: " + cEduUnit.getName(), new I_Button() {
+            @Override
+            public void onPush() {
+                new APICall<JBoolean>(main) {
+                    @Override
+                    public Call<JBoolean> apiFun() {
+                        return main.service.deleteById(main.debugToken,"SAEduUnit",cEduUnit.getOid());
+                        }
+                    @Override
+                    public void onSucess(JBoolean oo) {
+                        cDiscipline.getUnits().removeById(cEduUnit.getOid());
+                        disciplineUpdate();
+                        }
+                };
+            }
+        });
     }//GEN-LAST:event_EduUnitRemoveActionPerformed
 
     private void EduUnitToFrontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitToFrontActionPerformed
-        // TODO add your handling code here:
+        if (cEduUnit==null)
+            return;
+        int idx = EduUnits.getSelectedIndex();
+        if (idx==0)
+            return;
+        SAEduUnit prev = cDiscipline.getUnits().get(idx-1);
+        int ord1 = cEduUnit.getOrderNum();
+        int ord2 = prev.getOrderNum();
+        cEduUnit.setOrderNum(ord2);
+        prev.setOrderNum(ord1);
+        try {
+            new APICall2<JEmpty>() {
+                @Override
+                public Call<JEmpty> apiFun() {
+                    return main.service.updateEntity(main.debugToken,new DBRequest(prev,main.gson));
+                    }
+                }.call(main);
+            EduUnits.select(idx-1);
+            eduUnitUpdate(null,true);
+            } catch (UniException ee){
+                System.out.println(ee.toString());
+                }
+
     }//GEN-LAST:event_EduUnitToFrontActionPerformed
 
     private void EduUnitToEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitToEndActionPerformed
-        // TODO add your handling code here:
+        if (cEduUnit==null)
+            return;
+        int idx = EduUnits.getSelectedIndex();
+        if (idx==cDiscipline.getUnits().size()-1)
+            return;
+        SAEduUnit next = cDiscipline.getUnits().get(idx+1);
+        int ord1 = cEduUnit.getOrderNum();
+        int ord2 = next.getOrderNum();
+        cEduUnit.setOrderNum(ord2);
+        next.setOrderNum(ord1);
+        try {
+            new APICall2<JEmpty>() {
+                @Override
+                public Call<JEmpty> apiFun() {
+                    return main.service.updateEntity(main.debugToken,new DBRequest(next,main.gson));
+                }
+            }.call(main);
+            EduUnits.select(idx+1);
+            eduUnitUpdate(null,true);
+        } catch (UniException ee){
+            System.out.println(ee.toString());
+        }
     }//GEN-LAST:event_EduUnitToEndActionPerformed
 
     private void EduUnitNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EduUnitNameKeyPressed
-        // TODO add your handling code here:
+        if(evt.getKeyCode()!=10) return;
+        if (cEduUnit==null) return;
+        cEduUnit.setName(EduUnitName.getText());
+        eduUnitUpdate(evt);
     }//GEN-LAST:event_EduUnitNameKeyPressed
 
     private void SemesterRulesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_SemesterRulesItemStateChanged
         refreshSelectedSemesterRule(false);
     }//GEN-LAST:event_SemesterRulesItemStateChanged
+
+    private void EduUnitTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitTypeItemStateChanged
+        if (refresh)
+            return;
+        if (cEduUnit==null)
+            return;
+        final ConstValue cc = eduUnitTypes.get(EduUnitType.getSelectedIndex());
+        new OKName(200,200,"Тип уч.единицы: "+cc.title(), new I_Value<String>() {
+            @Override
+            public void onEnter(String value) {
+                cEduUnit.setUnitType(cc.value());
+                eduUnitUpdate(null);
+                }
+            });
+    }//GEN-LAST:event_EduUnitTypeItemStateChanged
+
+    private void EduUnitsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitsItemStateChanged
+        refreshSelectedEduUnit();
+    }//GEN-LAST:event_EduUnitsItemStateChanged
+
+    private void BasePointKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BasePointKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cEduUnit==null) return;
+        try {
+            cEduUnit.setBasePoint(Integer.parseInt(BasePoint.getText()));
+            eduUnitUpdate(evt);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+            }
+    }//GEN-LAST:event_BasePointKeyPressed
+
+    private void ManualPointSetItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ManualPointSetItemStateChanged
+        if (refresh)
+            return;
+        if (cEduUnit==null)
+            return;
+        cEduUnit.setManualPointSet(ManualPointSet.isSelected());
+        eduUnitUpdate(null);
+    }//GEN-LAST:event_ManualPointSetItemStateChanged
+
+    private void DeliveryWeekKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DeliveryWeekKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cEduUnit==null) return;
+        try {
+            cEduUnit.setDeliveryWeek(Integer.parseInt(DeliveryWeek.getText()));
+            eduUnitUpdate(evt);
+            } catch (Exception ee){
+                popup("Ошибка формата целого");
+                main.viewUpdate(evt,false);
+                }
+    }//GEN-LAST:event_DeliveryWeekKeyPressed
 
     public void semesterRuleUpdate(KeyEvent evt){
         if (cSemesterRule==null)
@@ -1955,6 +2172,34 @@ public class PRSDisciplinePanel extends BasePanel{
                     main.viewUpdate(evt,false);
                     }
     }
+
+    public void eduUnitUpdate(KeyEvent evt){
+        eduUnitUpdate(evt,false);
+        }
+    public void eduUnitUpdate(KeyEvent evt,boolean noPopup){
+        if (cEduUnit==null)
+            return;
+        try {
+            new APICall2<JEmpty>() {
+                @Override
+                public Call<JEmpty> apiFun() {
+                    return main.service.updateEntity(main.debugToken,new DBRequest(cEduUnit,main.gson));
+                }
+            }.call(main);
+            if (evt!=null)
+                main.viewUpdate(evt,true);
+            if (!noPopup)
+                popup("Учебная единица обновлена");
+            savePos();
+            refreshEduUnits(true);
+        } catch (UniException ee){
+            System.out.println(ee.toString());
+            if (evt!=null)
+                main.viewUpdate(evt,false);
+        }
+    }
+
+
 
     public void taskUpdate(){
         if (cTask==null)
@@ -1990,7 +2235,7 @@ public class PRSDisciplinePanel extends BasePanel{
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField BasePoint2;
+    private javax.swing.JTextField BasePoint;
     private javax.swing.JTextField DeliveryWeek;
     private javax.swing.JButton DisciplineAdd;
     private javax.swing.JButton DisciplineEdit;
@@ -1998,18 +2243,19 @@ public class PRSDisciplinePanel extends BasePanel{
     private javax.swing.JButton DisciplineRemove;
     private javax.swing.JButton DisciplineSaveImport;
     private java.awt.Choice Disciplines;
-    private java.awt.Choice EduUnit;
     private javax.swing.JButton EduUnitAdd;
     private javax.swing.JTextField EduUnitName;
     private javax.swing.JButton EduUnitRemove;
     private javax.swing.JButton EduUnitToEnd;
     private javax.swing.JButton EduUnitToFront;
     private java.awt.Choice EduUnitType;
+    private java.awt.Choice EduUnits;
     private javax.swing.JCheckBox FineOverDate;
     private javax.swing.JCheckBox FineOverIrregular;
     private javax.swing.JCheckBox FineOverSemester;
     private javax.swing.JCheckBox FullTrace;
     private javax.swing.JTextField IrregulaFirstWeek;
+    private javax.swing.JCheckBox ManualPointSet;
     private javax.swing.JTextField OverDatePercent;
     private javax.swing.JTextField OverDateWeeks;
     private javax.swing.JTextField OverSemesterPercent;
@@ -2052,7 +2298,6 @@ public class PRSDisciplinePanel extends BasePanel{
     private javax.swing.JButton ThemeEdit;
     private javax.swing.JButton ThemeRemove;
     private java.awt.Choice Themes;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
