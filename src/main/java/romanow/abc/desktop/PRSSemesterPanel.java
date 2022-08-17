@@ -42,7 +42,7 @@ import java.util.*;
  *
  * @author romanow
  */
-public class PRSSemesterPanel extends PRSBasePanel{
+public class PRSSemesterPanel extends BasePanel{
     private ArrayList<User> teachers = new ArrayList<>();
     private ArrayList<SAGroupRating> allRatings = new ArrayList<>();        // Список рейтингов
     private ArrayList<SAGroupRating> notAssigned = new ArrayList<>();       // Список рейтингов
@@ -69,7 +69,6 @@ public class PRSSemesterPanel extends PRSBasePanel{
     private void initComponents() {
 
         TaskTypeLabel = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         Teachers = new java.awt.Choice();
         RatingsAssigned = new java.awt.Choice();
@@ -78,48 +77,8 @@ public class PRSSemesterPanel extends PRSBasePanel{
         RatingRemove = new javax.swing.JButton();
         RatingsNotAssigned = new java.awt.Choice();
         jSeparator1 = new javax.swing.JSeparator();
-        SemesterRules = new java.awt.Choice();
-        jLabel1 = new javax.swing.JLabel();
-        SemesterRuleAdd = new javax.swing.JButton();
-        SemesterRuleRemove = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        SmstrDate = new javax.swing.JTextField();
-        FineOverDate = new javax.swing.JCheckBox();
-        SemesterDuration = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        PointPerSkip = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        OverDatePercent = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        SemesterRule = new javax.swing.JTextField();
-        FineOverSemeste = new javax.swing.JCheckBox();
-        jLabel8 = new javax.swing.JLabel();
-        OverSemesterPercent = new javax.swing.JTextField();
-        FineOverIrregular = new javax.swing.JCheckBox();
-        OverSemesterPercent1 = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        OverDateWeeks = new javax.swing.JTextField();
-        QualProc = new javax.swing.JTextField();
-        jSeparator2 = new javax.swing.JSeparator();
         jSeparator3 = new javax.swing.JSeparator();
-        Discipline = new java.awt.Choice();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        EduUnit = new java.awt.Choice();
-        EduUnitAdd = new javax.swing.JButton();
-        EduUnitRemove = new javax.swing.JButton();
-        EduUnitToFront = new javax.swing.JButton();
-        EduUnitToEnd = new javax.swing.JButton();
-        EduUnitName = new javax.swing.JTextField();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        PointSum = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        DeliveryWeek = new javax.swing.JTextField();
-        EduUnitType = new java.awt.Choice();
-        BasePoint2 = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -127,10 +86,6 @@ public class PRSSemesterPanel extends PRSBasePanel{
         TaskTypeLabel.setText("Не назначенные");
         add(TaskTypeLabel);
         TaskTypeLabel.setBounds(20, 90, 130, 16);
-
-        jLabel2.setText("Уч.единица");
-        add(jLabel2);
-        jLabel2.setBounds(20, 420, 120, 16);
 
         jLabel3.setText("Назначенные");
         add(jLabel3);
@@ -194,268 +149,15 @@ public class PRSSemesterPanel extends PRSBasePanel{
         RatingsNotAssigned.setBounds(20, 110, 320, 20);
         add(jSeparator1);
         jSeparator1.setBounds(20, 135, 400, 10);
-        add(SemesterRules);
-        SemesterRules.setBounds(20, 160, 320, 20);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel1.setText("Регламент семестра");
-        add(jLabel1);
-        jLabel1.setBounds(20, 140, 160, 16);
-
-        SemesterRuleAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        SemesterRuleAdd.setBorderPainted(false);
-        SemesterRuleAdd.setContentAreaFilled(false);
-        SemesterRuleAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SemesterRuleAddActionPerformed(evt);
-            }
-        });
-        add(SemesterRuleAdd);
-        SemesterRuleAdd.setBounds(350, 150, 30, 30);
-
-        SemesterRuleRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        SemesterRuleRemove.setBorderPainted(false);
-        SemesterRuleRemove.setContentAreaFilled(false);
-        SemesterRuleRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SemesterRuleRemoveActionPerformed(evt);
-            }
-        });
-        add(SemesterRuleRemove);
-        SemesterRuleRemove.setBounds(390, 150, 30, 30);
-
-        jLabel4.setText("Начало семестра");
-        add(jLabel4);
-        jLabel4.setBounds(20, 240, 120, 16);
-
-        SmstrDate.setEnabled(false);
-        SmstrDate.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                SmstrDateMouseClicked(evt);
-            }
-        });
-        add(SmstrDate);
-        SmstrDate.setBounds(140, 230, 110, 25);
-
-        FineOverDate.setText("Нарушение срока сдачи");
-        FineOverDate.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                FineOverDateItemStateChanged(evt);
-            }
-        });
-        add(FineOverDate);
-        FineOverDate.setBounds(20, 270, 170, 20);
-
-        SemesterDuration.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                SemesterDurationKeyPressed(evt);
-            }
-        });
-        add(SemesterDuration);
-        SemesterDuration.setBounds(370, 230, 40, 25);
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel5.setText("%");
-        add(jLabel5);
-        jLabel5.setBounds(190, 270, 20, 25);
-
-        PointPerSkip.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PointPerSkipActionPerformed(evt);
-            }
-        });
-        PointPerSkip.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                PointPerSkipKeyPressed(evt);
-            }
-        });
-        add(PointPerSkip);
-        PointPerSkip.setBounds(370, 330, 40, 25);
-
-        jLabel6.setText("Недель");
-        add(jLabel6);
-        jLabel6.setBounds(260, 235, 60, 16);
-
-        OverDatePercent.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                OverDatePercentKeyPressed(evt);
-            }
-        });
-        add(OverDatePercent);
-        OverDatePercent.setBounds(210, 270, 40, 25);
-
-        jLabel7.setText("Недель");
-        add(jLabel7);
-        jLabel7.setBounds(260, 270, 60, 25);
-
-        SemesterRule.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                SemesterRuleKeyPressed(evt);
-            }
-        });
-        add(SemesterRule);
-        SemesterRule.setBounds(20, 190, 320, 25);
-
-        FineOverSemeste.setText("Сдача после семестра");
-        FineOverSemeste.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                FineOverSemesteItemStateChanged(evt);
-            }
-        });
-        add(FineOverSemeste);
-        FineOverSemeste.setBounds(20, 300, 170, 20);
-
-        jLabel8.setText("Балл за пропуск");
-        add(jLabel8);
-        jLabel8.setBounds(260, 330, 90, 25);
-
-        OverSemesterPercent.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                OverSemesterPercentKeyPressed(evt);
-            }
-        });
-        add(OverSemesterPercent);
-        OverSemesterPercent.setBounds(210, 300, 40, 25);
-
-        FineOverIrregular.setText("Нерегулярность (начиная с...)");
-        FineOverIrregular.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                FineOverIrregularItemStateChanged(evt);
-            }
-        });
-        add(FineOverIrregular);
-        FineOverIrregular.setBounds(20, 330, 190, 20);
-
-        OverSemesterPercent1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                OverSemesterPercent1KeyPressed(evt);
-            }
-        });
-        add(OverSemesterPercent1);
-        OverSemesterPercent1.setBounds(210, 330, 40, 25);
-
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel9.setText("%");
-        add(jLabel9);
-        jLabel9.setBounds(190, 300, 20, 25);
-
-        jLabel10.setText("% за качество");
-        add(jLabel10);
-        jLabel10.setBounds(260, 300, 90, 25);
-
-        OverDateWeeks.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                OverDateWeeksKeyPressed(evt);
-            }
-        });
-        add(OverDateWeeks);
-        OverDateWeeks.setBounds(370, 270, 40, 25);
-
-        QualProc.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                QualProcKeyPressed(evt);
-            }
-        });
-        add(QualProc);
-        QualProc.setBounds(370, 300, 40, 25);
-        add(jSeparator2);
-        jSeparator2.setBounds(20, 362, 400, 10);
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
         add(jSeparator3);
         jSeparator3.setBounds(430, 30, 10, 620);
-        add(Discipline);
-        Discipline.setBounds(20, 390, 390, 20);
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel11.setText("Преподаватель");
         add(jLabel11);
         jLabel11.setBounds(70, 10, 120, 16);
-
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel12.setText("Дисциплина");
-        add(jLabel12);
-        jLabel12.setBounds(30, 370, 120, 16);
-        add(EduUnit);
-        EduUnit.setBounds(20, 440, 310, 20);
-
-        EduUnitAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
-        EduUnitAdd.setBorderPainted(false);
-        EduUnitAdd.setContentAreaFilled(false);
-        EduUnitAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EduUnitAddActionPerformed(evt);
-            }
-        });
-        add(EduUnitAdd);
-        EduUnitAdd.setBounds(340, 430, 30, 30);
-
-        EduUnitRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        EduUnitRemove.setBorderPainted(false);
-        EduUnitRemove.setContentAreaFilled(false);
-        EduUnitRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EduUnitRemoveActionPerformed(evt);
-            }
-        });
-        add(EduUnitRemove);
-        EduUnitRemove.setBounds(380, 430, 30, 30);
-
-        EduUnitToFront.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/up.PNG"))); // NOI18N
-        EduUnitToFront.setBorderPainted(false);
-        EduUnitToFront.setContentAreaFilled(false);
-        EduUnitToFront.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EduUnitToFrontActionPerformed(evt);
-            }
-        });
-        add(EduUnitToFront);
-        EduUnitToFront.setBounds(380, 470, 30, 30);
-
-        EduUnitToEnd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/down.png"))); // NOI18N
-        EduUnitToEnd.setBorderPainted(false);
-        EduUnitToEnd.setContentAreaFilled(false);
-        EduUnitToEnd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EduUnitToEndActionPerformed(evt);
-            }
-        });
-        add(EduUnitToEnd);
-        EduUnitToEnd.setBounds(340, 470, 30, 30);
-
-        EduUnitName.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                EduUnitNameKeyPressed(evt);
-            }
-        });
-        add(EduUnitName);
-        EduUnitName.setBounds(20, 470, 310, 25);
-
-        jCheckBox1.setText("\"Ручная\" установка");
-        add(jCheckBox1);
-        jCheckBox1.setBounds(270, 505, 140, 20);
-
-        PointSum.setEnabled(false);
-        add(PointSum);
-        PointSum.setBounds(220, 535, 40, 25);
-
-        jLabel13.setText("Неделя сдачи");
-        add(jLabel13);
-        jLabel13.setBounds(20, 540, 90, 16);
-
-        jLabel14.setText("Балл");
-        add(jLabel14);
-        jLabel14.setBounds(170, 510, 60, 16);
-        add(DeliveryWeek);
-        DeliveryWeek.setBounds(110, 535, 40, 25);
-        add(EduUnitType);
-        EduUnitType.setBounds(20, 510, 130, 20);
-        add(BasePoint2);
-        BasePoint2.setBounds(220, 505, 40, 25);
-
-        jLabel15.setText("Сумма");
-        add(jLabel15);
-        jLabel15.setBounds(170, 540, 60, 16);
     }// </editor-fold>//GEN-END:initComponents
 
     public void refreshTeachers(){
@@ -619,119 +321,6 @@ public class PRSSemesterPanel extends PRSBasePanel{
 
     }//GEN-LAST:event_RatingsNotAssignedItemStateChanged
 
-    private void SemesterRuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SemesterRuleAddActionPerformed
-        new OKName(200,200,"Добавить регламент", new I_Value<String>() {
-            @Override
-            public void onEnter(String value) {
-                SADiscipline discipline = new SADiscipline();
-                discipline.setName(value);
-                new APICall<JLong>(main) {
-                    @Override
-                    public Call<JLong> apiFun() {
-                        return main.service.addEntity(main.debugToken,new DBRequest(discipline,main.gson),0);
-                    }
-                    @Override
-                    public void onSucess(JLong oo) {
-                        //refreshDisciplineList();
-                    }
-                };
-            }
-        });
-    }//GEN-LAST:event_SemesterRuleAddActionPerformed
-
-    private void SemesterRuleRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SemesterRuleRemoveActionPerformed
-        if (cDiscipline==null)
-        return;
-        new OK(200, 200, "Удалить регламент: " + cDiscipline.getName(), new I_Button() {
-            @Override
-            public void onPush() {
-                new APICall<JBoolean>(main) {
-                    @Override
-                    public Call<JBoolean> apiFun() {
-                        return main.service.deleteById(main.debugToken,"SADiscipline",cDiscipline.getOid());
-                    }
-                    @Override
-                    public void onSucess(JBoolean oo) {
-                        //refreshDisciplineList();
-                    }
-                };
-            }
-        });
-    }//GEN-LAST:event_SemesterRuleRemoveActionPerformed
-
-    private void SmstrDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SmstrDateMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_SmstrDateMouseClicked
-
-    private void FineOverDateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FineOverDateItemStateChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_FineOverDateItemStateChanged
-
-    private void FineOverSemesteItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FineOverSemesteItemStateChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_FineOverSemesteItemStateChanged
-
-    private void FineOverIrregularItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FineOverIrregularItemStateChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_FineOverIrregularItemStateChanged
-
-    private void OverSemesterPercent1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_OverSemesterPercent1KeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OverSemesterPercent1KeyPressed
-
-    private void PointPerSkipKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PointPerSkipKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PointPerSkipKeyPressed
-
-    private void SemesterDurationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SemesterDurationKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_SemesterDurationKeyPressed
-
-    private void SemesterRuleKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SemesterRuleKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_SemesterRuleKeyPressed
-
-    private void OverDatePercentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_OverDatePercentKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OverDatePercentKeyPressed
-
-    private void OverSemesterPercentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_OverSemesterPercentKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OverSemesterPercentKeyPressed
-
-    private void OverDateWeeksKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_OverDateWeeksKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OverDateWeeksKeyPressed
-
-    private void QualProcKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_QualProcKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_QualProcKeyPressed
-
-    private void PointPerSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PointPerSkipActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PointPerSkipActionPerformed
-
-    private void EduUnitAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitAddActionPerformed
-
-
-    }//GEN-LAST:event_EduUnitAddActionPerformed
-
-    private void EduUnitRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitRemoveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_EduUnitRemoveActionPerformed
-
-    private void EduUnitToFrontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitToFrontActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_EduUnitToFrontActionPerformed
-
-    private void EduUnitToEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitToEndActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_EduUnitToEndActionPerformed
-
-    private void EduUnitNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EduUnitNameKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_EduUnitNameKeyPressed
-
 
 
     @Override
@@ -752,81 +341,16 @@ public class PRSSemesterPanel extends PRSBasePanel{
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField BasePoint2;
-    private javax.swing.JTextField DeliveryWeek;
-    private java.awt.Choice Discipline;
-    private java.awt.Choice EduUnit;
-    private javax.swing.JButton EduUnitAdd;
-    private javax.swing.JTextField EduUnitName;
-    private javax.swing.JButton EduUnitRemove;
-    private javax.swing.JButton EduUnitToEnd;
-    private javax.swing.JButton EduUnitToFront;
-    private java.awt.Choice EduUnitType;
-    private javax.swing.JCheckBox FineOverDate;
-    private javax.swing.JCheckBox FineOverIrregular;
-    private javax.swing.JCheckBox FineOverSemeste;
-    private javax.swing.JTextField OverDatePercent;
-    private javax.swing.JTextField OverDateWeeks;
-    private javax.swing.JTextField OverSemesterPercent;
-    private javax.swing.JTextField OverSemesterPercent1;
-    private javax.swing.JTextField PointPerSkip;
-    private javax.swing.JTextField PointSum;
-    private javax.swing.JTextField QualProc;
     private javax.swing.JButton RatingAdd;
     private javax.swing.JButton RatingRemove;
     private java.awt.Choice RatingsAssigned;
     private java.awt.Choice RatingsNotAssigned;
     private javax.swing.JButton RefreshAll;
-    private javax.swing.JTextField SemesterDuration;
-    private javax.swing.JTextField SemesterRule;
-    private javax.swing.JButton SemesterRuleAdd;
-    private javax.swing.JButton SemesterRuleRemove;
-    private java.awt.Choice SemesterRules;
-    private javax.swing.JTextField SmstrDate;
     private javax.swing.JLabel TaskTypeLabel;
     private java.awt.Choice Teachers;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    //---------------------- Пустышки автоматов -------------------------------------------------------------------------
-    @Override
-    public void refreshSelectedDiscipline(boolean withPos) {}
-    @Override
-    public void refreshSelectedStudRating() {}
-    @Override
-    public void refreshStudRatingFull(boolean withPos) {}
-    @Override
-    public SAStudRating getCStudRating() {
-        return null; }
-    @Override
-    public SADiscipline getCDiscipline() {
-        return null;}
-    @Override
-    public void calcRatingBall() {}
-    @Override
-    public SAExamTaking getCTaking() {
-        return null;}
-    @Override
-    public SAGroupRating getCRating() {
-        return null;}
-    @Override
-    public Choice getAnswerBall() {
-        return null;}
     // End of variables declaration//GEN-END:variables
 }

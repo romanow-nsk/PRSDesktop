@@ -1,6 +1,12 @@
 package romanow.abc.desktop;
 
+import romanow.abc.core.constants.ConstValue;
+
+import java.awt.*;
+import java.util.ArrayList;
+
 public class UtilsPRS {
+    //------------------------------------------------------
     public static String[]  parseFIO(String fio){
         fio = fio.trim();
         String out[]={"","",""};
@@ -20,6 +26,7 @@ public class UtilsPRS {
         out[2]=fio.substring(idx+1);
         return out;
         }
+    //------------------------------------------------------
     public static String formatSize(String ss, int size){
         String out = "";
         if (ss.length()<size)
@@ -42,5 +49,8 @@ public class UtilsPRS {
         out+="\n"+ss;
         return out;
     }
-
+    //------------------------------------------------------
+    public static String shortString(String ss, int size){
+        return ss.length()<=size ? ss : ss.substring(0,size)+"...";
+        }
 }

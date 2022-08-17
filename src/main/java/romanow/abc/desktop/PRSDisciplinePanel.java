@@ -33,6 +33,8 @@ import romanow.abc.excel.ExcelX2;
 import romanow.abc.excel.I_ExcelBack;
 
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
@@ -54,7 +56,7 @@ public class PRSDisciplinePanel extends BasePanel{
     //----------------------------------------------------------------------------------------
     private ArrayList<SATheme> ruleThemes = new ArrayList<>();          // Темы регламента сдачи
     private HashMap<Long, SATheme> ruleThemesMap = new HashMap<>();
-    private ArrayList<ConstValue> eduUnitTypes = new ArrayList<>();
+    private ChoiceConsts eduUnitTypes = null;
     //---------------------------------------------------------------------------------------
     private int themeIdx = -1;
     private int taskIdx = -1;
@@ -74,10 +76,12 @@ public class PRSDisciplinePanel extends BasePanel{
         TaskArtifactView.setEnabled(false);
         TaskArtifactDownLoad.setEnabled(false);
         DisciplineSaveImport.setEnabled(false);
-        eduUnitTypes = Values.constMap().getGroupList("EduUnit");
-        EduUnitType.removeAll();
-        for(ConstValue cc : eduUnitTypes)
-            EduUnitType.add(cc.title());
+        eduUnitTypes = new ChoiceConsts(EduUnitType, Values.constMap().getGroupList("EduUnit"), new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+
+                }
+            });
         refreshAll();
         }
 
@@ -188,7 +192,7 @@ public class PRSDisciplinePanel extends BasePanel{
         DeliveryWeek.setText(""+cEduUnit.getDeliveryWeek());
         BasePoint.setText(""+cEduUnit.getBasePoint());
         ManualPointSet.setSelected(cEduUnit.isManualPointSet());
-        if (selectChoiceByState(eduUnitTypes,EduUnitType,cEduUnit.getUnitType())==null)
+        if (eduUnitTypes.selectByValue(cEduUnit.getUnitType())==null)
             System.out.println("Недопустимый тип учебной единицы: "+cEduUnit.getUnitType());
         refresh=false;
         }
@@ -2104,7 +2108,7 @@ public class PRSDisciplinePanel extends BasePanel{
             return;
         if (cEduUnit==null)
             return;
-        final ConstValue cc = eduUnitTypes.get(EduUnitType.getSelectedIndex());
+        final ConstValue cc = eduUnitTypes.get();
         new OKName(200,200,"Тип уч.единицы: "+cc.title(), new I_Value<String>() {
             @Override
             public void onEnter(String value) {
