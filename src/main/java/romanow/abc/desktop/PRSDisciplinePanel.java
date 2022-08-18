@@ -71,7 +71,7 @@ public class PRSDisciplinePanel extends BasePanel{
         eduUnitTypes = new ChoiceConsts(EduUnitType, Values.constMap().getGroupList("EduUnit"), new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                eduUnitTypeItemStateChanged();
                 }
             });
         disciplines = new ChoiceList<SADiscipline>(Disciplines);
@@ -866,7 +866,7 @@ public class PRSDisciplinePanel extends BasePanel{
         jLabel22.setBounds(270, 550, 110, 20);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel5.setText("Уч.единица");
+        jLabel5.setText("Ед. контроля");
         add(jLabel5);
         jLabel5.setBounds(500, 240, 120, 16);
 
@@ -2060,7 +2060,7 @@ public class PRSDisciplinePanel extends BasePanel{
         refreshSelectedSemesterRule(true);
     }//GEN-LAST:event_SemesterRulesItemStateChanged
 
-    private void EduUnitTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitTypeItemStateChanged
+    public void eduUnitTypeItemStateChanged(){
         if (refresh)
             return;
         if (eduUnits.get()==null)
@@ -2071,8 +2071,11 @@ public class PRSDisciplinePanel extends BasePanel{
             public void onEnter(String value) {
                 eduUnits.get().setUnitType(cc.value());
                 eduUnitUpdate(null);
-                }
-            });
+            }
+        });
+    }
+
+    private void EduUnitTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitTypeItemStateChanged
     }//GEN-LAST:event_EduUnitTypeItemStateChanged
 
     private void EduUnitsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitsItemStateChanged
