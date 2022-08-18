@@ -46,6 +46,7 @@ import java.util.*;
  */
 public class PRSSemesterPanel extends BasePanel{
     private ChoiceConsts pointState;
+    private ChoiceConsts eduUnitType;
     private ChoiceList<SAGroupRating> ratings;
     private ChoiceList<SAStudent> students;
     private ChoiceList<SAEduUnit> eduUnits;
@@ -54,6 +55,13 @@ public class PRSSemesterPanel extends BasePanel{
     private EntityRefList<SAStudent> allStudents = new EntityRefList<>();
     private EntityRefList<SAGroupRating> allRatings = new EntityRefList<>();
     private SATeacher cTeacher=null;
+    private SAGroupRating cRating=null;
+    private SADiscipline cDiscipline=null;
+    private SAGroup cGroup = null;
+    private SAStudent cStudent=null;
+    private SAEduUnit cEduUnit=null;
+    private SATeam cTeam=null;
+    private boolean refresh=false;
 
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
@@ -64,6 +72,7 @@ public class PRSSemesterPanel extends BasePanel{
                 pointStateChanged();
                 }
             });
+        eduUnitType = new ChoiceConsts(EduUnitType, Values.constMap().getGroupList("EduUnit"), null);
         ratings = new ChoiceList<>(Ratings);
         students = new ChoiceList<>(Students);
         eduUnits = new ChoiceList<>(EduUnits);
@@ -79,12 +88,12 @@ public class PRSSemesterPanel extends BasePanel{
         teams.clearPos();
         teamStudents.clearPos();
         }
-    private void savePos(){
-        eduUnits.savePos();
-        students.savePos();
-        ratings.savePos();
-        teamStudents.savePos();
-        teamStudents.savePos();
+    private void savePos(boolean withPos){
+        eduUnits.savePos(withPos);
+        students.savePos(withPos);
+        ratings.savePos(withPos);
+        teamStudents.savePos(withPos);
+        teamStudents.savePos(withPos);
         }
     private void clear(){
         eduUnits.clear();
@@ -99,8 +108,7 @@ public class PRSSemesterPanel extends BasePanel{
     }
 
     public void refreshAll(boolean withPos){
-        if (withPos)
-            savePos();
+        savePos(withPos);
         clear();
         new APICall<ArrayList<DBRequest>>(null){
             @Override
@@ -120,7 +128,7 @@ public class PRSSemesterPanel extends BasePanel{
                             }
                         }
                 allRatings.createMap();
-                loadRatings(withPos);
+                refreshRatings(withPos);
             }
         };
 
@@ -153,14 +161,14 @@ public class PRSSemesterPanel extends BasePanel{
         StudentPdfReport = new javax.swing.JButton();
         RatingTableReport = new javax.swing.JButton();
         DocDownload = new javax.swing.JButton();
-        RatingPdfReport2 = new javax.swing.JButton();
+        RatingPdfReport = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         TeamAdd = new javax.swing.JButton();
         TeamStudentRemove = new javax.swing.JButton();
         bbb = new javax.swing.JLabel();
         EduUnitWeek = new javax.swing.JTextField();
-        TeamStudentSelect2 = new javax.swing.JButton();
-        TeamRemove1 = new javax.swing.JButton();
+        TeamStudentSelect = new javax.swing.JButton();
+        TeamRemove = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         PointVariant = new javax.swing.JTextField();
         bbb1 = new javax.swing.JLabel();
@@ -173,7 +181,7 @@ public class PRSSemesterPanel extends BasePanel{
         StudentTeam1 = new javax.swing.JTextField();
         ссс1 = new javax.swing.JLabel();
         ссс2 = new javax.swing.JLabel();
-        EduUnitPdfReport1 = new javax.swing.JButton();
+        EduUnitPdfReport = new javax.swing.JButton();
         DocUpload = new javax.swing.JButton();
         SrcDownload = new javax.swing.JButton();
         SrcUpload = new javax.swing.JButton();
@@ -181,6 +189,8 @@ public class PRSSemesterPanel extends BasePanel{
         bbb5 = new javax.swing.JLabel();
         EduUnitPoint = new javax.swing.JTextField();
         EduUnitPoint2 = new javax.swing.JTextField();
+        EduUnitType = new java.awt.Choice();
+        RefreshAll = new javax.swing.JButton();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -192,29 +202,47 @@ public class PRSSemesterPanel extends BasePanel{
         UserAccount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         UserAccount.setText(".......");
         add(UserAccount);
-        UserAccount.setBounds(20, 20, 360, 20);
+        UserAccount.setBounds(80, 20, 310, 20);
+
+        Ratings.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                RatingsItemStateChanged(evt);
+            }
+        });
         add(Ratings);
         Ratings.setBounds(20, 50, 370, 20);
 
         aaa.setText("Бригада");
         add(aaa);
-        aaa.setBounds(450, 50, 60, 16);
+        aaa.setBounds(450, 80, 60, 16);
+
+        Students.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                StudentsItemStateChanged(evt);
+            }
+        });
         add(Students);
         Students.setBounds(110, 120, 280, 20);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Студент");
         add(jLabel2);
-        jLabel2.setBounds(450, 80, 60, 16);
+        jLabel2.setBounds(450, 120, 60, 16);
+
+        Teams.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                TeamsItemStateChanged(evt);
+            }
+        });
         add(Teams);
-        Teams.setBounds(510, 50, 160, 20);
+        Teams.setBounds(510, 80, 160, 20);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Выполнение");
         add(jLabel3);
         jLabel3.setBounds(20, 340, 90, 16);
         add(TeamStudents);
-        TeamStudents.setBounds(510, 80, 160, 20);
+        TeamStudents.setBounds(510, 120, 160, 20);
 
         StudentTableReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/table.png"))); // NOI18N
         StudentTableReport.setBorderPainted(false);
@@ -231,6 +259,12 @@ public class PRSSemesterPanel extends BasePanel{
         jLabel4.setText("Студент");
         add(jLabel4);
         jLabel4.setBounds(20, 120, 90, 16);
+
+        EduUnits.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                EduUnitsItemStateChanged(evt);
+            }
+        });
         add(EduUnits);
         EduUnits.setBounds(110, 250, 270, 20);
 
@@ -289,16 +323,16 @@ public class PRSSemesterPanel extends BasePanel{
         add(DocDownload);
         DocDownload.setBounds(120, 490, 35, 35);
 
-        RatingPdfReport2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
-        RatingPdfReport2.setBorderPainted(false);
-        RatingPdfReport2.setContentAreaFilled(false);
-        RatingPdfReport2.addActionListener(new java.awt.event.ActionListener() {
+        RatingPdfReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
+        RatingPdfReport.setBorderPainted(false);
+        RatingPdfReport.setContentAreaFilled(false);
+        RatingPdfReport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RatingPdfReport2ActionPerformed(evt);
+                RatingPdfReportActionPerformed(evt);
             }
         });
-        add(RatingPdfReport2);
-        RatingPdfReport2.setBounds(60, 80, 35, 35);
+        add(RatingPdfReport);
+        RatingPdfReport.setBounds(60, 80, 35, 35);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Ед.контроля");
@@ -314,7 +348,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(TeamAdd);
-        TeamAdd.setBounds(680, 40, 30, 30);
+        TeamAdd.setBounds(680, 70, 30, 30);
 
         TeamStudentRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         TeamStudentRemove.setBorderPainted(false);
@@ -325,7 +359,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(TeamStudentRemove);
-        TeamStudentRemove.setBounds(680, 75, 30, 30);
+        TeamStudentRemove.setBounds(680, 110, 30, 30);
 
         bbb.setText("Состояние");
         add(bbb);
@@ -335,27 +369,27 @@ public class PRSSemesterPanel extends BasePanel{
         add(EduUnitWeek);
         EduUnitWeek.setBounds(310, 420, 60, 25);
 
-        TeamStudentSelect2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/left.PNG"))); // NOI18N
-        TeamStudentSelect2.setBorderPainted(false);
-        TeamStudentSelect2.setContentAreaFilled(false);
-        TeamStudentSelect2.addActionListener(new java.awt.event.ActionListener() {
+        TeamStudentSelect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/question.png"))); // NOI18N
+        TeamStudentSelect.setBorderPainted(false);
+        TeamStudentSelect.setContentAreaFilled(false);
+        TeamStudentSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TeamStudentSelect2ActionPerformed(evt);
+                TeamStudentSelectActionPerformed(evt);
             }
         });
-        add(TeamStudentSelect2);
-        TeamStudentSelect2.setBounds(410, 70, 35, 35);
+        add(TeamStudentSelect);
+        TeamStudentSelect.setBounds(720, 110, 35, 35);
 
-        TeamRemove1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
-        TeamRemove1.setBorderPainted(false);
-        TeamRemove1.setContentAreaFilled(false);
-        TeamRemove1.addActionListener(new java.awt.event.ActionListener() {
+        TeamRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
+        TeamRemove.setBorderPainted(false);
+        TeamRemove.setContentAreaFilled(false);
+        TeamRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TeamRemove1ActionPerformed(evt);
+                TeamRemoveActionPerformed(evt);
             }
         });
-        add(TeamRemove1);
-        TeamRemove1.setBounds(720, 40, 30, 30);
+        add(TeamRemove);
+        TeamRemove.setBounds(720, 70, 30, 30);
 
         jLabel6.setText("Бригада");
         add(jLabel6);
@@ -414,16 +448,16 @@ public class PRSSemesterPanel extends BasePanel{
         add(ссс2);
         ссс2.setBounds(20, 490, 50, 16);
 
-        EduUnitPdfReport1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
-        EduUnitPdfReport1.setBorderPainted(false);
-        EduUnitPdfReport1.setContentAreaFilled(false);
-        EduUnitPdfReport1.addActionListener(new java.awt.event.ActionListener() {
+        EduUnitPdfReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
+        EduUnitPdfReport.setBorderPainted(false);
+        EduUnitPdfReport.setContentAreaFilled(false);
+        EduUnitPdfReport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EduUnitPdfReport1ActionPerformed(evt);
+                EduUnitPdfReportActionPerformed(evt);
             }
         });
-        add(EduUnitPdfReport1);
-        EduUnitPdfReport1.setBounds(60, 280, 35, 35);
+        add(EduUnitPdfReport);
+        EduUnitPdfReport.setBounds(60, 280, 35, 35);
 
         DocUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
         DocUpload.setBorderPainted(false);
@@ -473,6 +507,22 @@ public class PRSSemesterPanel extends BasePanel{
         EduUnitPoint2.setEnabled(false);
         add(EduUnitPoint2);
         EduUnitPoint2.setBounds(310, 390, 60, 25);
+
+        EduUnitType.setBackground(new java.awt.Color(204, 204, 204));
+        EduUnitType.setEnabled(false);
+        add(EduUnitType);
+        EduUnitType.setBounds(288, 280, 90, 20);
+
+        RefreshAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
+        RefreshAll.setBorderPainted(false);
+        RefreshAll.setContentAreaFilled(false);
+        RefreshAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RefreshAllActionPerformed(evt);
+            }
+        });
+        add(RefreshAll);
+        RefreshAll.setBounds(20, 10, 30, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     private void StudentTableReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentTableReportActionPerformed
@@ -499,9 +549,9 @@ public class PRSSemesterPanel extends BasePanel{
         // TODO add your handling code here:
     }//GEN-LAST:event_DocDownloadActionPerformed
 
-    private void RatingPdfReport2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingPdfReport2ActionPerformed
+    private void RatingPdfReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingPdfReportActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_RatingPdfReport2ActionPerformed
+    }//GEN-LAST:event_RatingPdfReportActionPerformed
 
     private void TeamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TeamAddActionPerformed
         new OKName(200,200,"Добавить дисциплину", new I_Value<String>() {
@@ -515,13 +565,13 @@ public class PRSSemesterPanel extends BasePanel{
 
     }//GEN-LAST:event_TeamStudentRemoveActionPerformed
 
-    private void TeamStudentSelect2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TeamStudentSelect2ActionPerformed
+    private void TeamStudentSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TeamStudentSelectActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TeamStudentSelect2ActionPerformed
+    }//GEN-LAST:event_TeamStudentSelectActionPerformed
 
-    private void TeamRemove1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TeamRemove1ActionPerformed
+    private void TeamRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TeamRemoveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TeamRemove1ActionPerformed
+    }//GEN-LAST:event_TeamRemoveActionPerformed
 
     private void PointVariantKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PointVariantKeyPressed
         // TODO add your handling code here:
@@ -535,9 +585,9 @@ public class PRSSemesterPanel extends BasePanel{
         // TODO add your handling code here:
     }//GEN-LAST:event_PointDateMouseClicked
 
-    private void EduUnitPdfReport1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitPdfReport1ActionPerformed
+    private void EduUnitPdfReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitPdfReportActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_EduUnitPdfReport1ActionPerformed
+    }//GEN-LAST:event_EduUnitPdfReportActionPerformed
 
     private void DocUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocUploadActionPerformed
         // TODO add your handling code here:
@@ -551,7 +601,33 @@ public class PRSSemesterPanel extends BasePanel{
         // TODO add your handling code here:
     }//GEN-LAST:event_SrcUploadActionPerformed
 
-    public void loadRatings(boolean withPos){
+    private void EduUnitsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitsItemStateChanged
+        eduUnits.savePos();
+        refreshSelectedEduUnit(true);
+        refreshPoint();
+    }//GEN-LAST:event_EduUnitsItemStateChanged
+
+    private void StudentsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentsItemStateChanged
+        students.savePos();
+        refreshSelectedStudent(true);
+        refreshPoint();
+    }//GEN-LAST:event_StudentsItemStateChanged
+
+    private void TeamsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TeamsItemStateChanged
+        teams.savePos();
+        refreshSelectedTeam(true);
+    }//GEN-LAST:event_TeamsItemStateChanged
+
+    private void RatingsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingsItemStateChanged
+        savePos(true);
+        refreshSelectedRating(true);
+    }//GEN-LAST:event_RatingsItemStateChanged
+
+    private void RefreshAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshAllActionPerformed
+        refreshAll(false);
+    }//GEN-LAST:event_RefreshAllActionPerformed
+
+    public void refreshRatings(boolean withPos){
         new APICall<ArrayList<DBRequest>>(null){
             @Override
             public Call<ArrayList<DBRequest>> apiFun() {
@@ -568,11 +644,11 @@ public class PRSSemesterPanel extends BasePanel{
                             System.out.println(e);
                             }
                         }
-                loadTeacherRatings(withPos);
+                refreshTeacherRatings(withPos);
                 }
             };
         }
-    public void loadTeacherRatings(final boolean withPos) {
+    public void refreshTeacherRatings(final boolean withPos) {
         UserAccount.setText(main.loginUser.getTitle()+": "+main.loginUser.getMail());
         if (main.loginUser.getTypeId() != Values.UserTeacher) {
             for (SAGroupRating gg : allRatings)
@@ -614,12 +690,118 @@ public class PRSSemesterPanel extends BasePanel{
             }
 
         public void refreshSelectedRating(boolean withPos){
+            ratings.withPos(withPos);
+            cRating = ratings.get();
+            if (cRating==null)
+                return;
+            refreshStudents(false);
+            refreshEduUnits(false);
+            refreshAllPoints();
+            refreshPoint();
+            }
+
+    public void refreshAllPoints(){
 
         }
 
+    public void refreshPoint(){
 
+        }
+    public void refreshTeams(boolean withPos){
+        teams.withPos(withPos);
+        teams.clear();
+        for (SATeam team : cRating.getTeams())
+            teams.add(team);
+        refreshSelectedTeam(withPos);
+        }
+    public void refreshSelectedTeam(boolean withPos){
+        teams.withPos(withPos);
+        teamStudents.clear();
+        cTeam = teams.get();
+        if (cTeam==null)
+            return;
+        for(EntityLink<SAStudent> ss : cTeam.getStudents()){
+            SAStudent cc = allStudents.getById(ss.getOid());
+            if (cc==null){
+                System.out.println("Не найден студент в бригаде id="+cc.getOid());
+                }
+            else
+                teamStudents.add(cc);
+                }
+        }
 
+    public void refreshEduUnits(boolean withPos){
+        eduUnits.savePos();
+        eduUnits.clear();
+        new APICall<DBRequest>(main) {
+            @Override
+            public Call<DBRequest> apiFun() {
+                return main.service.getEntity(main.debugToken,"SADiscipline",cRating.getSADiscipline().getOid(),1);
+                }
+            @Override
+            public void onSucess(DBRequest oo) {
+                try {
+                    cDiscipline = (SADiscipline) oo.get(main.gson);
+                    } catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Ошибка чтения дисциплины "+cRating.getName());
+                        return;
+                        }
+                for(SAEduUnit eduUnit : cDiscipline.getUnits())
+                    eduUnits.add(eduUnit);
+                refreshSelectedEduUnit(withPos);
+                }
+            };
+        }
 
+    public void refreshSelectedEduUnit(boolean withPos){
+        eduUnits.withPos(withPos);
+        refresh = true;
+        EduUnitWeek.setText("");
+        EduUnitPoint.setText("");
+        cEduUnit = eduUnits.get();
+        if (cEduUnit==null){
+            refresh=false;
+            return;
+            }
+        if (cEduUnit.getDeliveryWeek()!=0)
+            EduUnitWeek.setText(""+cEduUnit.getDeliveryWeek());
+        EduUnitPoint.setText(""+cEduUnit.getBasePoint());
+        if (eduUnitType.selectByValue(eduUnits.get().getUnitType())==null)
+            System.out.println("Недопустимый тип учебной единицы: "+eduUnits.get().getUnitType());
+        refresh=false;
+        }
+
+    public void refreshSelectedStudent(boolean withPos){
+        students.withPos(withPos);
+        }
+
+    public void refreshStudents(boolean withPos){
+        students.withPos(withPos);
+        students.clear();
+        allStudents.clear();
+        new APICall<DBRequest>(main) {
+            @Override
+            public Call<DBRequest> apiFun() {
+                return main.service.getEntity(main.debugToken,"SAGroup",cRating.getGroup().getOid(),2);
+                }
+            @Override
+            public void onSucess(DBRequest oo) {
+                try{
+                    cGroup = (SAGroup)oo.get(main.gson);
+                    for(SAStudent student : cGroup.getStudents()){
+                        students.add(student);
+                        allStudents.add(student);
+                        }
+                    allStudents.createMap();
+                    refreshSelectedStudent(withPos);
+                }catch (Exception ee){
+                    System.out.println(ee.toString());
+                    popup("Не прочитаны данные группы "+cGroup.getName());
+                }
+            }
+        };
+    }
 
 
     @Override
@@ -642,19 +824,21 @@ public class PRSSemesterPanel extends BasePanel{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DocDownload;
     private javax.swing.JButton DocUpload;
-    private javax.swing.JButton EduUnitPdfReport1;
+    private javax.swing.JButton EduUnitPdfReport;
     private javax.swing.JTextField EduUnitPoint;
     private javax.swing.JTextField EduUnitPoint2;
     private javax.swing.JButton EduUnitTableReport;
+    private java.awt.Choice EduUnitType;
     private javax.swing.JTextField EduUnitWeek;
     private java.awt.Choice EduUnits;
     private javax.swing.JTextField Point;
     private javax.swing.JTextField PointDate;
     private java.awt.Choice PointState;
     private javax.swing.JTextField PointVariant;
-    private javax.swing.JButton RatingPdfReport2;
+    private javax.swing.JButton RatingPdfReport;
     private javax.swing.JButton RatingTableReport;
     private java.awt.Choice Ratings;
+    private javax.swing.JButton RefreshAll;
     private javax.swing.JButton SrcDownload;
     private javax.swing.JButton SrcUpload;
     private javax.swing.JButton StudentPdfReport;
@@ -662,10 +846,10 @@ public class PRSSemesterPanel extends BasePanel{
     private javax.swing.JTextField StudentTeam1;
     private java.awt.Choice Students;
     private javax.swing.JButton TeamAdd;
-    private javax.swing.JButton TeamRemove1;
+    private javax.swing.JButton TeamRemove;
     private javax.swing.JButton TeamStudentAdd;
     private javax.swing.JButton TeamStudentRemove;
-    private javax.swing.JButton TeamStudentSelect2;
+    private javax.swing.JButton TeamStudentSelect;
     private java.awt.Choice TeamStudents;
     private java.awt.Choice Teams;
     private javax.swing.JLabel UserAccount;
