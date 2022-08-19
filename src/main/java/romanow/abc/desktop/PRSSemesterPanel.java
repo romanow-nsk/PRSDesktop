@@ -78,7 +78,7 @@ public class PRSSemesterPanel extends BasePanel{
         eduUnits = new ChoiceList<>(EduUnits);
         teams = new ChoiceList<>(Teams);
         teamStudents = new ChoiceList<>(TeamStudents);
-        refreshAll(false);
+        refreshAll();
         }
 
     public void clearPos(){
@@ -88,12 +88,12 @@ public class PRSSemesterPanel extends BasePanel{
         teams.clearPos();
         teamStudents.clearPos();
         }
-    private void savePos(boolean withPos){
-        eduUnits.savePos(withPos);
-        students.savePos(withPos);
-        ratings.savePos(withPos);
-        teamStudents.savePos(withPos);
-        teamStudents.savePos(withPos);
+    private void savePos(){
+        eduUnits.savePos();
+        students.savePos();
+        ratings.savePos();
+        teamStudents.savePos();
+        teamStudents.savePos();
         }
     private void clear(){
         eduUnits.clear();
@@ -107,8 +107,8 @@ public class PRSSemesterPanel extends BasePanel{
 
     }
 
-    public void refreshAll(boolean withPos){
-        savePos(withPos);
+    public void refreshAll(){
+        savePos();
         clear();
         new APICall<ArrayList<DBRequest>>(null){
             @Override
@@ -128,7 +128,7 @@ public class PRSSemesterPanel extends BasePanel{
                             }
                         }
                 allRatings.createMap();
-                refreshRatings(withPos);
+                refreshRatings();
             }
         };
 
@@ -603,31 +603,31 @@ public class PRSSemesterPanel extends BasePanel{
 
     private void EduUnitsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitsItemStateChanged
         eduUnits.savePos();
-        refreshSelectedEduUnit(true);
+        refreshSelectedEduUnit();
         refreshPoint();
     }//GEN-LAST:event_EduUnitsItemStateChanged
 
     private void StudentsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentsItemStateChanged
         students.savePos();
-        refreshSelectedStudent(true);
+        refreshSelectedStudent();
         refreshPoint();
     }//GEN-LAST:event_StudentsItemStateChanged
 
     private void TeamsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TeamsItemStateChanged
         teams.savePos();
-        refreshSelectedTeam(true);
+        refreshSelectedTeam();
     }//GEN-LAST:event_TeamsItemStateChanged
 
     private void RatingsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingsItemStateChanged
-        savePos(true);
-        refreshSelectedRating(true);
+        savePos();
+        refreshSelectedRating();
     }//GEN-LAST:event_RatingsItemStateChanged
 
     private void RefreshAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshAllActionPerformed
-        refreshAll(false);
+        refreshAll();
     }//GEN-LAST:event_RefreshAllActionPerformed
 
-    public void refreshRatings(boolean withPos){
+    public void refreshRatings(){
         new APICall<ArrayList<DBRequest>>(null){
             @Override
             public Call<ArrayList<DBRequest>> apiFun() {
@@ -644,16 +644,16 @@ public class PRSSemesterPanel extends BasePanel{
                             System.out.println(e);
                             }
                         }
-                refreshTeacherRatings(withPos);
+                refreshTeacherRatings();
                 }
             };
         }
-    public void refreshTeacherRatings(final boolean withPos) {
+    public void refreshTeacherRatings() {
         UserAccount.setText(main.loginUser.getTitle()+": "+main.loginUser.getMail());
         if (main.loginUser.getTypeId() != Values.UserTeacher) {
             for (SAGroupRating gg : allRatings)
                 ratings.add(gg);
-            refreshSelectedRating(withPos);
+            refreshSelectedRating();
             return;
             }
         final long userOid = main.loginUser.getOid();
@@ -681,7 +681,7 @@ public class PRSSemesterPanel extends BasePanel{
                             }
                         ratings.add(gg);
                         }
-                    refreshSelectedRating(withPos);
+                    refreshSelectedRating();
                     } catch (UniException e) {
                         System.out.println(e);
                         }
@@ -689,13 +689,13 @@ public class PRSSemesterPanel extends BasePanel{
                 };
             }
 
-        public void refreshSelectedRating(boolean withPos){
-            ratings.withPos(withPos);
+        public void refreshSelectedRating(){
+            ratings.restorePos();
             cRating = ratings.get();
             if (cRating==null)
                 return;
-            refreshStudents(false);
-            refreshEduUnits(false);
+            refreshStudents();
+            refreshEduUnits();
             refreshAllPoints();
             refreshPoint();
             }
@@ -707,15 +707,15 @@ public class PRSSemesterPanel extends BasePanel{
     public void refreshPoint(){
 
         }
-    public void refreshTeams(boolean withPos){
-        teams.withPos(withPos);
+    public void refreshTeams(){
+        teams.restorePos();
         teams.clear();
         for (SATeam team : cRating.getTeams())
             teams.add(team);
-        refreshSelectedTeam(withPos);
+        refreshSelectedTeam();
         }
-    public void refreshSelectedTeam(boolean withPos){
-        teams.withPos(withPos);
+    public void refreshSelectedTeam(){
+        teams.restorePos();
         teamStudents.clear();
         cTeam = teams.get();
         if (cTeam==null)
@@ -730,7 +730,7 @@ public class PRSSemesterPanel extends BasePanel{
                 }
         }
 
-    public void refreshEduUnits(boolean withPos){
+    public void refreshEduUnits(){
         eduUnits.savePos();
         eduUnits.clear();
         new APICall<DBRequest>(main) {
@@ -749,13 +749,13 @@ public class PRSSemesterPanel extends BasePanel{
                         }
                 for(SAEduUnit eduUnit : cDiscipline.getUnits())
                     eduUnits.add(eduUnit);
-                refreshSelectedEduUnit(withPos);
+                refreshSelectedEduUnit();
                 }
             };
         }
 
-    public void refreshSelectedEduUnit(boolean withPos){
-        eduUnits.withPos(withPos);
+    public void refreshSelectedEduUnit(){
+        eduUnits.restorePos();
         refresh = true;
         EduUnitWeek.setText("");
         EduUnitPoint.setText("");
@@ -772,12 +772,12 @@ public class PRSSemesterPanel extends BasePanel{
         refresh=false;
         }
 
-    public void refreshSelectedStudent(boolean withPos){
-        students.withPos(withPos);
+    public void refreshSelectedStudent(){
+        students.restorePos();
         }
 
-    public void refreshStudents(boolean withPos){
-        students.withPos(withPos);
+    public void refreshStudents(){
+        students.restorePos();
         students.clear();
         allStudents.clear();
         new APICall<DBRequest>(main) {
@@ -794,7 +794,7 @@ public class PRSSemesterPanel extends BasePanel{
                         allStudents.add(student);
                         }
                     allStudents.createMap();
-                    refreshSelectedStudent(withPos);
+                    refreshSelectedStudent();
                 }catch (Exception ee){
                     System.out.println(ee.toString());
                     popup("Не прочитаны данные группы "+cGroup.getName());

@@ -95,16 +95,13 @@ public class PRSDisciplinePanel extends BasePanel{
         }
 
     public void refreshAll(){
-        refreshAll(false);
-        }
-    public void refreshAll(boolean withPos){
-        refreshDisciplineList(withPos);
-        refreshSemesterRuleList(withPos);
-        refreshEduUnits(withPos);
+        refreshDisciplineList();
+        refreshSemesterRuleList();
+        refreshEduUnits();
         }
 
-    public void refreshSemesterRuleList(boolean withPos){
-        semesterRules.savePos(withPos);
+    public void refreshSemesterRuleList(){
+        semesterRules.savePos();
         semesterRules.clear();
         new APICall<ArrayList<DBRequest>>(main){
             @Override
@@ -122,14 +119,14 @@ public class PRSDisciplinePanel extends BasePanel{
                     System.out.println(ee.toString());
                     popup("Ошибка чтения регламентов семестра");
                     }
-                refreshSelectedSemesterRule(withPos);
+                refreshSelectedSemesterRule();
             }
         };
     }
 
 
-    public void refreshDisciplineList(boolean withPos){
-        disciplines.savePos(withPos);
+    public void refreshDisciplineList(){
+        disciplines.savePos();
         disciplines.clear();
         TaskText.setText("");
         new APICall<ArrayList<DBRequest>>(main){
@@ -148,32 +145,32 @@ public class PRSDisciplinePanel extends BasePanel{
                     System.out.println(ee.toString());
                     popup("Ошибка чтения списка дисциплин");
                     }
-                refreshSelectedDiscipline(false);
+                refreshSelectedDiscipline();
                 }
             };
         }
 
-    public void refreshEduUnits(boolean withPos){
+    public void refreshEduUnits(){
         eduUnits.clear();
         cDiscipline.getUnits().sortByKeyNum();
         caclEduUnitsSum();
         for(SAEduUnit unit : cDiscipline.getUnits()){
             eduUnits.add(unit);
             }
-        eduUnits.withPos(withPos);
-        refreshSelectedEduUnit(withPos);
+        eduUnits.restorePos();
+        refreshSelectedEduUnit();
         }
 
-    public void refreshRules(boolean withPos){
+    public void refreshRules(){
         rules.clear();
         for(SAExamRule rule : cDiscipline.getRules()){
             rules.add(rule);
             }
-        refreshSelectedRule(withPos);
+        refreshSelectedRule();
         }
 
-    public void refreshSelectedEduUnit(boolean withPos){
-        eduUnits.withPos(withPos);
+    public void refreshSelectedEduUnit(){
+        eduUnits.restorePos();
         refresh = true;
         EduUnitName.setText("");
         ManualPointSet.setSelected(false);
@@ -192,8 +189,8 @@ public class PRSDisciplinePanel extends BasePanel{
         refresh=false;
         }
 
-    public void refreshSelectedRule(boolean withPos){
-        rules.withPos(withPos);
+    public void refreshSelectedRule(){
+        rules.restorePos();
         RuleName.setText("");
         RuleOwnRating.setText("");
         RuleExceciseForOne.setText("");
@@ -222,14 +219,10 @@ public class PRSDisciplinePanel extends BasePanel{
             }
         }
 
-
     public void refreshSelectedDiscipline(){
-        refreshSelectedDiscipline(true);
-        }
-
-    public void refreshSelectedDiscipline(boolean withPos){
         themes.savePos();
         themes.clear();
+        TaskText.setText("");
         if (disciplines.get()==null)
             return;
         new APICall<DBRequest>(main) {
@@ -250,14 +243,14 @@ public class PRSDisciplinePanel extends BasePanel{
                 themes.clear();
                 for(SATheme theme : cDiscipline.getThemes())
                     themes.add(theme);
-                refreshSelectedTheme(withPos);
-                refreshRules(withPos);
+                refreshSelectedTheme();
+                refreshRules();
                 }
             };
         }
 
-    public void refreshSelectedTheme(boolean withPos){
-        themes.withPos(withPos);
+    public void refreshSelectedTheme(){
+        themes.restorePos();
         tasks.clear();
         if (cDiscipline.getThemes().size()==0)
             return;
@@ -280,7 +273,7 @@ public class PRSDisciplinePanel extends BasePanel{
                         if (task.getType() == Values.TaskExercise){
                             tasks.add(task,"Задача " + it++);
                             }
-                    refreshSelectedTask(withPos);
+                    refreshSelectedTask();
                     } catch (Exception ee){
                         System.out.println(ee.toString());
                         popup("Не прочитана тема: "+shortString(cTheme.getName(),30));
@@ -290,8 +283,8 @@ public class PRSDisciplinePanel extends BasePanel{
                 };
             }
 
-    public void refreshSelectedSemesterRule(boolean withPos){
-        semesterRules.withPos(withPos);
+    public void refreshSelectedSemesterRule(){
+        semesterRules.restorePos();
         SemesterRule.setText("");
         SmstrDate.setText("");
         refresh = true;
@@ -336,8 +329,8 @@ public class PRSDisciplinePanel extends BasePanel{
         refresh = false;
         }
 
-    public void refreshSelectedTaskForce(boolean withPos){
-        tasks.savePos(withPos);
+    public void refreshSelectedTaskForce(){
+        tasks.savePos();
         TaskText.setText("");
         if (tasks.size()==0)
             return;
@@ -353,9 +346,9 @@ public class PRSDisciplinePanel extends BasePanel{
         refresh=false;
         }
 
-    public void refreshSelectedTask(final boolean withPos){
+    public void refreshSelectedTask(){
         if (!taskTextChanged){
-            refreshSelectedTaskForce(withPos);
+            refreshSelectedTaskForce();
             return;
             }
         taskTextChanged=false;
@@ -366,7 +359,7 @@ public class PRSDisciplinePanel extends BasePanel{
                 if (yes)
                     taskUpdate();
                 else
-                    refreshSelectedTaskForce(withPos);
+                    refreshSelectedTaskForce();
                 }
             });
         }
@@ -1190,7 +1183,7 @@ public class PRSDisciplinePanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JBoolean oo) {
-                        refreshSelectedDiscipline(false);
+                        refreshSelectedDiscipline();
                     }
                 };
             }
@@ -1216,7 +1209,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JLong oo) {
                         System.out.println("taskId="+oo.getValue());
-                        refreshSelectedDiscipline(Tasks.getItemCount()!=0);
+                        refreshSelectedDiscipline();
                     }
                 };
             }
@@ -1237,7 +1230,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JLong oo) {
                         disciplines.toNewElement();
-                        refreshDisciplineList(true);
+                        refreshDisciplineList();
                     }
                 };
             }
@@ -1258,7 +1251,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JBoolean oo) {
                         disciplines.toPrevElement();
-                        refreshDisciplineList(true);
+                        refreshDisciplineList();
                     }
                 };
             }
@@ -1282,7 +1275,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JLong oo) {
                         themes.toNewElement();
-                        refreshDisciplineList(true);
+                        refreshDisciplineList();
                     }
                 };
             }
@@ -1303,7 +1296,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JBoolean oo) {
                         themes.toPrevElement();
-                        refreshDisciplineList(true);
+                        refreshDisciplineList();
                     }
                 };
             }
@@ -1316,12 +1309,12 @@ public class PRSDisciplinePanel extends BasePanel{
 
     private void ThemesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ThemesItemStateChanged
         savePos();
-        refreshSelectedTheme(false);
+        refreshSelectedTheme();
     }//GEN-LAST:event_ThemesItemStateChanged
 
     private void TasksItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TasksItemStateChanged
         savePos();
-        refreshSelectedTask(true);
+        refreshSelectedTask();
     }//GEN-LAST:event_TasksItemStateChanged
 
     private void TaskArtifactViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskArtifactViewActionPerformed
@@ -1377,7 +1370,7 @@ public class PRSDisciplinePanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JEmpty oo) {
-                        refreshSelectedDiscipline(true);
+                        refreshSelectedDiscipline();
                     }
                 };
             }
@@ -1569,6 +1562,7 @@ public class PRSDisciplinePanel extends BasePanel{
     private void RuleAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleAddActionPerformed
         if (disciplines.get()==null)
             return;
+        savePos();
         final SAExamRule ruleBean = new SAExamRule();
         new OKName(200, 200, "Добавить регламент", new I_Value<String>() {
             @Override
@@ -1590,7 +1584,7 @@ public class PRSDisciplinePanel extends BasePanel{
                         }
                     @Override
                     public void onSucess(JLong oo) {
-                        refreshSelectedDiscipline(Rules.getItemCount()!=0);
+                        refreshSelectedDiscipline();
                         }
                     };
             }
@@ -1681,7 +1675,7 @@ public class PRSDisciplinePanel extends BasePanel{
 
     private void RulesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RulesItemStateChanged
         rules.savePos();
-        refreshSelectedRule(true);
+        refreshSelectedRule();
     }//GEN-LAST:event_RulesItemStateChanged
 
     private void RuleThemeAddAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RuleThemeAddAllActionPerformed
@@ -1783,7 +1777,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JLong oo) {
                         semesterRules.toNewElement();
-                        refreshSemesterRuleList(true);
+                        refreshSemesterRuleList();
                         }
                     };
                 }
@@ -1804,7 +1798,7 @@ public class PRSDisciplinePanel extends BasePanel{
                     @Override
                     public void onSucess(JBoolean oo) {
                         semesterRules.toPrevElement();
-                        refreshSemesterRuleList(true);
+                        refreshSemesterRuleList();
                     }
                 };
             }
@@ -2057,7 +2051,7 @@ public class PRSDisciplinePanel extends BasePanel{
 
     private void SemesterRulesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_SemesterRulesItemStateChanged
         semesterRules.savePos();
-        refreshSelectedSemesterRule(true);
+        refreshSelectedSemesterRule();
     }//GEN-LAST:event_SemesterRulesItemStateChanged
 
     public void eduUnitTypeItemStateChanged(){
@@ -2080,7 +2074,7 @@ public class PRSDisciplinePanel extends BasePanel{
 
     private void EduUnitsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitsItemStateChanged
         savePos();
-        refreshSelectedEduUnit(true);
+        refreshSelectedEduUnit();
     }//GEN-LAST:event_EduUnitsItemStateChanged
 
     private void BasePointKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BasePointKeyPressed
@@ -2130,7 +2124,7 @@ public class PRSDisciplinePanel extends BasePanel{
                 main.viewUpdate(evt,true);
             popup("Регламент семестра обновлен");
             savePos();
-            refreshSelectedSemesterRule(true);
+            refreshSelectedSemesterRule();
             } catch (UniException ee){
                 System.out.println(ee.toString());
                 if (evt!=null)
@@ -2156,7 +2150,7 @@ public class PRSDisciplinePanel extends BasePanel{
             if (!noPopup)
                 popup("Учебная единица обновлена");
             savePos();
-            refreshEduUnits(true);
+            refreshEduUnits();
         } catch (UniException ee){
             System.out.println(ee.toString());
             if (evt!=null)

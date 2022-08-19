@@ -76,20 +76,14 @@ public class PRSRatingPanel extends BasePanel{
         ratingGroups.savePos();
         }
     public void refreshAll(){
-        refreshAll(false);
-        }
-    public void refreshAll(boolean withPos){
-        if (withPos)
-            savePos();
-        else
-            clearPos();
-        refreshGroupsList(withPos);
-        refreshDisciplineList(withPos);
-        refreshTeachers(withPos);
-        refreshRuleList(withPos);
+        savePos();
+        refreshGroupsList();
+        refreshDisciplineList();
+        refreshTeachers();
+        refreshRuleList();
         }
 
-    public void refreshDisciplineList(boolean withPos){
+    public void refreshDisciplineList(){
         ratingDisciplines.clear();
         new APICall<ArrayList<DBRequest>>(main){
             @Override
@@ -103,7 +97,7 @@ public class PRSRatingPanel extends BasePanel{
                     SADiscipline discipline = (SADiscipline) request.get(main.gson);
                     ratingDisciplines.add(discipline);
                     }
-                ratingDisciplines.withPos(withPos);
+                ratingDisciplines.restorePos();
                 } catch (Exception ee){
                     System.out.println(ee.toString());
                     popup("Ошибка чтения списка дисциплин");
@@ -112,7 +106,7 @@ public class PRSRatingPanel extends BasePanel{
             };
         }
 
-    public void refreshRuleList(boolean withPos){
+    public void refreshRuleList(){
         ratingRules.clear();
         new APICall<ArrayList<DBRequest>>(main){
             @Override
@@ -126,7 +120,7 @@ public class PRSRatingPanel extends BasePanel{
                         SASemesterRule rule = (SASemesterRule) request.get(main.gson);
                         ratingRules.add(rule);
                     }
-                    ratingRules.withPos(withPos);
+                    ratingRules.restorePos();
                 } catch (Exception ee){
                     System.out.println(ee.toString());
                     popup("Ошибка чтения списка регламентов");
@@ -135,7 +129,7 @@ public class PRSRatingPanel extends BasePanel{
         };
     }
 
-    public void refreshGroupsList(boolean withPos){
+    public void refreshGroupsList(){
         groups.clear();
         students.clear();
         ratingGroups.clear();
@@ -154,9 +148,9 @@ public class PRSRatingPanel extends BasePanel{
                         groups.add(group);
                         ratingGroups.add(group);
                         }
-                    groups.withPos(withPos);
-                    ratingGroups.withPos(withPos);
-                    refreshStudentList(withPos);
+                    groups.restorePos();
+                    ratingGroups.restorePos();
+                    refreshStudentList();
                     } catch (Exception ee){
                         System.out.println(ee.toString());
                         popup("Не прочитан список групп");
@@ -165,7 +159,7 @@ public class PRSRatingPanel extends BasePanel{
                     }
                 };
         }
-    public void refreshStudentList(boolean withPos){
+    public void refreshStudentList(){
         students.clear();
         if (groups.size()==0)
             return;
@@ -180,7 +174,7 @@ public class PRSRatingPanel extends BasePanel{
                     cGroup = (SAGroup)oo.get(main.gson);
                     for(SAStudent student : cGroup.getStudents())
                         students.add(student);
-                    students.withPos(withPos);
+                    students.restorePos();
                     }catch (Exception ee){
                         System.out.println(ee.toString());
                         popup("Не прочитаны данные группы "+cGroup.getName());
@@ -482,7 +476,7 @@ public class PRSRatingPanel extends BasePanel{
 
     private void GroupsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_GroupsItemStateChanged
         savePos();
-        refreshGroupsList(true);
+        refreshGroupsList();
     }//GEN-LAST:event_GroupsItemStateChanged
 
     private void StudentsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentsItemStateChanged
@@ -490,7 +484,7 @@ public class PRSRatingPanel extends BasePanel{
     }//GEN-LAST:event_StudentsItemStateChanged
 
     private void RefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshActionPerformed
-        refreshAll(true);
+        refreshAll();
     }//GEN-LAST:event_RefreshActionPerformed
 
     private void GroupAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GroupAddActionPerformed
@@ -508,7 +502,7 @@ public class PRSRatingPanel extends BasePanel{
                     public void onSucess(JLong oo) {
                         savePos();
                         groups.toNewElement();
-                        refreshGroupsList(true);
+                        refreshGroupsList();
                         }
                     };
                 }
@@ -530,7 +524,7 @@ public class PRSRatingPanel extends BasePanel{
                     public void onSucess(JBoolean oo) {
                         savePos();
                         groups.toPrevElement();
-                        refreshGroupsList(true);
+                        refreshGroupsList();
                         }
                 };
             }
@@ -663,7 +657,7 @@ public class PRSRatingPanel extends BasePanel{
                     @Override
                     public void onSucess(JLong oo) {
                         ratings.toNewElement();
-                        refreshAll(true);
+                        refreshAll();
                         }
                     };
                 }
@@ -685,7 +679,7 @@ public class PRSRatingPanel extends BasePanel{
                     @Override
                     public void onSucess(JEmpty oo) {
                         ratings.toPrevElement();
-                        refreshAll(true);
+                        refreshAll();
                         popup("Рейтинг удален");
                     }
                 };
@@ -694,7 +688,7 @@ public class PRSRatingPanel extends BasePanel{
     }//GEN-LAST:event_GroupRatingRemoveActionPerformed
 
 
-    private void refreshTeachers(boolean withPos){
+    private void refreshTeachers(){
         DBQueryList query =  new DBQueryList().
                 add(new DBQueryInt(I_DBQuery.ModeEQ,"typeId",Values.UserTeacher)).
                 add(new DBQueryBoolean("valid",true));
@@ -715,13 +709,13 @@ public class PRSRatingPanel extends BasePanel{
                             System.out.println(e);
                             }
                     }
-                teachers.withPos(withPos);
-                loadAllRatings(withPos);
+                teachers.restorePos();
+                loadAllRatings();
             }
         };
     }
 
-    public void loadAllRatings(boolean withPos){
+    public void loadAllRatings(){
         ratings.clear();
         new APICall<ArrayList<DBRequest>>(null){
             @Override
@@ -740,13 +734,13 @@ public class PRSRatingPanel extends BasePanel{
                         System.out.println(e);
                         }
                     }
-                ratings.withPos(withPos);
+                ratings.restorePos();
                 refreshSelectedRating();
-                loadTeacherRatings(withPos);
+                loadTeacherRatings();
                 }
             };
         }
-    public void loadTeacherRatings(boolean withPos){
+    public void loadTeacherRatings(){
         RatingsAssigned.removeAll();
         RatingsNotAssigned.removeAll();
         User user = teachers.get();
@@ -814,7 +808,7 @@ public class PRSRatingPanel extends BasePanel{
             @Override
             public void onSucess(JEmpty oo) {
                 savePos();
-                refreshAll(true);
+                refreshAll();
                 }
             };       
         }
@@ -829,7 +823,7 @@ public class PRSRatingPanel extends BasePanel{
 
     private void TeachersItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TeachersItemStateChanged
         savePos();
-        loadTeacherRatings(true);
+        loadTeacherRatings();
     }//GEN-LAST:event_TeachersItemStateChanged
 
     private void RatingsAssignedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingsAssignedItemStateChanged
@@ -849,7 +843,7 @@ public class PRSRatingPanel extends BasePanel{
                 }
             @Override
             public void onSucess(JEmpty oo) {
-                loadTeacherRatings(true);
+                loadTeacherRatings();
                 }
         };
     }//GEN-LAST:event_RatingAddActionPerformed
@@ -866,7 +860,7 @@ public class PRSRatingPanel extends BasePanel{
                 }
             @Override
             public void onSucess(JEmpty oo) {
-                loadTeacherRatings(true);
+                loadTeacherRatings();
                 }
         };
     }//GEN-LAST:event_RatingRemoveActionPerformed
