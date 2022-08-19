@@ -3,12 +3,12 @@ package romanow.abc.desktop.statemashine;
 import romanow.abc.core.constants.Values;
 import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.SAExamTaking;
-import romanow.abc.core.entity.subjectarea.SAStudRating;
+import romanow.abc.core.entity.subjectarea.SAExamRating;
 import romanow.abc.desktop.PRSExamPanel;
 
-public abstract class EMClientEmpty implements I_ClientTransition<PRSExamPanel>{
+public abstract class SAExamBase implements I_ClientTransition<PRSExamPanel>{
     public boolean onlyForTakingState(int state, PRSExamPanel panel, StateEntity env){
-        SAStudRating rating = panel.getCStudRating();
+        SAExamRating rating = panel.getCStudRating();
         SAExamTaking taking = panel.getCDiscipline().getTakings().getById(rating.getSAExamTaking().getOid());
         return taking.getState()==state;
         }

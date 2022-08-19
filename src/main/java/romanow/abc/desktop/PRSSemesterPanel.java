@@ -45,7 +45,6 @@ import java.util.*;
  * @author romanow
  */
 public class PRSSemesterPanel extends BasePanel{
-    private ChoiceConsts pointState;
     private ChoiceConsts eduUnitType;
     private ChoiceList<SAGroupRating> ratings;
     private ChoiceList<SAStudent> students;
@@ -63,22 +62,23 @@ public class PRSSemesterPanel extends BasePanel{
     private SATeam cTeam=null;
     private boolean refresh=false;
     private ArrayList<SAPoint> points = new ArrayList<>();
+    private StateMashineView<PRSSemesterPanel> pointStateMashine;
+    private SAPoint cPoint = null;
+    private SASemesterRating cStudRating = null;
+    private boolean newPoint=false;
+    private ArrayList<ConstValue> pointStates;
 
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
         initComponents();
-        pointState = new ChoiceConsts(PointState, Values.constMap().getGroupList("PointState"), new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                pointStateChanged();
-                }
-            });
+        pointStates = Values.constMap().getGroupList("PointState");
         eduUnitType = new ChoiceConsts(EduUnitType, Values.constMap().getGroupList("EduUnit"), null);
         ratings = new ChoiceList<>(Ratings);
         students = new ChoiceList<>(Students);
         eduUnits = new ChoiceList<>(EduUnits);
         teams = new ChoiceList<>(Teams);
         teamStudents = new ChoiceList<>(TeamStudents);
+        pointStateMashine = new StateMashineView<PRSSemesterPanel>(this,20,530,Values.PointFactory);
         refreshAll();
         }
 
@@ -173,7 +173,6 @@ public class PRSSemesterPanel extends BasePanel{
         jLabel6 = new javax.swing.JLabel();
         PointVariant = new javax.swing.JTextField();
         bbb1 = new javax.swing.JLabel();
-        PointState = new java.awt.Choice();
         jSeparator1 = new javax.swing.JSeparator();
         bbb2 = new javax.swing.JLabel();
         PointDate = new javax.swing.JTextField();
@@ -192,6 +191,7 @@ public class PRSSemesterPanel extends BasePanel{
         EduUnitPoint2 = new javax.swing.JTextField();
         EduUnitType = new java.awt.Choice();
         RefreshAll = new javax.swing.JButton();
+        PointState = new javax.swing.JTextField();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -407,8 +407,6 @@ public class PRSSemesterPanel extends BasePanel{
         bbb1.setText("Балл");
         add(bbb1);
         bbb1.setBounds(20, 420, 80, 16);
-        add(PointState);
-        PointState.setBounds(110, 360, 260, 20);
         add(jSeparator1);
         jSeparator1.setBounds(110, 350, 290, 3);
 
@@ -524,6 +522,10 @@ public class PRSSemesterPanel extends BasePanel{
         });
         add(RefreshAll);
         RefreshAll.setBounds(20, 10, 30, 30);
+
+        PointState.setEnabled(false);
+        add(PointState);
+        PointState.setBounds(110, 360, 180, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void StudentTableReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentTableReportActionPerformed
@@ -695,70 +697,86 @@ public class PRSSemesterPanel extends BasePanel{
             cRating = ratings.get();
             if (cRating==null)
                 return;
-            refreshStudents();
-            refreshEduUnits();
-            refreshAllPoints();
+            new APICall<DBRequest>(main) {
+                @Override
+                public Call<DBRequest> apiFun() {
+                    return main.service.getEntity(main.debugToken,"SAGroupRating",cRating.getOid(),2);
+                    }
+                @Override
+                public void onSucess(DBRequest oo) {
+                    try{
+                        cRating = (SAGroupRating)oo.get(main.gson);
+                        refreshStudents();
+                        refreshEduUnits();
+                        refreshStudentPoints();
+                        }catch (Exception ee){
+                            System.out.println(ee.toString());
+                            }
+                    }
+                };
             }
 
-    public void refreshAllPoints(){
+    public void refreshStudentPoints(){
         if (cRating==null)
             return;
-        students.createMap();
-        for(SAStudent student : students.getList()){                 // МАПы оценок
-            student.setPointsMap(new HashMap<Long,SAPoint>());
+        cStudRating = null;
+        for(SASemesterRating semesterRating : cRating.getSemRatings())
+            if (semesterRating.getStudent().getOid()==cStudent.getOid()){
+                cStudRating = semesterRating;
+                break;
+                }
+        if (cStudRating==null){
+            System.out.println("На найдены данные семестра для студента "+cStudent.getTitle());
+            return;
             }
-        DBQueryList query =  new DBQueryList().
-                add(new DBQueryLong(I_DBQuery.ModeEQ,"SAStudRating",cRating.getOid())).
-                add(new DBQueryBoolean("valid",true));
-        final String xmlQuery = new DBXStream().toXML(query);
-        new APICall<ArrayList<DBRequest>>(null){
+        new APICall<DBRequest>(main) {
             @Override
-            public Call<ArrayList<DBRequest>> apiFun() {
-                return main.getService().getEntityListByQuery(main.getDebugToken(),"SAPoint",xmlQuery,1);
+            public Call<DBRequest> apiFun() {
+                return main.service.getEntity(main.debugToken,"SASemesterRating",cStudRating.getOid(),2);
                 }
             @Override
-            public void onSucess(ArrayList<DBRequest> oo) {
-                try {
-                    for(DBRequest ss : oo){
-                        SAPoint point = (SAPoint) ss.get(main.gson);
-                        points.add(point);
-                        SAStudent student = students.getList().getById(point.getStudent().getOid());
-                        if (student!=null)
-                            System.out.println("Не найден студент id="+point.getStudent().getOid()+" для оценки "+point.getOid());
-                        else
-                            student.getPointsMap().put(point.getEduUnit().getOid(),point);
-                        }
+            public void onSucess(DBRequest oo) {
+                try{
+                    cStudRating = (SASemesterRating) oo.get(main.gson);
                     refreshPoint();
-                    } catch (UniException e) {
-                        System.out.println(e);
+                    }catch (Exception ee){
+                        System.out.println(ee.toString());
+                        popup("Не прочитаны данные семестра для студента "+cStudent.getTitle());
                         }
-                }
-            };
+                    }
+                };
         }
 
     public void refreshPoint(){
-        if (cStudent==null || cEduUnit==null)
+        if (cStudent==null || cEduUnit==null || cStudRating==null)
             return;
-        SAPoint point = cStudent.getPointsMap().get(cEduUnit.getOid());
-        if (point==null){
-            pointState.selectByValue(Values.PSNotIssued);
-            PointVariant.setText("");
-            Point.setText("");
-            PointDate.setText("");
-            DocDownload.setVisible(false);
-            DocUpload.setVisible(false);
-            SrcDownload.setVisible(false);
-            SrcUpload.setVisible(false);
+        cPoint=null;
+        for (SAPoint point : cStudRating.getPoints()){
+            if (point.getState()==Values.PSArchive)
+                continue;
+            if (point.getEduUnit().getOid()==cEduUnit.getOid()){
+                cPoint = point;
+                break;
+                }
             }
-        else{
-            pointState.selectByValue(point.getState());
-            PointVariant.setText(point.getVariant());
-            Point.setText(""+point.getPoint());
-            PointDate.setText(point.getDate().dateToString());
-            DocDownload.setVisible(point.getReport().getOid()!=0);
-            DocUpload.setVisible(true);
-            SrcDownload.setVisible(point.getSource().getOid()!=0);
-            SrcUpload.setVisible(true);
+        newPoint = false;
+        if (cPoint==null){
+            newPoint = true;
+            cPoint = new SAPoint(cRating.getOid(),cStudent.getOid(),cEduUnit.getOid(),cStudRating.getOid());
+            }
+        PointVariant.setText(cPoint.getVariant());
+        Point.setText(""+cPoint.getPoint());
+        PointDate.setText(cPoint.getDate().dateToString());
+        DocDownload.setVisible(cPoint.getReport().getOid()!=0);
+        DocUpload.setVisible(true);
+        SrcDownload.setVisible(cPoint.getSource().getOid()!=0);
+        SrcUpload.setVisible(true);
+        pointStateMashine.refresh(cPoint);
+        PointState.setText("");
+        for(ConstValue cc : pointStates)
+            if(cc.value()==cPoint.getState()){
+                PointState.setText(cc.title());
+                break;
             }
         }
     public void refreshTeams(){
@@ -828,6 +846,7 @@ public class PRSSemesterPanel extends BasePanel{
 
     public void refreshSelectedStudent(){
         students.restorePos();
+        cStudent = students.get();
         }
 
     public void refreshStudents(){
@@ -887,7 +906,7 @@ public class PRSSemesterPanel extends BasePanel{
     private java.awt.Choice EduUnits;
     private javax.swing.JTextField Point;
     private javax.swing.JTextField PointDate;
-    private java.awt.Choice PointState;
+    private javax.swing.JTextField PointState;
     private javax.swing.JTextField PointVariant;
     private javax.swing.JButton RatingPdfReport;
     private javax.swing.JButton RatingTableReport;

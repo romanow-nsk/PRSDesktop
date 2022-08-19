@@ -152,6 +152,8 @@ public class PRSDisciplinePanel extends BasePanel{
 
     public void refreshEduUnits(){
         eduUnits.clear();
+        if (cDiscipline==null)
+            return;
         cDiscipline.getUnits().sortByKeyNum();
         caclEduUnitsSum();
         for(SAEduUnit unit : cDiscipline.getUnits()){

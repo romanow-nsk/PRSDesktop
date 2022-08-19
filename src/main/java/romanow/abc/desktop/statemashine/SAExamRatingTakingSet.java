@@ -2,13 +2,13 @@ package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.SAExamTaking;
-import romanow.abc.core.entity.subjectarea.SAStudRating;
+import romanow.abc.core.entity.subjectarea.SAExamRating;
 import romanow.abc.desktop.PRSExamPanel;
 
-public class EMStudRatingTakingSet implements I_ClientTransition<PRSExamPanel> {
+public class SAExamRatingTakingSet implements I_ClientTransition<PRSExamPanel> {
     @Override
     public String testTransition(PRSExamPanel panel, StateEntity env) {
-        SAStudRating rating = (SAStudRating)env;
+        SAExamRating rating = (SAExamRating)env;
         SAExamTaking taking = panel.getCTaking();
         if (taking==null)
             return "Не выбран прием экзамена";
@@ -23,7 +23,7 @@ public class EMStudRatingTakingSet implements I_ClientTransition<PRSExamPanel> {
     }
     @Override
     public void onTransitionBefore(PRSExamPanel panel, StateEntity env) {
-        SAStudRating rating = (SAStudRating)env;
+        SAExamRating rating = (SAExamRating)env;
         rating.getSAExamTaking().setOid(panel.getCTaking().getOid());
         }
 }

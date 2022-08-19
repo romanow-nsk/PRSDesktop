@@ -5,7 +5,7 @@ import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.SAExamTaking;
 import romanow.abc.desktop.PRSExamPanel;
 
-public class EMAnswerSendStud implements I_ClientTransition<PRSExamPanel> {
+public class SAAnswerSendStud implements I_ClientTransition<PRSExamPanel> {
     @Override
     public String testTransition(PRSExamPanel panel, StateEntity env) {
         if (panel.getCStudRating().getState()!=Values.StudRatingOnExam)

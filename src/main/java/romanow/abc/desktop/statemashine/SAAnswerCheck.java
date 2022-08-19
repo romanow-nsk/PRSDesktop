@@ -3,18 +3,15 @@ package romanow.abc.desktop.statemashine;
 import romanow.abc.core.entity.StateEntity;
 import romanow.abc.desktop.PRSExamPanel;
 
-public class EMExamTakingClose extends EMClientEmpty {
+public class SAAnswerCheck extends SAExamBase {
     @Override
     public String testTransition(PRSExamPanel panel, StateEntity env) {
-        return "";
+        return onlyInTaking(panel,env);
         }
     @Override
     public void onTransitionAfter(PRSExamPanel panel, StateEntity env) {
-        panel.refreshSelectedDiscipline();
-    }
-
+        panel.refreshSelectedStudRating();
+        }
     @Override
-    public void onTransitionBefore(PRSExamPanel panel, StateEntity env) {
-
+    public void onTransitionBefore(PRSExamPanel panel, StateEntity env) {}
     }
-}

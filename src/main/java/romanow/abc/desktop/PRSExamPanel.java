@@ -54,7 +54,7 @@ public class PRSExamPanel extends BasePanel{
     private ConstValue cTakingState = null;
     private SAGroupRating cGroupRating = null;
     private SAExamTaking cExamTaking = null;
-    @Getter private SAStudRating cStudRating = null;
+    @Getter private SAExamRating cStudRating = null;
     @Getter private ArrayList<SAGroup> groups = new ArrayList<>();              // Список групп полный
     @Getter private ArrayList<SAExamTaking> cTakings = new ArrayList<>();       // Список приема для экзамена
     private HashMap<Integer,ConstValue> takingStateMap;
@@ -68,7 +68,8 @@ public class PRSExamPanel extends BasePanel{
     private ArrayList<SATheme> ruleThemes = new ArrayList<>();          // Темы регламента
     private HashMap<Long, SATheme> ruleThemesMap = new HashMap<>();
     private HashMap<Long, SAGroup> groupsMap = new HashMap<>();          // Мар всех групп
-    private EntityRefList<SAStudRating> studRatings = new EntityRefList<>();
+    private EntityRefList<SAExamRating> studRatings = new EntityRefList<>();
+    private EntityRefList<SASemesterRating> semesterRatings = new EntityRefList<>();
     private EntityRefList<SAAnswer> answers = new EntityRefList<>();
     private StateMashineView<PRSExamPanel> takingStateMashine;
     private StateMashineView<PRSExamPanel> answerStateMashine;
@@ -1345,11 +1346,7 @@ public class PRSExamPanel extends BasePanel{
         add(Состояние1);
         Состояние1.setBounds(520, 470, 140, 16);
 
-        RatingSemesterSum.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                RatingSemesterSumKeyPressed(evt);
-            }
-        });
+        RatingSemesterSum.setEnabled(false);
         add(RatingSemesterSum);
         RatingSemesterSum.setBounds(460, 420, 40, 25);
 
@@ -2315,7 +2312,7 @@ public class PRSExamPanel extends BasePanel{
                 @Override
                 public void onSucess(SAGroupRating oo) {
                     cGroupRating = oo;
-                    studRatings = oo.getRatings();
+                    studRatings = oo.getExamRatings();
                     createRatingStudentList();
                     refreshSelectedStudRating();
                     }
@@ -2358,7 +2355,7 @@ public class PRSExamPanel extends BasePanel{
 
     public void createRatingStudentList(){
         RatingStudentList.removeAll();
-        for(SAStudRating rating : studRatings)
+        for(SAExamRating rating : studRatings)
             RatingStudentList.add(rating.getStudent().getRef().getUser().getTitle());
         refreshSelectedStudRating();
         }
@@ -2385,10 +2382,13 @@ public class PRSExamPanel extends BasePanel{
         refreshStudRatingFull(true);
         RatingSemesterSum.setEnabled(cStudRating.getState()==Values.StudRatingNotAllowed);
         RatingSum.setText(""+ cStudRating.getExcerciceRating());
-        RatingSemesterSum.setText(""+ cStudRating.getSemesterRating());
-        RatingQuestionSum.setText(""+ cStudRating.getQuestionRating());
-        RatingExcerciseSum1.setText(""+cStudRating.getExcerciceRating());
-        RatingSum.setText(""+cStudRating.getSumRating());
+        int c1 = cStudRating.getSemRating().getRef().getSemesterRating();
+        RatingSemesterSum.setText(""+ c1);
+        int c2 = cStudRating.getQuestionRating();
+        RatingQuestionSum.setText(""+ c2);
+        int c3 = cStudRating.getExcerciceRating();
+        RatingExcerciseSum1.setText(""+c3);
+        RatingSum.setText(""+c1+c2+c3);
         RatingStudentState.setText(ticketStateMap.get(cStudRating.getState()).title());
         studRatingStateMashine.refresh(cStudRating);
         }
@@ -2455,12 +2455,12 @@ public class PRSExamPanel extends BasePanel{
         new APICall<DBRequest>(main) {
             @Override
             public Call<DBRequest> apiFun() {
-                return main.service.getEntity(main.debugToken,"SAStudRating",cStudRating.getOid(),3);
+                return main.service.getEntity(main.debugToken,"SAExamRating",cStudRating.getOid(),3);
                 }
             @Override
             public void onSucess(DBRequest oo) {
                 try {
-                    cStudRating = (SAStudRating) oo.get(main.gson);
+                    cStudRating = (SAExamRating) oo.get(main.gson);
                     answers.clear();
                     Answers.removeAll();
                     int qIdx=1;
@@ -2588,18 +2588,6 @@ public class PRSExamPanel extends BasePanel{
     private void AnswerArtifactDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnswerArtifactDownLoadActionPerformed
         main.loadFile(cAnswerMessage.getArtifact().getRef());
     }//GEN-LAST:event_AnswerArtifactDownLoadActionPerformed
-
-    private void RatingSemesterSumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_RatingSemesterSumKeyPressed
-        if(evt.getKeyCode()!=10) return;
-        if (cStudRating==null)
-            return;
-        try{
-            cStudRating.setSemesterRating(Integer.parseInt(RatingSemesterSum.getText()));
-            studRatingStateMashine.forceStateChange(cStudRating,Values.StudRatingAllowed);
-            } catch(Exception ee){
-                popup("Ошибка формата целого");
-                }
-    }//GEN-LAST:event_RatingSemesterSumKeyPressed
 
     private void RatingOrTakingModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_RatingOrTakingModeItemStateChanged
         refreshStudRatings();

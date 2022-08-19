@@ -4,7 +4,7 @@ import romanow.abc.core.entity.StateEntity;
 import romanow.abc.core.entity.subjectarea.SAAnswer;
 import romanow.abc.desktop.PRSExamPanel;
 
-public class EMAnswerSetRating extends EMClientEmpty{
+public class SAAnswerSetRating extends SAExamBase {
     @Override
     public String testTransition(PRSExamPanel panel, StateEntity env) {
         return onlyInTaking(panel,env);

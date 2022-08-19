@@ -5,7 +5,7 @@ import romanow.abc.core.entity.subjectarea.SAExamTaking;
 import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.desktop.PRSExamPanel;
 
-public class EMExamTakingStart implements I_ClientTransition<PRSExamPanel> {
+public class SAExamTakingStart implements I_ClientTransition<PRSExamPanel> {
     @Override
     public String testTransition(PRSExamPanel panel, StateEntity env) {
         SAExamTaking taking = (SAExamTaking) env;

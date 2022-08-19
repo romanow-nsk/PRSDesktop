@@ -1,23 +1,20 @@
 package romanow.abc.desktop.statemashine;
 
 import romanow.abc.core.entity.StateEntity;
-import romanow.abc.core.entity.subjectarea.SAExamTaking;
+import romanow.abc.core.entity.subjectarea.SAExamRating;
 import romanow.abc.desktop.PRSExamPanel;
 
-public class EMExamTakingTimeSet extends EMClientEmpty {
+public class SAExamRatingTakingCancel implements I_ClientTransition<PRSExamPanel> {
     @Override
     public String testTransition(PRSExamPanel panel, StateEntity env) {
-        if (((SAExamTaking)env).getStartTime().timeInMS()==0)
-            return "Не установлено время начала";
         return "";
         }
     @Override
     public void onTransitionAfter(PRSExamPanel panel, StateEntity env) {
-        panel.refreshSelectedDiscipline();
+        panel.refreshStudRatingFull(true);
     }
-
     @Override
     public void onTransitionBefore(PRSExamPanel panel, StateEntity env) {
-
-    }
+        ((SAExamRating)env).getSAExamTaking().setOid(0);
+        }
 }
