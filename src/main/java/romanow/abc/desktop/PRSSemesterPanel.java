@@ -62,6 +62,7 @@ public class PRSSemesterPanel extends BasePanel{
     private SAEduUnit cEduUnit=null;
     private SATeam cTeam=null;
     private boolean refresh=false;
+    private ArrayList<SAPoint> points = new ArrayList<>();
 
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
@@ -697,15 +698,68 @@ public class PRSSemesterPanel extends BasePanel{
             refreshStudents();
             refreshEduUnits();
             refreshAllPoints();
-            refreshPoint();
             }
 
     public void refreshAllPoints(){
-
+        if (cRating==null)
+            return;
+        students.createMap();
+        for(SAStudent student : students.getList()){                 // МАПы оценок
+            student.setPointsMap(new HashMap<Long,SAPoint>());
+            }
+        DBQueryList query =  new DBQueryList().
+                add(new DBQueryLong(I_DBQuery.ModeEQ,"SAStudRating",cRating.getOid())).
+                add(new DBQueryBoolean("valid",true));
+        final String xmlQuery = new DBXStream().toXML(query);
+        new APICall<ArrayList<DBRequest>>(null){
+            @Override
+            public Call<ArrayList<DBRequest>> apiFun() {
+                return main.getService().getEntityListByQuery(main.getDebugToken(),"SAPoint",xmlQuery,1);
+                }
+            @Override
+            public void onSucess(ArrayList<DBRequest> oo) {
+                try {
+                    for(DBRequest ss : oo){
+                        SAPoint point = (SAPoint) ss.get(main.gson);
+                        points.add(point);
+                        SAStudent student = students.getList().getById(point.getStudent().getOid());
+                        if (student!=null)
+                            System.out.println("Не найден студент id="+point.getStudent().getOid()+" для оценки "+point.getOid());
+                        else
+                            student.getPointsMap().put(point.getEduUnit().getOid(),point);
+                        }
+                    refreshPoint();
+                    } catch (UniException e) {
+                        System.out.println(e);
+                        }
+                }
+            };
         }
 
     public void refreshPoint(){
-
+        if (cStudent==null || cEduUnit==null)
+            return;
+        SAPoint point = cStudent.getPointsMap().get(cEduUnit.getOid());
+        if (point==null){
+            pointState.selectByValue(Values.PSNotIssued);
+            PointVariant.setText("");
+            Point.setText("");
+            PointDate.setText("");
+            DocDownload.setVisible(false);
+            DocUpload.setVisible(false);
+            SrcDownload.setVisible(false);
+            SrcUpload.setVisible(false);
+            }
+        else{
+            pointState.selectByValue(point.getState());
+            PointVariant.setText(point.getVariant());
+            Point.setText(""+point.getPoint());
+            PointDate.setText(point.getDate().dateToString());
+            DocDownload.setVisible(point.getReport().getOid()!=0);
+            DocUpload.setVisible(true);
+            SrcDownload.setVisible(point.getSource().getOid()!=0);
+            SrcUpload.setVisible(true);
+            }
         }
     public void refreshTeams(){
         teams.restorePos();
