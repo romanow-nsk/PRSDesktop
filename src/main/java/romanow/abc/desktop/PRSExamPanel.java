@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @author romanow
  */
-public class PRSExamPanel extends PRSBasePanel{
+public class PRSExamPanel extends BasePanel{
     private ArrayList<SADiscipline> disciplines = new ArrayList<>();    // Список дисциплин
     @Getter private SADiscipline cDiscipline = null;                            // Текущая дисциплина
     @Getter private SATheme cTheme = null;                                      // Текущая тема
@@ -70,9 +70,9 @@ public class PRSExamPanel extends PRSBasePanel{
     private HashMap<Long, SAGroup> groupsMap = new HashMap<>();          // Мар всех групп
     private EntityRefList<SAStudRating> studRatings = new EntityRefList<>();
     private EntityRefList<SAAnswer> answers = new EntityRefList<>();
-    private StateMashineView takingStateMashine;
-    private StateMashineView answerStateMashine;
-    private StateMashineView studRatingStateMashine;
+    private StateMashineView<PRSExamPanel> takingStateMashine;
+    private StateMashineView<PRSExamPanel> answerStateMashine;
+    private StateMashineView<PRSExamPanel> studRatingStateMashine;
     //---------------------------------------------------------------------------------------
     private int themeIdx = -1;
     private int taskIdx = -1;
@@ -103,9 +103,9 @@ public class PRSExamPanel extends PRSBasePanel{
         takingStateList = Values.constMap().getGroupList("Taking");
         ticketStateList = Values.constMap().getGroupList("StudRating");
         answerStateList = Values.constMap().getGroupList("Answer");
-        takingStateMashine = new StateMashineView(this,610,275,Values.TakingFactory);
-        studRatingStateMashine = new StateMashineView(this,780,365,Values.StudRatingFactory);
-        answerStateMashine = new StateMashineView(this,780,440,Values.AnswerFactory);
+        takingStateMashine = new StateMashineView<PRSExamPanel>(this,610,275,Values.TakingFactory);
+        studRatingStateMashine = new StateMashineView<PRSExamPanel>(this,780,365,Values.StudRatingFactory);
+        answerStateMashine = new StateMashineView<PRSExamPanel>(this,780,440,Values.AnswerFactory);
         refreshAll();
         }
 

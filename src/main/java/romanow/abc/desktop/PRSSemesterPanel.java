@@ -269,7 +269,7 @@ public class PRSSemesterPanel extends BasePanel{
         add(EduUnits);
         EduUnits.setBounds(110, 250, 270, 20);
 
-        TeamStudentAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/right.PNG"))); // NOI18N
+        TeamStudentAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         TeamStudentAdd.setBorderPainted(false);
         TeamStudentAdd.setContentAreaFilled(false);
         TeamStudentAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -278,7 +278,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(TeamStudentAdd);
-        TeamStudentAdd.setBounds(410, 110, 35, 35);
+        TeamStudentAdd.setBounds(680, 110, 35, 35);
 
         EduUnitTableReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/table.png"))); // NOI18N
         EduUnitTableReport.setBorderPainted(false);
@@ -360,7 +360,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(TeamStudentRemove);
-        TeamStudentRemove.setBounds(680, 110, 30, 30);
+        TeamStudentRemove.setBounds(720, 110, 30, 30);
 
         bbb.setText("Состояние");
         add(bbb);
@@ -379,7 +379,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(TeamStudentSelect);
-        TeamStudentSelect.setBounds(720, 110, 35, 35);
+        TeamStudentSelect.setBounds(410, 110, 35, 35);
 
         TeamRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/remove.png"))); // NOI18N
         TeamRemove.setBorderPainted(false);

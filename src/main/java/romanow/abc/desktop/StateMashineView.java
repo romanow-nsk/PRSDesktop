@@ -13,15 +13,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class StateMashineView {
+public class StateMashineView<T extends BasePanel> {
     private final static int bHight=25;
     private final static int bWidth=150;
     private final int panelX0;
     private final int panelY0;
-    private final PRSBasePanel panel;
+    private final T panel;
     private final TransitionsFactory factory;
     private ArrayList<JButton> bList = new ArrayList<>();
-    public StateMashineView(PRSBasePanel client0,int panelX0, int panelY0, TransitionsFactory factory0) {
+    public StateMashineView(T client0,int panelX0, int panelY0, TransitionsFactory factory0) {
         this.panelX0 = panelX0;
         this.panelY0 = panelY0;
         factory = factory0;
