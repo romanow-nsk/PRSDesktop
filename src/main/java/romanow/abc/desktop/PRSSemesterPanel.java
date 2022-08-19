@@ -63,9 +63,9 @@ public class PRSSemesterPanel extends BasePanel{
     private boolean refresh=false;
     private ArrayList<SAPoint> points = new ArrayList<>();
     private StateMashineView<PRSSemesterPanel> pointStateMashine;
-    private SAPoint cPoint = null;
+    @Getter private SAPoint cPoint = null;
     private SASemesterRating cStudRating = null;
-    private boolean newPoint=false;
+    @Getter private boolean newPoint=false;
     private ArrayList<ConstValue> pointStates;
 
     public void initPanel(MainBaseFrame main0){
@@ -577,12 +577,55 @@ public class PRSSemesterPanel extends BasePanel{
     }//GEN-LAST:event_TeamRemoveActionPerformed
 
     private void PointVariantKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PointVariantKeyPressed
-        // TODO add your handling code here:
+        if(evt.getKeyCode()!=10) return;
+        if (cRating==null || cPoint==null)
+            return;
+            cPoint.setVariant(PointVariant.getText());
+            pointUpdate(evt,true);
     }//GEN-LAST:event_PointVariantKeyPressed
 
     private void PointKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PointKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PointKeyPressed
+        if(evt.getKeyCode()!=10) return;
+        if (cRating==null || cPoint==null)
+            return;
+        try {
+            cPoint.setPoint(Integer.parseInt(Point.getText()));
+            pointUpdate(evt,true);
+        } catch (Exception ee){
+            popup("Ошибка формата целого");
+            main.viewUpdate(evt,false);
+            }
+        }//GEN-LAST:event_PointKeyPressed
+
+    public void pointUpdate(KeyEvent evt,boolean noPopup){
+        try {
+            if (newPoint)
+            new APICall2<JLong>() {
+                @Override
+                public Call<JLong> apiFun() {
+                    return main.service.addEntity(main.debugToken,new DBRequest(cPoint,main.gson),0);
+                    }
+                }.call(main);
+            else
+            new APICall2<JEmpty>() {
+                @Override
+                public Call<JEmpty> apiFun() {
+                    return main.service.updateEntity(main.debugToken,new DBRequest(cPoint,main.gson));
+                    }
+                }.call(main);
+            newPoint = false;
+            if (evt!=null)
+                main.viewUpdate(evt,true);
+            if (!noPopup)
+                popup("Данные о выполнении обновлены");
+            savePos();
+            refreshStudentPoints();
+        } catch (UniException ee){
+            System.out.println(ee.toString());
+            if (evt!=null)
+                main.viewUpdate(evt,false);
+            }
+        }
 
     private void PointDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PointDateMouseClicked
         // TODO add your handling code here:
