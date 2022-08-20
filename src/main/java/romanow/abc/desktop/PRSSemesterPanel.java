@@ -67,18 +67,34 @@ public class PRSSemesterPanel extends BasePanel{
     private SASemesterRating cStudRating = null;
     @Getter private boolean newPoint=false;
     private ArrayList<ConstValue> pointStates;
+    private ArrayList<ConstValue> quantityes;
+    private QualitySelector quality;
 
     public void initPanel(MainBaseFrame main0){
         super.initPanel(main0);
         initComponents();
         pointStates = Values.constMap().getGroupList("PointState");
         eduUnitType = new ChoiceConsts(EduUnitType, Values.constMap().getGroupList("EduUnit"), null);
+        quantityes = Values.constMap().getGroupList("QualityType");
+        quantityes.sort(new Comparator<ConstValue>() {
+            @Override
+            public int compare(ConstValue o1, ConstValue o2) {
+                return o1.value()-o2.value();
+                }
+            });
+        quality = new QualitySelector(quantityes, Quality, 200, 440, new I_Value<Integer>() {
+            @Override
+            public void onEnter(Integer value) {
+                cPoint.setQuality(value);
+                pointUpdate(null,false);
+                }
+            });
         ratings = new ChoiceList<>(Ratings);
         students = new ChoiceList<>(Students);
         eduUnits = new ChoiceList<>(EduUnits);
         teams = new ChoiceList<>(Teams);
         teamStudents = new ChoiceList<>(TeamStudents);
-        pointStateMashine = new StateMashineView<PRSSemesterPanel>(this,20,530,Values.PointFactory);
+        pointStateMashine = new StateMashineView<PRSSemesterPanel>(this,20,440,Values.PointFactory);
         refreshAll();
         }
 
@@ -175,12 +191,12 @@ public class PRSSemesterPanel extends BasePanel{
         bbb1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         bbb2 = new javax.swing.JLabel();
-        PointDate = new javax.swing.JTextField();
+        PointDeliveryWeek = new javax.swing.JTextField();
         Point = new javax.swing.JTextField();
-        ссс = new javax.swing.JLabel();
+        SrcLabel = new javax.swing.JLabel();
         StudentTeam1 = new javax.swing.JTextField();
         ссс1 = new javax.swing.JLabel();
-        ссс2 = new javax.swing.JLabel();
+        DocLabel = new javax.swing.JLabel();
         EduUnitPdfReport = new javax.swing.JButton();
         DocUpload = new javax.swing.JButton();
         SrcDownload = new javax.swing.JButton();
@@ -188,10 +204,13 @@ public class PRSSemesterPanel extends BasePanel{
         bbb4 = new javax.swing.JLabel();
         bbb5 = new javax.swing.JLabel();
         EduUnitPoint = new javax.swing.JTextField();
-        EduUnitPoint2 = new javax.swing.JTextField();
         EduUnitType = new java.awt.Choice();
         RefreshAll = new javax.swing.JButton();
         PointState = new javax.swing.JTextField();
+        PointDate = new javax.swing.JTextField();
+        ссс2 = new javax.swing.JLabel();
+        EduUnitManual = new javax.swing.JCheckBox();
+        Quality = new javax.swing.JPanel();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -241,7 +260,7 @@ public class PRSSemesterPanel extends BasePanel{
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Выполнение");
         add(jLabel3);
-        jLabel3.setBounds(20, 340, 90, 16);
+        jLabel3.setBounds(20, 290, 90, 16);
         add(TeamStudents);
         TeamStudents.setBounds(510, 120, 160, 20);
 
@@ -267,7 +286,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(EduUnits);
-        EduUnits.setBounds(110, 250, 270, 20);
+        EduUnits.setBounds(110, 200, 270, 20);
 
         TeamStudentAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         TeamStudentAdd.setBorderPainted(false);
@@ -289,7 +308,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(EduUnitTableReport);
-        EduUnitTableReport.setBounds(20, 280, 35, 35);
+        EduUnitTableReport.setBounds(20, 230, 35, 35);
 
         StudentPdfReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
         StudentPdfReport.setBorderPainted(false);
@@ -322,7 +341,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(DocDownload);
-        DocDownload.setBounds(120, 490, 35, 35);
+        DocDownload.setBounds(150, 400, 35, 35);
 
         RatingPdfReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
         RatingPdfReport.setBorderPainted(false);
@@ -338,7 +357,7 @@ public class PRSSemesterPanel extends BasePanel{
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Ед.контроля");
         add(jLabel5);
-        jLabel5.setBounds(20, 250, 90, 16);
+        jLabel5.setBounds(20, 200, 90, 16);
 
         TeamAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/add.png"))); // NOI18N
         TeamAdd.setBorderPainted(false);
@@ -364,11 +383,11 @@ public class PRSSemesterPanel extends BasePanel{
 
         bbb.setText("Состояние");
         add(bbb);
-        bbb.setBounds(20, 360, 80, 16);
+        bbb.setBounds(20, 310, 80, 16);
 
         EduUnitWeek.setEnabled(false);
         add(EduUnitWeek);
-        EduUnitWeek.setBounds(310, 420, 60, 25);
+        EduUnitWeek.setBounds(170, 260, 40, 25);
 
         TeamStudentSelect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/question.png"))); // NOI18N
         TeamStudentSelect.setBorderPainted(false);
@@ -402,26 +421,25 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(PointVariant);
-        PointVariant.setBounds(110, 390, 60, 25);
+        PointVariant.setBounds(110, 340, 60, 25);
 
         bbb1.setText("Балл");
         add(bbb1);
-        bbb1.setBounds(20, 420, 80, 16);
+        bbb1.setBounds(280, 340, 50, 16);
         add(jSeparator1);
-        jSeparator1.setBounds(110, 350, 290, 3);
+        jSeparator1.setBounds(110, 300, 290, 3);
 
         bbb2.setText("Вариант");
         add(bbb2);
-        bbb2.setBounds(20, 390, 80, 16);
+        bbb2.setBounds(20, 340, 80, 16);
 
-        PointDate.setEnabled(false);
-        PointDate.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                PointDateMouseClicked(evt);
+        PointDeliveryWeek.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                PointDeliveryWeekKeyPressed(evt);
             }
         });
-        add(PointDate);
-        PointDate.setBounds(80, 450, 90, 25);
+        add(PointDeliveryWeek);
+        PointDeliveryWeek.setBounds(340, 370, 40, 25);
 
         Point.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -429,23 +447,23 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(Point);
-        Point.setBounds(110, 420, 60, 25);
+        Point.setBounds(340, 340, 40, 25);
 
-        ссс.setText("Исходник (архив)");
-        add(ссс);
-        ссс.setBounds(180, 490, 110, 16);
+        SrcLabel.setText("Исходник (архив)");
+        add(SrcLabel);
+        SrcLabel.setBounds(200, 400, 110, 16);
 
         StudentTeam1.setEnabled(false);
         add(StudentTeam1);
         StudentTeam1.setBounds(170, 150, 60, 25);
 
-        ссс1.setText("Дата");
+        ссс1.setText("Неделя");
         add(ссс1);
-        ссс1.setBounds(20, 450, 50, 16);
+        ссс1.setBounds(280, 370, 60, 20);
 
-        ссс2.setText("Отчет");
-        add(ссс2);
-        ссс2.setBounds(20, 490, 50, 16);
+        DocLabel.setText("Отчет");
+        add(DocLabel);
+        DocLabel.setBounds(20, 400, 50, 16);
 
         EduUnitPdfReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/pdf.png"))); // NOI18N
         EduUnitPdfReport.setBorderPainted(false);
@@ -456,7 +474,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(EduUnitPdfReport);
-        EduUnitPdfReport.setBounds(60, 280, 35, 35);
+        EduUnitPdfReport.setBounds(60, 230, 35, 35);
 
         DocUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
         DocUpload.setBorderPainted(false);
@@ -467,7 +485,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(DocUpload);
-        DocUpload.setBounds(80, 490, 35, 35);
+        DocUpload.setBounds(110, 400, 35, 35);
 
         SrcDownload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/download.png"))); // NOI18N
         SrcDownload.setBorderPainted(false);
@@ -478,7 +496,7 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(SrcDownload);
-        SrcDownload.setBounds(320, 490, 35, 35);
+        SrcDownload.setBounds(350, 400, 35, 35);
 
         SrcUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/upload.png"))); // NOI18N
         SrcUpload.setBorderPainted(false);
@@ -489,28 +507,24 @@ public class PRSSemesterPanel extends BasePanel{
             }
         });
         add(SrcUpload);
-        SrcUpload.setBounds(280, 490, 35, 35);
+        SrcUpload.setBounds(310, 400, 35, 35);
 
-        bbb4.setText("Нормат. балл");
+        bbb4.setText("Балл");
         add(bbb4);
-        bbb4.setBounds(190, 390, 90, 16);
+        bbb4.setBounds(280, 260, 60, 16);
 
-        bbb5.setText("Срок сдачи (нед)");
+        bbb5.setText("Неделя ");
         add(bbb5);
-        bbb5.setBounds(190, 420, 110, 16);
+        bbb5.setBounds(110, 260, 60, 16);
 
         EduUnitPoint.setEnabled(false);
         add(EduUnitPoint);
-        EduUnitPoint.setBounds(310, 390, 60, 25);
-
-        EduUnitPoint2.setEnabled(false);
-        add(EduUnitPoint2);
-        EduUnitPoint2.setBounds(310, 390, 60, 25);
+        EduUnitPoint.setBounds(340, 260, 40, 25);
 
         EduUnitType.setBackground(new java.awt.Color(204, 204, 204));
         EduUnitType.setEnabled(false);
         add(EduUnitType);
-        EduUnitType.setBounds(288, 280, 90, 20);
+        EduUnitType.setBounds(280, 230, 100, 20);
 
         RefreshAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/drawable/refresh.png"))); // NOI18N
         RefreshAll.setBorderPainted(false);
@@ -525,7 +539,30 @@ public class PRSSemesterPanel extends BasePanel{
 
         PointState.setEnabled(false);
         add(PointState);
-        PointState.setBounds(110, 360, 180, 25);
+        PointState.setBounds(110, 310, 180, 25);
+
+        PointDate.setEnabled(false);
+        PointDate.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PointDateMouseClicked(evt);
+            }
+        });
+        add(PointDate);
+        PointDate.setBounds(110, 370, 90, 25);
+
+        ссс2.setText("Дата");
+        add(ссс2);
+        ссс2.setBounds(20, 370, 50, 16);
+
+        EduUnitManual.setText("\"Ручная\" установка");
+        EduUnitManual.setEnabled(false);
+        add(EduUnitManual);
+        EduUnitManual.setBounds(110, 230, 160, 20);
+
+        Quality.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        Quality.setLayout(null);
+        add(Quality);
+        Quality.setBounds(200, 450, 190, 170);
     }// </editor-fold>//GEN-END:initComponents
 
     private void StudentTableReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentTableReportActionPerformed
@@ -549,7 +586,7 @@ public class PRSSemesterPanel extends BasePanel{
     }//GEN-LAST:event_RatingTableReportActionPerformed
 
     private void DocDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocDownloadActionPerformed
-        // TODO add your handling code here:
+        main.loadFile(cPoint.getReport().getRef());
     }//GEN-LAST:event_DocDownloadActionPerformed
 
     private void RatingPdfReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingPdfReportActionPerformed
@@ -600,12 +637,7 @@ public class PRSSemesterPanel extends BasePanel{
     public void pointUpdate(KeyEvent evt,boolean noPopup){
         try {
             if (newPoint)
-            new APICall2<JLong>() {
-                @Override
-                public Call<JLong> apiFun() {
-                    return main.service.addEntity(main.debugToken,new DBRequest(cPoint,main.gson),0);
-                    }
-                }.call(main);
+                pointAdd();
             else
             new APICall2<JEmpty>() {
                 @Override
@@ -627,24 +659,73 @@ public class PRSSemesterPanel extends BasePanel{
             }
         }
 
-    private void PointDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PointDateMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PointDateMouseClicked
+    public void pointAdd() throws UniException {
+        long oid =  new APICall2<JLong>() {
+            @Override
+            public Call<JLong> apiFun() {
+                return main.service.addEntity(main.debugToken,new DBRequest(cPoint,main.gson),0);
+            }
+        }.call(main).getValue();
+        cPoint.setOid(oid);
+    }
 
     private void EduUnitPdfReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EduUnitPdfReportActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_EduUnitPdfReportActionPerformed
 
     private void DocUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocUploadActionPerformed
-        // TODO add your handling code here:
+        new UploadPanel(200, 200, main, new I_OK() {
+            @Override
+            public void onOK(final Entity ent) {
+                if (cPoint.getReport().getOid()==0){
+                    cPoint.getReport().setOidRef((Artifact) ent);
+                    pointUpdate(null,true);
+                    return;
+                    }
+                new APICall<JEmpty>(main) {
+                    @Override
+                    public Call<JEmpty> apiFun() {
+                        return main.service.removeArtifact(main.debugToken,cPoint.getReport().getOid());
+                        }
+
+                    @Override
+                    public void onSucess(JEmpty oo) {
+                        cPoint.getReport().setOidRef((Artifact) ent);
+                        pointUpdate(null,true);
+                        }
+                    };
+                }
+            });
     }//GEN-LAST:event_DocUploadActionPerformed
 
     private void SrcDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SrcDownloadActionPerformed
-        // TODO add your handling code here:
+        main.loadFile(cPoint.getSource().getRef());
     }//GEN-LAST:event_SrcDownloadActionPerformed
 
     private void SrcUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SrcUploadActionPerformed
-        // TODO add your handling code here:
+        new UploadPanel(200, 200, main, new I_OK() {
+            @Override
+            public void onOK(final Entity ent) {
+                if (cPoint.getSource().getOid()==0){
+                    cPoint.getSource().setOidRef((Artifact) ent);
+                    pointUpdate(null,true);
+                    return;
+                }
+                new APICall<JEmpty>(main) {
+                    @Override
+                    public Call<JEmpty> apiFun() {
+                        return main.service.removeArtifact(main.debugToken,cPoint.getSource().getOid());
+                    }
+
+                    @Override
+                    public void onSucess(JEmpty oo) {
+                        cPoint.getSource().setOidRef((Artifact) ent);
+                        pointUpdate(null,true);
+                    }
+                };
+            }
+        });
+
     }//GEN-LAST:event_SrcUploadActionPerformed
 
     private void EduUnitsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EduUnitsItemStateChanged
@@ -656,6 +737,7 @@ public class PRSSemesterPanel extends BasePanel{
     private void StudentsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_StudentsItemStateChanged
         students.savePos();
         refreshSelectedStudent();
+        refreshStudentPoints();
         refreshPoint();
     }//GEN-LAST:event_StudentsItemStateChanged
 
@@ -672,6 +754,27 @@ public class PRSSemesterPanel extends BasePanel{
     private void RefreshAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshAllActionPerformed
         refreshAll();
     }//GEN-LAST:event_RefreshAllActionPerformed
+
+    private void PointDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PointDateMouseClicked
+        if (evt.getClickCount()<2)
+            return;
+        if (cRating==null || cPoint.getState()==Values.PSNotIssued)
+            return;
+        new CalendarView("Дата сдачи", new I_CalendarTime() {
+            @Override
+            public void onSelect(OwnDateTime time) {
+                String ss = cPoint.setDeliveryWeekDate(time,cRating.getSemRule().getRef());
+                if (ss.length()!=0)
+                    popup(ss);
+                else
+                    pointUpdate(null,false);
+                }
+            });
+    }//GEN-LAST:event_PointDateMouseClicked
+
+    private void PointDeliveryWeekKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PointDeliveryWeekKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PointDeliveryWeekKeyPressed
 
     public void refreshRatings(){
         new APICall<ArrayList<DBRequest>>(null){
@@ -791,8 +894,16 @@ public class PRSSemesterPanel extends BasePanel{
         }
 
     public void refreshPoint(){
+        DocDownload.setVisible(false);
+        DocUpload.setVisible(false);
+        SrcDownload.setVisible(false);
+        SrcUpload.setVisible(false);
+        DocLabel.setVisible(false);
+        SrcLabel.setVisible(false);
+        Point.setEnabled(false);
         if (cStudent==null || cEduUnit==null || cStudRating==null)
             return;
+        Point.setEnabled(cEduUnit.isManualPointSet());
         cPoint=null;
         for (SAPoint point : cStudRating.getPoints()){
             if (point.getState()==Values.PSArchive)
@@ -807,14 +918,25 @@ public class PRSSemesterPanel extends BasePanel{
             newPoint = true;
             cPoint = new SAPoint(cRating.getOid(),cStudent.getOid(),cEduUnit.getOid(),cStudRating.getOid());
             }
+        boolean bb = cPoint.getState()!=Values.PSNotIssued;
+        if (bb && !cEduUnit.isManualPointSet()){
+            quality.setVisible(true);
+            quality.select(cPoint.getQuality());
+            }
         PointVariant.setText(cPoint.getVariant());
-        Point.setText(""+cPoint.getPoint());
+        Point.setText(""+(int)cPoint.getPoint());
         PointDate.setText(cPoint.getDate().dateToString());
+        int week = cPoint.getDeliveryWeek();
+        PointDeliveryWeek.setText(cPoint.weekToString());
         DocDownload.setVisible(cPoint.getReport().getOid()!=0);
-        DocUpload.setVisible(true);
+        DocUpload.setVisible(bb);
+        DocLabel.setVisible(bb);
         SrcDownload.setVisible(cPoint.getSource().getOid()!=0);
-        SrcUpload.setVisible(true);
+        SrcUpload.setVisible(bb);
+        SrcLabel.setVisible(bb);
         pointStateMashine.refresh(cPoint);
+        if (!cEduUnit.isManualPointSet())
+            quality.select(cPoint.getQuality());
         PointState.setText("");
         for(ConstValue cc : pointStates)
             if(cc.value()==cPoint.getState()){
@@ -874,6 +996,7 @@ public class PRSSemesterPanel extends BasePanel{
         refresh = true;
         EduUnitWeek.setText("");
         EduUnitPoint.setText("");
+        EduUnitManual.setSelected(false);
         cEduUnit = eduUnits.get();
         if (cEduUnit==null){
             refresh=false;
@@ -882,6 +1005,7 @@ public class PRSSemesterPanel extends BasePanel{
         if (cEduUnit.getDeliveryWeek()!=0)
             EduUnitWeek.setText(""+cEduUnit.getDeliveryWeek());
         EduUnitPoint.setText(""+cEduUnit.getBasePoint());
+        EduUnitManual.setSelected(cEduUnit.isManualPointSet());
         if (eduUnitType.selectByValue(eduUnits.get().getUnitType())==null)
             System.out.println("Недопустимый тип учебной единицы: "+eduUnits.get().getUnitType());
         refresh=false;
@@ -939,23 +1063,27 @@ public class PRSSemesterPanel extends BasePanel{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DocDownload;
+    private javax.swing.JLabel DocLabel;
     private javax.swing.JButton DocUpload;
+    private javax.swing.JCheckBox EduUnitManual;
     private javax.swing.JButton EduUnitPdfReport;
     private javax.swing.JTextField EduUnitPoint;
-    private javax.swing.JTextField EduUnitPoint2;
     private javax.swing.JButton EduUnitTableReport;
     private java.awt.Choice EduUnitType;
     private javax.swing.JTextField EduUnitWeek;
     private java.awt.Choice EduUnits;
     private javax.swing.JTextField Point;
     private javax.swing.JTextField PointDate;
+    private javax.swing.JTextField PointDeliveryWeek;
     private javax.swing.JTextField PointState;
     private javax.swing.JTextField PointVariant;
+    private javax.swing.JPanel Quality;
     private javax.swing.JButton RatingPdfReport;
     private javax.swing.JButton RatingTableReport;
     private java.awt.Choice Ratings;
     private javax.swing.JButton RefreshAll;
     private javax.swing.JButton SrcDownload;
+    private javax.swing.JLabel SrcLabel;
     private javax.swing.JButton SrcUpload;
     private javax.swing.JButton StudentPdfReport;
     private javax.swing.JButton StudentTableReport;
@@ -982,7 +1110,6 @@ public class PRSSemesterPanel extends BasePanel{
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JLabel ссс;
     private javax.swing.JLabel ссс1;
     private javax.swing.JLabel ссс2;
     // End of variables declaration//GEN-END:variables

@@ -119,7 +119,7 @@ public class PRSRatingPanel extends BasePanel{
                     for(DBRequest request : oo){
                         SASemesterRule rule = (SASemesterRule) request.get(main.gson);
                         ratingRules.add(rule);
-                    }
+                        }
                     ratingRules.restorePos();
                 } catch (Exception ee){
                     System.out.println(ee.toString());
@@ -646,7 +646,7 @@ public class PRSRatingPanel extends BasePanel{
             @Override
             public void onPush() {
                 final SAGroupRating rating = new SAGroupRating();
-                rating.getExamRule().setOid(ratingRules.get().getOid());
+                rating.getSemRule().setOid(ratingRules.get().getOid());
                 rating.getSADiscipline().setOid(ratingDisciplines.get().getOid());
                 rating.getGroup().setOid(ratingGroups.get().getOid());
                 new APICall<JLong>(main) {

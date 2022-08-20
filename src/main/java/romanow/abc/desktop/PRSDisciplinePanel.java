@@ -159,7 +159,6 @@ public class PRSDisciplinePanel extends BasePanel{
         for(SAEduUnit unit : cDiscipline.getUnits()){
             eduUnits.add(unit);
             }
-        eduUnits.restorePos();
         refreshSelectedEduUnit();
         }
 
