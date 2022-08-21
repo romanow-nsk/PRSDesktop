@@ -7,6 +7,7 @@ package romanow.abc.desktop;
 
 import com.google.gson.Gson;
 import lombok.Getter;
+import org.apache.poi.ss.formula.functions.T;
 import retrofit2.Call;
 import romanow.abc.bridge.APICallSync;
 import romanow.abc.convert.onewayticket.OWTDiscipline;
@@ -29,6 +30,7 @@ import romanow.abc.core.entity.users.Account;
 import romanow.abc.core.entity.users.User;
 import romanow.abc.core.mongo.*;
 import romanow.abc.core.reports.GroupRatingReport;
+import romanow.abc.core.reports.TableData;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.excel.ExcelX2;
@@ -593,7 +595,33 @@ public class PRSSemesterPanel extends BasePanel{
     }//GEN-LAST:event_StudentPdfReportActionPerformed
 
     private void RatingTableReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingTableReportActionPerformed
-        // TODO add your handling code here:
+        new APICall<TableData>(main) {
+            @Override
+            public Call<TableData> apiFun() {
+                return  ((PRSClient)main).service2.createGroupReportTable(main.debugToken,cRating.getOid());
+              }
+            @Override
+            public void onSucess(TableData oo) {
+                new TableWindow(oo, 1, new I_TableBack() {
+                    @Override
+                    public void rowSelected(int row) {
+                        System.out.println("row="+row);
+                        }
+                    @Override
+                    public void colSelected(int col) {
+                        System.out.println("col="+col);
+                        }
+                    @Override
+                    public void cellSelected(int row, int col) {
+                        System.out.println("row="+row+" col="+col);
+                        }
+                    @Override
+                    public void onClose() {
+                        System.out.println("closed");
+                        }
+                    });
+                }
+            };
     }//GEN-LAST:event_RatingTableReportActionPerformed
 
     private void DocDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocDownloadActionPerformed
@@ -601,14 +629,14 @@ public class PRSSemesterPanel extends BasePanel{
     }//GEN-LAST:event_DocDownloadActionPerformed
 
     private void RatingPdfReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingPdfReportActionPerformed
-        new APICall<GroupRatingReport>(main) {
+        new APICall<Artifact>(main) {
             @Override
-            public Call<GroupRatingReport> apiFun() {
-                return  ((PRSClient)main).service2.createPaymentReport4(main.debugToken,cRating.getOid(),Values.ReportPDF);
+            public Call<Artifact> apiFun() {
+                return  ((PRSClient)main).service2.createGroupReportArtifact(main.debugToken,cRating.getOid(),Values.ReportPDF);
                 }
             @Override
-            public void onSucess(GroupRatingReport oo) {
-                main.loadFile(oo.reportFile);
+            public void onSucess(Artifact oo) {
+                main.loadFile(oo);
                 }
         };
     }//GEN-LAST:event_RatingPdfReportActionPerformed
