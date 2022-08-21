@@ -28,6 +28,7 @@ import romanow.abc.core.entity.subjectarea.*;
 import romanow.abc.core.entity.users.Account;
 import romanow.abc.core.entity.users.User;
 import romanow.abc.core.mongo.*;
+import romanow.abc.core.reports.GroupRatingReport;
 import romanow.abc.core.utils.FileNameExt;
 import romanow.abc.core.utils.OwnDateTime;
 import romanow.abc.excel.ExcelX2;
@@ -600,7 +601,16 @@ public class PRSSemesterPanel extends BasePanel{
     }//GEN-LAST:event_DocDownloadActionPerformed
 
     private void RatingPdfReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RatingPdfReportActionPerformed
-        // TODO add your handling code here:
+        new APICall<GroupRatingReport>(main) {
+            @Override
+            public Call<GroupRatingReport> apiFun() {
+                return  ((PRSClient)main).service2.createPaymentReport4(main.debugToken,cRating.getOid(),Values.ReportPDF);
+                }
+            @Override
+            public void onSucess(GroupRatingReport oo) {
+                main.loadFile(oo.reportFile);
+                }
+        };
     }//GEN-LAST:event_RatingPdfReportActionPerformed
 
     private void TeamAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TeamAddActionPerformed
