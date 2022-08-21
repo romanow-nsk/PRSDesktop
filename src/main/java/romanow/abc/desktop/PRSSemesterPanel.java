@@ -211,6 +211,8 @@ public class PRSSemesterPanel extends BasePanel{
         ссс2 = new javax.swing.JLabel();
         EduUnitManual = new javax.swing.JCheckBox();
         Quality = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        StudentRating = new javax.swing.JTextField();
 
         setVerifyInputWhenFocusTarget(false);
         setLayout(null);
@@ -411,9 +413,9 @@ public class PRSSemesterPanel extends BasePanel{
         add(TeamRemove);
         TeamRemove.setBounds(720, 70, 30, 30);
 
-        jLabel6.setText("Бригада");
+        jLabel6.setText("Рейтинг");
         add(jLabel6);
-        jLabel6.setBounds(110, 150, 80, 16);
+        jLabel6.setBounds(250, 150, 60, 16);
 
         PointVariant.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -563,6 +565,14 @@ public class PRSSemesterPanel extends BasePanel{
         Quality.setLayout(null);
         add(Quality);
         Quality.setBounds(200, 450, 190, 170);
+
+        jLabel7.setText("Бригада");
+        add(jLabel7);
+        jLabel7.setBounds(110, 150, 80, 16);
+
+        StudentRating.setEnabled(false);
+        add(StudentRating);
+        StudentRating.setBounds(320, 150, 60, 25);
     }// </editor-fold>//GEN-END:initComponents
 
     private void StudentTableReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StudentTableReportActionPerformed
@@ -638,18 +648,21 @@ public class PRSSemesterPanel extends BasePanel{
         try {
             if (newPoint)
                 pointAdd();
-            else
-            new APICall2<JEmpty>() {
+            else{
+                cPoint.calcPointValue(cEduUnit,cRating.getSemRule().getRef());
+                new APICall2<JEmpty>() {
                 @Override
                 public Call<JEmpty> apiFun() {
                     return main.service.updateEntity(main.debugToken,new DBRequest(cPoint,main.gson));
                     }
                 }.call(main);
+                }
             newPoint = false;
             if (evt!=null)
                 main.viewUpdate(evt,true);
             if (!noPopup)
                 popup("Данные о выполнении обновлены");
+            studentRatingUpdate();
             savePos();
             refreshStudentPoints();
         } catch (UniException ee){
@@ -658,6 +671,22 @@ public class PRSSemesterPanel extends BasePanel{
                 main.viewUpdate(evt,false);
             }
         }
+
+    public void studentRatingUpdate(){
+        try {
+            cStudRating.calcSemesterRating(cDiscipline.getUnits(),cRating.getSemRule().getRef());
+            new APICall2<JEmpty>() {
+                    @Override
+                    public Call<JEmpty> apiFun() {
+                        return main.service.updateEntity(main.debugToken,new DBRequest(cStudRating,main.gson));
+                    }
+                }.call(main);
+            } catch (UniException ee){
+                System.out.println(ee.toString());
+                }
+    }
+
+
 
     public void pointAdd() throws UniException {
         long oid =  new APICall2<JLong>() {
@@ -763,7 +792,8 @@ public class PRSSemesterPanel extends BasePanel{
         new CalendarView("Дата сдачи", new I_CalendarTime() {
             @Override
             public void onSelect(OwnDateTime time) {
-                String ss = cPoint.setDeliveryWeekDate(time,cRating.getSemRule().getRef());
+                cPoint.setDate(time);
+                String ss = cPoint.setDeliveryWeekByDate(cRating.getSemRule().getRef());
                 if (ss.length()!=0)
                     popup(ss);
                 else
@@ -773,7 +803,17 @@ public class PRSSemesterPanel extends BasePanel{
     }//GEN-LAST:event_PointDateMouseClicked
 
     private void PointDeliveryWeekKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PointDeliveryWeekKeyPressed
-        // TODO add your handling code here:
+        if(evt.getKeyCode()!=10) return;
+        if (cRating==null || cPoint==null || cPoint.getState()==Values.PSNotIssued)
+            return;
+        try {
+            cPoint.setDeliveryWeek(Integer.parseInt(PointDeliveryWeek.getText()));
+            cPoint.setDateByWeek(cRating.getSemRule().getRef());
+            pointUpdate(evt,false);
+            } catch (Exception ee){
+                popup("Ошибка формата целого");
+                main.viewUpdate(evt,false);
+                }
     }//GEN-LAST:event_PointDeliveryWeekKeyPressed
 
     public void refreshRatings(){
@@ -866,6 +906,7 @@ public class PRSSemesterPanel extends BasePanel{
         if (cRating==null)
             return;
         cStudRating = null;
+        StudentRating.setText("");
         for(SASemesterRating semesterRating : cRating.getSemRatings())
             if (semesterRating.getStudent().getOid()==cStudent.getOid()){
                 cStudRating = semesterRating;
@@ -884,6 +925,7 @@ public class PRSSemesterPanel extends BasePanel{
             public void onSucess(DBRequest oo) {
                 try{
                     cStudRating = (SASemesterRating) oo.get(main.gson);
+                    StudentRating.setText(""+cStudRating.getSemesterRating());
                     refreshPoint();
                     }catch (Exception ee){
                         System.out.println(ee.toString());
@@ -924,7 +966,7 @@ public class PRSSemesterPanel extends BasePanel{
             quality.select(cPoint.getQuality());
             }
         PointVariant.setText(cPoint.getVariant());
-        Point.setText(""+(int)cPoint.getPoint());
+        Point.setText(""+Math.round(cPoint.calcPointValue(cEduUnit,cRating.getSemRule().getRef())));
         PointDate.setText(cPoint.getDate().dateToString());
         int week = cPoint.getDeliveryWeek();
         PointDeliveryWeek.setText(cPoint.weekToString());
@@ -1086,6 +1128,7 @@ public class PRSSemesterPanel extends BasePanel{
     private javax.swing.JLabel SrcLabel;
     private javax.swing.JButton SrcUpload;
     private javax.swing.JButton StudentPdfReport;
+    private javax.swing.JTextField StudentRating;
     private javax.swing.JButton StudentTableReport;
     private javax.swing.JTextField StudentTeam1;
     private java.awt.Choice Students;
@@ -1108,6 +1151,7 @@ public class PRSSemesterPanel extends BasePanel{
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JLabel ссс1;

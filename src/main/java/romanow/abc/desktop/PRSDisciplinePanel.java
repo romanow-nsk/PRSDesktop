@@ -987,10 +987,15 @@ public class PRSDisciplinePanel extends BasePanel{
         add(OverSemesterPercent);
         OverSemesterPercent.setBounds(690, 170, 40, 25);
 
-        FineOverIrregular.setText("Нерегулярность (начиная с...)");
+        FineOverIrregular.setText("Нерегулярность (с недели)");
         FineOverIrregular.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 FineOverIrregularItemStateChanged(evt);
+            }
+        });
+        FineOverIrregular.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                FineOverIrregularActionPerformed(evt);
             }
         });
         add(FineOverIrregular);
@@ -2110,6 +2115,10 @@ public class PRSDisciplinePanel extends BasePanel{
                 main.viewUpdate(evt,false);
                 }
     }//GEN-LAST:event_DeliveryWeekKeyPressed
+
+    private void FineOverIrregularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FineOverIrregularActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_FineOverIrregularActionPerformed
 
     public void semesterRuleUpdate(KeyEvent evt){
         if (semesterRules.get()==null)

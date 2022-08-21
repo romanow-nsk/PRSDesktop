@@ -1,6 +1,8 @@
 package romanow.abc.desktop;
 
 import romanow.abc.core.constants.ConstValue;
+import romanow.abc.core.entity.subjectarea.SASemesterRule;
+import romanow.abc.core.utils.OwnDateTime;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -10,6 +10,7 @@ public class SAPointEmpty implements I_ClientTransition<PRSSemesterPanel> {
         }
     @Override
     public void onTransitionAfter(PRSSemesterPanel panel, StateEntity env) {
+        panel.studentRatingUpdate();
         panel.refreshStudentPoints();
         }
     @Override
