@@ -636,7 +636,7 @@ public class PRSSemesterPanel extends BasePanel{
                 }
             @Override
             public void onSucess(Artifact oo) {
-                main.loadFile(oo);
+                main.loadFileAndDelete(oo);
                 }
         };
     }//GEN-LAST:event_RatingPdfReportActionPerformed
