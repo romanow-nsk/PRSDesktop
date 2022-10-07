@@ -17,7 +17,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>romanow.abc.desktop.MainBase</mainClass>
+                            <mainClass>romanow.abc.desktop.PRSMainBase</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
